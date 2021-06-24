@@ -28,8 +28,6 @@ import ConnectionLine from './components/ConnectionLine.vue'
 const modules = useModules()
 const connections = useConnections()
 
-console.log({ modules })
-
 modules.clearAll()
 connections.clearAll()
 
