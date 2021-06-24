@@ -6,6 +6,8 @@
 
 <script setup lang="ts">
 import { computed, defineProps, toRefs } from 'vue'
+import { useInputPosition } from '../composables/useInputPosition'
+import { useOutputPosition } from '../composables/useOutputPosition'
 import { useModules } from '../store/modules'
 
 const props = defineProps<{
@@ -18,15 +20,8 @@ const modules = useModules()
 const fromModule = modules.items[props.from.moduleId]
 const toModule = modules.items[props.to.moduleId]
 
-const fromPoint = computed(() => ({
-  x: fromModule.position.x + fromModule.outputDeltas[props.from.index].x,
-  y: fromModule.position.y + fromModule.outputDeltas[props.from.index].y,
-}))
-
-const toPoint = computed(() => ({
-  x: toModule.position.x + toModule.inputDeltas[props.to.index].x,
-  y: toModule.position.y + toModule.inputDeltas[props.to.index].y,
-}))
+const fromPoint = useOutputPosition(fromModule, props.from.index)
+const toPoint = useInputPosition(toModule, props.to.index)
 </script>
 
 <style scoped>
