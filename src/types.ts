@@ -17,8 +17,8 @@ interface Module {
   id: number
   type: string
   position: Point
-  inputDeltas?: Point[]
-  outputDeltas?: Point[]
+  inputDeltas: Point[]
+  outputDeltas: Point[]
 }
 
 interface ModuleDefinition {

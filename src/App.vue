@@ -5,18 +5,17 @@
       :key="id"
       :id="module.id"
       :type="module.type"
-      :definition="modules.definitions[module.type]"
       v-model:position="module.position"
+      v-model:inputDeltas="module.inputDeltas"
+      v-model:outputDeltas="module.outputDeltas"
     />
   </div>
-  <div class="connections">
-    <ConnectionLine
-      v-for="(connection, index) in connections.items"
-      :key="index"
-      :from="connection.from"
-      :to="connection.to"
-    />
-  </div>
+  <ConnectionLine
+    v-for="(connection, index) in connections.items"
+    :key="index"
+    :from="connection.from"
+    :to="connection.to"
+  />
 </template>
 
 <script setup lang="ts">
