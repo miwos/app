@@ -1,5 +1,5 @@
 {
-  "type": "arp",
+  "type": "Arp",
   "inputs": 2,
   "outputs": 2
 }
