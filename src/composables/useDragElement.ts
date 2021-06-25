@@ -65,17 +65,7 @@ export const useDragElement = (el: Ref<HTMLElement | null>) => {
     initialized.value = true
   }
 
-  const style = computed(() =>
-    initialized.value
-      ? ({
-          position: 'absolute',
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          cursor: isDragging.value ? 'grab' : 'pointer',
-        } as CSS.Properties)
-      : {}
-  )
-
   watch(el, initialize)
-  return { position, style, isDragging, delta, initialized }
+
+  return { position, isDragging, delta, initialized }
 }
