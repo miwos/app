@@ -51,6 +51,12 @@ export const useModules = defineStore({
       this.items[id] = { id, type, position, inputDeltas: [], outputDeltas: [] }
     },
 
+    removeModule(moduleId: number) {
+      const module = this.items[moduleId]
+      const definition = this.definitions[module.type]
+      if (definition.allowRemove) delete this.items[moduleId]
+    },
+
     clearAll() {
       this.nextModuleId = 1
       this.items = {}

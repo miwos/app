@@ -1,5 +1,11 @@
 <template>
-  <div class="module" ref="el" :style="style">
+  <div
+    class="module"
+    ref="el"
+    :style="style"
+    tabindex="-1"
+    @keydown.delete="remove"
+  >
     <div class="connection-points inputs">
       <ConnectionPoint
         v-for="i in definition.inputs"
@@ -25,7 +31,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useDragElement } from '../composables/useDragElement'
 import { useModules } from '../store/modules'
-import { getOffset } from '../utils'
+import { getInputOutputDeltas } from '../utils'
 import ConnectionPoint from './ConnectionPoint.vue'
 
 const props = defineProps<{
@@ -50,26 +56,15 @@ watch(isDragging, (value) => document.body.classList.toggle('dragging', value))
 
 onMounted(() => {
   if (!el.value) return
-
   // The position of the inputs and outputs relative to the module won't change
   // during runtime, so we measure them once and can then use them to calculate
   // the connection line positions.
-
-  const bounds = el.value.getBoundingClientRect()
-
-  const inputElements = Array.from(el.value.querySelectorAll('[data-input]'))
-  const inputDeltas = inputElements.map((el) =>
-    getOffset(bounds, el.getBoundingClientRect())
-  )
-
-  const outputElements = Array.from(el.value.querySelectorAll('[data-output]'))
-  const outputDeltas = outputElements.map((el) =>
-    getOffset(bounds, el.getBoundingClientRect())
-  )
-
+  const [inputDeltas, outputDeltas] = getInputOutputDeltas(el.value)
   emit('update:inputDeltas', inputDeltas)
   emit('update:outputDeltas', outputDeltas)
 })
+
+const remove = () => modules.removeModule(props.id)
 
 const style = computed(() => ({
   top: `${props.position.y}px`,
@@ -83,6 +78,11 @@ const style = computed(() => ({
   background: red;
   width: 100px;
   height: 100px;
+}
+
+.module:focus {
+  background-color: aqua;
+  outline: none;
 }
 
 .connection-points {
