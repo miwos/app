@@ -45,9 +45,10 @@ class Bridge {
 
   async updatePatch(name: string, patch: string) {
     try {
-      const fileName = `lua/patches/${name}.lua`
+      const dirName = 'lua/patches'
+      const fileName = `${name}.lua`
       const data = new TextEncoder().encode(patch)
-      await this.osc.sendRawRequest('/write-file', fileName, data)
+      await this.osc.sendRawRequest('/write-file', [dirName, fileName], data)
       await this.osc.sendRequest('/update-patch', name)
     } catch (error) {
       this.logError(
