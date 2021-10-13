@@ -25,4 +25,6 @@ interface ModuleDefinition {
   type: string
   inputs: number
   outputs: number
+  allowCreate: boolean
+  allowRemove: boolean
 }

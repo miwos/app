@@ -3,18 +3,18 @@
     <div class="connection-points inputs">
       <ConnectionPoint
         v-for="i in definition.inputs"
-        :data-input="i - 1"
+        :data-input="i"
         :moduleId="id"
-        :index="i - 1"
+        :index="i"
         type="input"
       />
     </div>
     <div class="connection-points outputs">
       <ConnectionPoint
         v-for="i in definition.outputs"
-        :data-output="i - 1"
+        :data-output="i"
         :moduleId="id"
-        :index="i - 1"
+        :index="i"
         type="output"
       />
     </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineEmit, defineProps, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useDragElement } from '../composables/useDragElement'
 import { useModules } from '../store/modules'
 import { getOffset } from '../utils'
@@ -34,18 +34,19 @@ const props = defineProps<{
   position: Point
 }>()
 
-const emit = defineEmit([
+const emit = defineEmits([
   'update:position',
   'update:inputDeltas',
   'update:outputDeltas',
 ])
 
 const el = ref<HTMLElement | null>(null)
-const { position } = useDragElement(el)
+const { position, isDragging } = useDragElement(el)
 const modules = useModules()
 const definition = modules.definitions[props.type]
 
 watch(position, (position) => emit('update:position', position))
+watch(isDragging, (value) => document.body.classList.toggle('dragging', value))
 
 onMounted(() => {
   if (!el.value) return

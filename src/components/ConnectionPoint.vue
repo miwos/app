@@ -16,12 +16,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useConnections } from '../store/connections'
 import { emptyImage } from '../utils'
 
 const props = defineProps<{
   moduleId: number
+  // Note: the index is one-based to be consistent with lua.
   index: number
   type: 'input' | 'output'
 }>()

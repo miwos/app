@@ -10,27 +10,62 @@
       v-model:outputDeltas="module.outputDeltas"
     />
   </div>
-  <ConnectionLine
-    v-for="(connection, index) in connections.items"
-    :key="index"
-    :from="connection.from"
-    :to="connection.to"
-  />
+  <div class="connections">
+    <ConnectionLine
+      v-for="(connection, index) in connections.items"
+      :key="index"
+      :from="connection.from"
+      :to="connection.to"
+    />
+  </div>
+  <div>
+    <button
+      v-for="definition of modules.creatableDefinitions"
+      @click="createModule(definition.type)"
+    >
+      {{ definition.type }}
+    </button>
+  </div>
+  <button @click="bridge.connect()">Connect</button>
+  <button @click="bridge.close()">Close</button>
+  <button @click="updatePatch">Patch</button>
+  <button @click="bridge.init()">Init</button>
+  <div>{{ bridge.isConnected }}</div>
+  <Logger></Logger>
 </template>
 
 <script setup lang="ts">
+import { createLuaPatch } from './utils'
 import { useModules } from './store/modules'
 import { useConnections } from './store/connections'
 import Module from './components/Module.vue'
 import ConnectionLine from './components/ConnectionLine.vue'
+import Logger from './components/Logger.vue'
+import { useBridge } from './bridge'
 
-const modules = useModules()
+const bridge = useBridge()
 const connections = useConnections()
+const modules = useModules()
+modules.init()
 
-modules.clearAll()
-connections.clearAll()
+const connected = bridge.isConnected
 
-modules.addDefinition({ type: 'arp', inputs: 2, outputs: 3 })
-modules.addModule('arp', { x: 100, y: 100 })
-modules.addModule('arp', { x: 500, y: 500 })
+const createModule = (type: string) =>
+  modules.addModule(type, {
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+  })
+
+const updatePatch = async () => {
+  const patch = createLuaPatch()
+  bridge.updatePatch('patch1', patch)
+}
 </script>
+
+<style lang="scss">
+body {
+  &.dragging * {
+    user-select: none;
+  }
+}
+</style>

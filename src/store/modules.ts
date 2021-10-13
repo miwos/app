@@ -1,10 +1,15 @@
 import { defineStore } from 'pinia'
 
+const definitionDefaults = {
+  allowCreate: true,
+  allowRemove: true,
+}
+
 const definitionModules = import.meta.globEager('../modules/*.json')
 const definitions: Record<string, ModuleDefinition> = Object.fromEntries(
   Object.values(definitionModules).map((module) => [
     module.default.type,
-    module.default,
+    { ...definitionDefaults, ...module.default },
   ])
 )
 
@@ -12,12 +17,29 @@ export const useModules = defineStore({
   id: 'modules',
 
   state: () => ({
+    isInit: false,
     definitions,
     items: {} as Record<number, Module>,
-    nextModuleId: 0,
+    // We use a one-based index to be consistent with lua.
+    nextModuleId: 1,
   }),
 
+  getters: {
+    definitionsList: (state) => Object.values(state.definitions),
+
+    creatableDefinitions(): ModuleDefinition[] {
+      return this.definitionsList.filter((definition) => definition.allowCreate)
+    },
+  },
+
   actions: {
+    init() {
+      if (this.isInit) return
+      this.addModule('Input', { x: 200, y: 200 })
+      this.addModule('Output', { x: 400, y: 400 })
+      this.isInit = true
+    },
+
     addDefinition(definition: ModuleDefinition) {
       this.definitions[definition.type] = definition
     },
@@ -30,7 +52,7 @@ export const useModules = defineStore({
     },
 
     clearAll() {
-      this.nextModuleId = 0
+      this.nextModuleId = 1
       this.items = {}
     },
   },

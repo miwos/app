@@ -5,7 +5,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineProps, toRefs } from 'vue'
 import { useInputPosition } from '../composables/useInputPosition'
 import { useOutputPosition } from '../composables/useOutputPosition'
 import { useModules } from '../store/modules'
