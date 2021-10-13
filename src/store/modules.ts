@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useConnections } from './connections'
 
 const definitionDefaults = {
   allowCreate: true,
@@ -54,7 +55,15 @@ export const useModules = defineStore({
     removeModule(moduleId: number) {
       const module = this.items[moduleId]
       const definition = this.definitions[module.type]
-      if (definition.allowRemove) delete this.items[moduleId]
+      if (!definition.allowRemove) return
+
+      // Remove all connections that are connected to the module we are about
+      // to remove.
+      const connections = useConnections()
+      for (const connection of connections.connectedToModule(moduleId))
+        connections.removeConnection(connection.id)
+
+      delete this.items[moduleId]
     },
 
     clearAll() {

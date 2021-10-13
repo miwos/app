@@ -9,6 +9,14 @@ export const useConnections = defineStore({
     startConnectionPoint: null as ConnectionPoint | null,
   }),
 
+  getters: {
+    connectedToModule: (state) => (moduleId: number) =>
+      Object.values(state.items).filter(
+        (item) =>
+          item.from.moduleId === moduleId || item.to.moduleId === moduleId
+      ),
+  },
+
   actions: {
     connectFrom(connectionPoint: ConnectionPoint) {
       this.startConnectionPoint = connectionPoint
@@ -27,8 +35,12 @@ export const useConnections = defineStore({
       if (startType === 'input') connectionPoints.reverse()
 
       const [from, to] = connectionPoints
-      const id = getConnectionId({ from, to })
-      this.items[id] = { from, to }
+      const id = getConnectionId(from, to)
+      this.items[id] = { id, from, to }
+    },
+
+    removeConnection(connectionId: string) {
+      delete this.items[connectionId]
     },
 
     clearAll() {

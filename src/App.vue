@@ -16,6 +16,7 @@
       :key="index"
       :from="connection.from"
       :to="connection.to"
+      :id="connection.id"
     />
   </div>
   <div>

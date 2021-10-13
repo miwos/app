@@ -1,4 +1,2 @@
-export const getConnectionId = (connection: Connection) => {
-  const { from, to } = connection
-  return `(${from.moduleId},${from.index})-(${to.moduleId},${to.index})`
-}
+export const getConnectionId = (from: ConnectionPoint, to: ConnectionPoint) =>
+  `(${from.moduleId},${from.index})-(${to.moduleId},${to.index})`

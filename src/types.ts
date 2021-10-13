@@ -9,6 +9,7 @@ interface ConnectionPoint {
 }
 
 interface Connection {
+  id: string
   from: ConnectionPoint
   to: ConnectionPoint
 }
