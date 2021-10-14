@@ -81,7 +81,7 @@ const style = computed(() => ({
 }
 
 .module:focus {
-  background-color: aqua;
+  background-color: tomato;
   outline: none;
 }
 
