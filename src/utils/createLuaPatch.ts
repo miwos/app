@@ -1,7 +1,13 @@
 import { useConnections } from '../store/connections'
+import { useInterface } from '../store/interface'
 import { useModules } from '../store/modules'
 
-const patchTemplate = (require: string, types: string, connections: string) =>
+const patchTemplate = (
+  require: string,
+  types: string,
+  connections: string,
+  interfaces: string
+) =>
   `${require ? require + '\n\n' : ''}return {
   types = {
 ${types}
@@ -9,6 +15,10 @@ ${types}
 
   connections = {
 ${connections}
+  },
+
+  interface = {
+${interfaces}    
   }
 }
 `
@@ -40,5 +50,23 @@ export const createLuaPatch = () => {
     )
     .join(',\n')
 
-  return patchTemplate(requireMarkup, typesMarkup, connectionsMarkup)
+  const interfaceMarkup = useInterface()
+    .pages.map((page) =>
+      Object.entries(page).map(
+        ([name, entries]) =>
+          `    {\n      ${name} = {\n${entries
+            .map(
+              (entry) => `        { ${entry.moduleId}, '${entry.propName}' }`
+            )
+            .join(',\n')}\n      }\n    }`
+      )
+    )
+    .join(',\n')
+
+  return patchTemplate(
+    requireMarkup,
+    typesMarkup,
+    connectionsMarkup,
+    interfaceMarkup
+  )
 }

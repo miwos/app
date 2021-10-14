@@ -5,12 +5,14 @@
   "props": {
     "speed": {
       "type": "number",
+      "default": 240,
       "min": 30,
       "max": 1300,
       "step": 1
     },
     "gate": {
       "type": "number",
+      "default": 0.5,
       "min": 0,
       "max": 1
     }

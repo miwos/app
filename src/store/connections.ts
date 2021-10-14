@@ -39,6 +39,7 @@ export const useConnections = defineStore({
       const id = getConnectionId(from, to)
       this.items[id] = { id, from, to }
 
+      console.log(createLuaPatch())
       useBridge().updatePatch('patch1', createLuaPatch())
     },
 

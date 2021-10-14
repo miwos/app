@@ -14,6 +14,7 @@
         v-for="(prop, name) in definition.props"
         :name="name"
         :prop="prop"
+        :value="modules.items[id].props[name]"
         @update:value="sendPropValue(name, $event)"
       />
     </div>

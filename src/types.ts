@@ -20,10 +20,12 @@ interface Module {
   position: Point
   inputDeltas: Point[]
   outputDeltas: Point[]
+  props: Record<string, number>
 }
 
 interface ModuleProp {
   type: string
+  default: number
 }
 
 interface ModuleDefinition {
@@ -33,4 +35,8 @@ interface ModuleDefinition {
   props: Record<string, ModuleProp>
   allowCreate: boolean
   allowRemove: boolean
+}
+
+interface InterfacePage {
+  encoders: Array<{ moduleId: number; propName: string }>
 }

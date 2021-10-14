@@ -2,6 +2,7 @@ import AsyncOsc from 'async-osc'
 import WebSerialTransport from 'async-osc/dist/WebSerialTransport'
 import { LogType, useLogs } from './store/logs'
 import { ref } from 'vue'
+import { useModules } from './store/modules'
 
 class Bridge {
   private osc = new AsyncOsc(new WebSerialTransport())
@@ -28,6 +29,11 @@ class Bridge {
         useLogs().addLog(params.type as LogType, new TextDecoder().decode(data))
       }
     )
+
+    this.osc.on('/patch/prop', (message) => {
+      const [moduleId, propName, value] = message.args
+      useModules().items[moduleId].props[propName] = value
+    })
   }
 
   async connect() {

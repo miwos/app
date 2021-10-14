@@ -6,6 +6,7 @@
       >&nbsp;
       <input
         type="number"
+        :value="props.value"
         @change="$emit('update:value', parseInt(($event.target as HTMLInputElement)?.value))"
       />
     </div>
@@ -15,6 +16,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   name: string
+  value: number
 }>()
 
 const map = () => {}

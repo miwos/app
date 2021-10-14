@@ -46,10 +46,25 @@ export const useModules = defineStore({
     },
 
     addModule(type: string, position: Point) {
+      const definition = this.definitions[type]
       if (!this.definitions[type])
         throw new Error(`Can't find module definition for type '${type}'.`)
+
       const id = this.nextModuleId++
-      this.items[id] = { id, type, position, inputDeltas: [], outputDeltas: [] }
+
+      const props = {} as Module['props']
+      for (const [name, prop] of Object.entries(definition.props ?? {})) {
+        props[name] = prop.default
+      }
+
+      this.items[id] = {
+        id,
+        type,
+        position,
+        inputDeltas: [],
+        outputDeltas: [],
+        props,
+      }
     },
 
     removeModule(moduleId: number) {
