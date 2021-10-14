@@ -1,5 +1,18 @@
 {
   "type": "Arp",
-  "inputs": 2,
-  "outputs": 2
+  "inputs": 1,
+  "outputs": 1,
+  "props": {
+    "speed": {
+      "type": "number",
+      "min": 30,
+      "max": 1300,
+      "step": 1
+    },
+    "gate": {
+      "type": "number",
+      "min": 0,
+      "max": 1
+    }
+  }
 }

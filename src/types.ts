@@ -22,10 +22,15 @@ interface Module {
   outputDeltas: Point[]
 }
 
+interface ModuleProp {
+  type: string
+}
+
 interface ModuleDefinition {
   type: string
   inputs: number
   outputs: number
+  props: Record<string, ModuleProp>
   allowCreate: boolean
   allowRemove: boolean
 }

@@ -43,13 +43,17 @@ class Bridge {
     }
   }
 
+  sendProp(moduleId: number, name: string, value: number) {
+    this.osc.sendMessage('patch/prop', [moduleId, name, value])
+  }
+
   async updatePatch(name: string, patch: string) {
     try {
       const dirName = 'lua/patches'
       const fileName = `${name}.lua`
       const data = new TextEncoder().encode(patch)
       await this.osc.sendRawRequest('/write-file', [dirName, fileName], data)
-      await this.osc.sendRequest('/update-patch', name)
+      await this.osc.sendRequest('/patch/update', name)
     } catch (error) {
       this.logError(
         `Couldn't update patch '${name}' (${(error as Error).message})`

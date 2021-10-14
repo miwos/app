@@ -1,11 +1,5 @@
 <template>
-  <div
-    class="module"
-    ref="el"
-    :style="style"
-    tabindex="-1"
-    @keydown.delete="remove"
-  >
+  <div class="module" ref="el" tabindex="-1" @keydown.delete="remove">
     <div class="connection-points inputs">
       <ConnectionPoint
         v-for="i in definition.inputs"
@@ -13,6 +7,14 @@
         :moduleId="id"
         :index="i"
         type="input"
+      />
+    </div>
+    <div class="props">
+      <ModuleProp
+        v-for="(prop, name) in definition.props"
+        :name="name"
+        :prop="prop"
+        @update:value="sendPropValue(name, $event)"
       />
     </div>
     <div class="connection-points outputs">
@@ -28,11 +30,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { useBridge } from '../bridge'
 import { useDragElement } from '../composables/useDragElement'
 import { useModules } from '../store/modules'
 import { getInputOutputDeltas } from '../utils'
 import ConnectionPoint from './ConnectionPoint.vue'
+import ModuleProp from './ModuleProp.vue'
 
 const props = defineProps<{
   id: number
@@ -48,6 +52,7 @@ const emit = defineEmits([
 
 const el = ref<HTMLElement | null>(null)
 const { position, isDragging } = useDragElement(el)
+const bridge = useBridge()
 const modules = useModules()
 const definition = modules.definitions[props.type]
 
@@ -64,20 +69,24 @@ onMounted(() => {
   emit('update:outputDeltas', outputDeltas)
 })
 
-const remove = () => modules.removeModule(props.id)
+const sendPropValue = (name: string, value: number) => {
+  bridge.sendProp(props.id, name, value)
+}
 
-const style = computed(() => ({
-  top: `${props.position.y}px`,
-  left: `${props.position.x}px`,
-}))
+const remove = (event: KeyboardEvent) => {
+  if (event.target === el.value) modules.removeModule(props.id)
+}
 </script>
 
 <style scoped>
 .module {
   position: absolute;
+  display: flex;
+  flex-direction: column;
   background: red;
-  width: 100px;
-  height: 100px;
+  width: 50px;
+  top: v-bind('props.position.y + `px`');
+  left: v-bind('props.position.x + `px`');
 }
 
 .module:focus {
@@ -85,8 +94,12 @@ const style = computed(() => ({
   outline: none;
 }
 
+.props {
+  transform: translate(100%);
+}
+
 .connection-points {
-  position: absolute;
+  /* position: absolute; */
   display: flex;
   justify-content: space-between;
   width: 100%;
