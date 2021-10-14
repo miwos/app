@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { getConnectionId } from '../utils'
+import { useBridge } from '../bridge'
+import { createLuaPatch, getConnectionId } from '../utils'
 
 export const useConnections = defineStore({
   id: 'connections',
@@ -37,10 +38,13 @@ export const useConnections = defineStore({
       const [from, to] = connectionPoints
       const id = getConnectionId(from, to)
       this.items[id] = { id, from, to }
+
+      useBridge().updatePatch('patch1', createLuaPatch())
     },
 
     removeConnection(connectionId: string) {
       delete this.items[connectionId]
+      useBridge().updatePatch('patch1', createLuaPatch())
     },
 
     clearAll() {
