@@ -15,6 +15,8 @@
         :name="name"
         :prop="prop"
         :value="modules.items[id].props[name]"
+        :encoder="interfaces.getEncoderId(id, name).value"
+        @update:encoder="interfaces.mapEncoder($event, id, name)"
         @update:value="sendPropValue(name, $event)"
       />
     </div>
@@ -34,6 +36,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { useBridge } from '../bridge'
 import { useDragElement } from '../composables/useDragElement'
+import { useInterfaces } from '../store/interfaces'
 import { useModules } from '../store/modules'
 import { getInputOutputDeltas } from '../utils'
 import ConnectionPoint from './ConnectionPoint.vue'
@@ -55,6 +58,7 @@ const el = ref<HTMLElement | null>(null)
 const { position, isDragging } = useDragElement(el)
 const bridge = useBridge()
 const modules = useModules()
+const interfaces = useInterfaces()
 const definition = modules.definitions[props.type]
 
 watch(position, (position) => emit('update:position', position))
