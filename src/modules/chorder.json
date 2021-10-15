@@ -1,5 +1,19 @@
 {
   "type": "Chorder",
-  "inputs": 3,
-  "outputs": 3
+  "inputs": 1,
+  "outputs": 1,
+  "props": {
+    "pitch1": {
+      "type": "number",
+      "default": 6,
+      "min": -12,
+      "max": 12
+    },
+    "pitch2": {
+      "type": "number",
+      "default": -12,
+      "min": -12,
+      "max": 12
+    }
+  }
 }

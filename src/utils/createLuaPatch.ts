@@ -1,5 +1,5 @@
 import { useConnections } from '../store/connections'
-import { useInterface } from '../store/interface'
+import { useInterfaces } from '../store/interfaces'
 import { useModules } from '../store/modules'
 
 const patchTemplate = (
@@ -50,7 +50,7 @@ export const createLuaPatch = () => {
     )
     .join(',\n')
 
-  const interfaceMarkup = useInterface()
+  const interfaceMarkup = useInterfaces()
     .pages.map((page) =>
       Object.entries(page).map(
         ([name, entries]) =>
