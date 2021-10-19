@@ -1,72 +1,48 @@
 import { useConnections } from '../store/connections'
 import { useInterfaces } from '../store/interfaces'
 import { useModules } from '../store/modules'
-
-const patchTemplate = (
-  require: string,
-  types: string,
-  connections: string,
-  interfaces: string
-) =>
-  `${require ? require + '\n\n' : ''}return {
-  types = {
-${types}
-  },
-
-  connections = {
-${connections}
-  },
-
-  interface = {
-${interfaces}    
-  }
-}
-`
+// @ts-ignore
+import { format } from 'lua-json'
 
 export const createLuaPatch = () => {
   const modules = useModules()
   const connections = useConnections()
 
-  const require = new Set()
-  const types = []
+  const requiredModules = new Set()
+  const types = {} as Record<string, string>
 
   for (const { id, type } of Object.values(modules.items)) {
-    require.add(type)
-    types.push([id, type])
+    requiredModules.add(type)
+    types[`%${id}%`] = `%${type}%`
   }
 
-  const requireMarkup = Array.from(require)
+  const require = Array.from(requiredModules)
     .map((type) => `local ${type} = require('modules.${type}')`)
     .join('\n')
 
-  const typesMarkup = types
-    .map(([id, type]) => `    [${id}] = ${type}`)
-    .join(',\n')
+  const patch = {
+    types,
 
-  const connectionsMarkup = Object.values(connections.items)
-    .map(
+    connections: Object.values(connections.items).map(
       ({ from, to }) =>
-        `    { ${from.moduleId}, ${from.index}, ${to.moduleId}, ${to.index} }`
-    )
-    .join(',\n')
+        `%{ ${from.moduleId}, ${from.index}, ${to.moduleId}, ${to.index} }%`
+    ),
 
-  const interfaceMarkup = useInterfaces()
-    .pages.map((page) =>
-      Object.entries(page).map(
-        ([name, entries]) =>
-          `    {\n      ${name} = {\n${entries
-            .map(
-              (entry) => `        { ${entry.moduleId}, '${entry.propName}' }`
-            )
-            .join(',\n')}\n      }\n    }`
+    interface: useInterfaces().pages.map((page) =>
+      Object.fromEntries(
+        Object.entries(page).map(([name, entries]) => [
+          name,
+          entries.map(
+            (entry) => `%{ ${entry.moduleId}, "${entry.propName}" }%`
+          ),
+        ])
       )
-    )
-    .join(',\n')
+    ),
+  }
 
-  return patchTemplate(
-    requireMarkup,
-    typesMarkup,
-    connectionsMarkup,
-    interfaceMarkup
-  )
+  // lua-json does a great job, but some things we have to convert manually.
+  // Each string that starts and ends with a `%` will be ignored from lua-json
+  // and the quotes and the `%` characters removed afterwards.
+  const patchLua = format(patch).replace(/('%|%')/g, '')
+  return `${require}\n\n${patchLua}`
 }
