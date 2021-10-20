@@ -1,16 +1,13 @@
 import { defineStore } from 'pinia'
+import { useBridge } from '../bridge'
+import { createLuaPatch } from '../utils'
 import { useConnections } from './connections'
-
-const definitionDefaults = {
-  allowCreate: true,
-  allowRemove: true,
-}
 
 const definitionModules = import.meta.globEager('../modules/*.json')
 const definitions: Record<string, ModuleDefinition> = Object.fromEntries(
   Object.values(definitionModules).map((module) => [
     module.default.type,
-    { ...definitionDefaults, ...module.default },
+    module.default,
   ])
 )
 
@@ -27,10 +24,6 @@ export const useModules = defineStore({
 
   getters: {
     definitionsList: (state) => Object.values(state.definitions),
-
-    creatableDefinitions(): ModuleDefinition[] {
-      return this.definitionsList.filter((definition) => definition.allowCreate)
-    },
   },
 
   actions: {
@@ -65,13 +58,11 @@ export const useModules = defineStore({
         outputDeltas: [],
         props,
       }
+
+      useBridge().updatePatch('patch1', createLuaPatch())
     },
 
     removeModule(moduleId: number) {
-      const module = this.items[moduleId]
-      const definition = this.definitions[module.type]
-      if (!definition.allowRemove) return
-
       // Remove all connections that are connected to the module we are about
       // to remove.
       const connections = useConnections()

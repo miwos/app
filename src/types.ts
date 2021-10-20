@@ -35,8 +35,6 @@ interface ModuleDefinition {
   inputs: number
   outputs: number
   props: Record<string, ModuleProp>
-  allowCreate: boolean
-  allowRemove: boolean
 }
 
 interface InterfacePage {
