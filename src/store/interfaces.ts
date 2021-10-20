@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { defineStore } from 'pinia'
-import { useBridge } from '../bridge'
-import { createLuaPatch } from '../utils'
+import { usePatch } from './patch'
 
 export const useInterfaces = defineStore({
   id: 'interfaces',
@@ -30,7 +29,7 @@ export const useInterfaces = defineStore({
     mapEncoder(encoderId: number, moduleId: number, propName: string) {
       // Subtract 1 to convert lua's 1-based index to javascript index.
       this.pages[0].encoders[encoderId - 1] = { moduleId, propName }
-      useBridge().updatePatch('patch1', createLuaPatch())
+      usePatch().update()
     },
   },
 })

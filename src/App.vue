@@ -30,8 +30,9 @@
   </div>
   <button @click="bridge.connect()">Connect</button>
   <button @click="bridge.close()">Close</button>
-  <button @click="updatePatch">Patch</button>
+  <button @click="patch.update()">Patch</button>
   <button @click="bridge.init()">Init</button>
+  <button @click="patch.clear()">Clear</button>
   <div>{{ bridge.isConnected }}</div>
   <Logger></Logger>
 </template>
@@ -44,10 +45,12 @@ import Module from './components/Module.vue'
 import ConnectionLine from './components/ConnectionLine.vue'
 import Logger from './components/Logger.vue'
 import { useBridge } from './bridge'
+import { usePatch } from './store/patch'
 
 const bridge = useBridge()
 const connections = useConnections()
 const modules = useModules()
+const patch = usePatch()
 modules.init()
 
 const createModule = (type: string) =>
@@ -55,11 +58,6 @@ const createModule = (type: string) =>
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
   })
-
-const updatePatch = async () => {
-  const patch = createLuaPatch()
-  bridge.updatePatch('patch1', patch)
-}
 </script>
 
 <style lang="scss">

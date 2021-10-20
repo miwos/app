@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { useBridge } from '../bridge'
 import { createLuaPatch } from '../utils'
 import { useConnections } from './connections'
+import { usePatch } from './patch'
 
 const definitionModules = import.meta.globEager('../modules/*.json')
 const definitions: Record<string, ModuleDefinition> = Object.fromEntries(
@@ -29,8 +30,8 @@ export const useModules = defineStore({
   actions: {
     init() {
       if (this.isInit) return
-      this.addModule('Input', { x: 200, y: 200 })
-      this.addModule('Output', { x: 400, y: 400 })
+      this.addModule('Input', { x: 200, y: 200 }, false)
+      this.addModule('Output', { x: 400, y: 400 }, false)
       this.isInit = true
     },
 
@@ -38,7 +39,7 @@ export const useModules = defineStore({
       this.definitions[definition.type] = definition
     },
 
-    addModule(type: string, position: Point) {
+    addModule(type: string, position: Point, update = true) {
       const definition = this.definitions[type]
       if (!this.definitions[type])
         throw new Error(`Can't find module definition for type '${type}'.`)
@@ -59,7 +60,7 @@ export const useModules = defineStore({
         props,
       }
 
-      useBridge().updatePatch('patch1', createLuaPatch())
+      if (update) usePatch().update()
     },
 
     removeModule(moduleId: number) {
@@ -72,9 +73,10 @@ export const useModules = defineStore({
       delete this.items[moduleId]
     },
 
-    clearAll() {
+    clearAll(update = true) {
       this.nextModuleId = 1
       this.items = {}
+      if (update) usePatch().update()
     },
   },
 })
