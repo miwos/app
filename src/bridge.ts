@@ -8,6 +8,7 @@ class Bridge {
   private osc = new AsyncOsc(new WebSerialTransport())
 
   isConnected = ref(false)
+  usedMemory = ref(0)
 
   constructor() {
     this.osc.on('/disconnect', () => {
@@ -38,7 +39,14 @@ class Bridge {
 
   async connect() {
     await this.osc.connect()
+    this.osc.sendMessage('/bridge/connect')
     this.isConnected.value = true
+
+    setInterval(async () => {
+      this.usedMemory.value = parseInt(
+        await this.osc.sendRequest('/info/memory-usage')
+      )
+    }, 1000)
   }
 
   async init() {

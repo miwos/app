@@ -20,8 +20,9 @@
     />
   </div>
   <div>
+    <span>{{ bridge.usedMemory }}</span>
     <button
-      v-for="definition of modules.creatableDefinitions"
+      v-for="definition of modules.definitions"
       @click="createModule(definition.type)"
     >
       {{ definition.type }}
@@ -48,8 +49,6 @@ const bridge = useBridge()
 const connections = useConnections()
 const modules = useModules()
 modules.init()
-
-const connected = bridge.isConnected
 
 const createModule = (type: string) =>
   modules.addModule(type, {
