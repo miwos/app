@@ -54,7 +54,7 @@ export const useModules = defineStore({
 
       const props = {} as Module['props']
       for (const [name, prop] of Object.entries(definition.props ?? {})) {
-        props[name] = prop.default
+        props[name] = prop.default ?? prop.min ?? 0
       }
 
       this.items[id] = {

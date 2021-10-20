@@ -1,7 +1,8 @@
 {
   "type": "Output",
-  "allowCreate": false,
-  "allowRemove": false,
   "inputs": 1,
-  "outputs": 0
+  "outputs": 0,
+  "props": {
+    "cable": { "type": "number", "min": 1, "max": 16, "step": 1 }
+  }
 }

@@ -26,6 +26,8 @@ interface Module {
 interface ModuleProp {
   type: string
   default: number
+  min?: number
+  max?: number
 }
 
 interface ModuleDefinition {
