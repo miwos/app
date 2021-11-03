@@ -13,6 +13,7 @@ export const usePatch = defineStore({
 
   actions: {
     update() {
+      console.log(createLuaPatch())
       useBridge().updatePatch(this.name, createLuaPatch())
     },
 

@@ -1,0 +1,11 @@
+{
+  "type": "Pitcher",
+  "inputs": 1,
+  "outputs": 1,
+  "props": {
+    "semitones": {
+      "min": -24,
+      "max": 24
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "type": "Chords",
+  "inputs": 1,
+  "outputs": 1,
+  "props": {
+    "count": {
+      "type": "number",
+      "default": 6,
+      "min": 0,
+      "max": 16,
+      "step": 1
+    },
+    "chord": {
+      "type": "switch",
+      "default": 1,
+      "min": 1,
+      "max": 3
+    }
+  }
+}

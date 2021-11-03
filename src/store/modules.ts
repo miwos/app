@@ -63,14 +63,15 @@ export const useModules = defineStore({
       if (update) usePatch().update()
     },
 
-    removeModule(moduleId: number) {
+    removeModule(moduleId: number, update = true) {
       // Remove all connections that are connected to the module we are about
       // to remove.
       const connections = useConnections()
       for (const connection of connections.connectedToModule(moduleId))
-        connections.removeConnection(connection.id)
+        connections.removeConnection(connection.id, false)
 
       delete this.items[moduleId]
+      if (update) usePatch().update()
     },
 
     clearAll(update = true) {

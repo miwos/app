@@ -43,8 +43,9 @@ export const useConnections = defineStore({
       usePatch().update()
     },
 
-    removeConnection(connectionId: string) {
+    removeConnection(connectionId: string, update = true) {
       delete this.items[connectionId]
+      if (update) usePatch().update()
     },
 
     clearAll(update = true) {

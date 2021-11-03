@@ -15,9 +15,9 @@ class Bridge {
       this.isConnected.value = false
     })
 
-    this.osc.on('/data/dev', (data) =>
-      console.log(new TextDecoder().decode(data))
-    )
+    // this.osc.on('/data/dev', (data) =>
+    //   console.log(new TextDecoder().decode(data))
+    // )
 
     this.osc.on('/log/:type', (message, params) =>
       useLogs().addLog(params.type as LogType, message.args[0])

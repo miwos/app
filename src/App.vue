@@ -38,7 +38,6 @@
 </template>
 
 <script setup lang="ts">
-import { createLuaPatch } from './utils'
 import { useModules } from './store/modules'
 import { useConnections } from './store/connections'
 import Module from './components/Module.vue'

@@ -1,0 +1,12 @@
+{
+  "type": "Switch",
+  "inputs": 1,
+  "outputs": 2,
+  "props": {
+    "state": {
+      "type": "number",
+      "min": 1,
+      "max": 2
+    }
+  }
+}

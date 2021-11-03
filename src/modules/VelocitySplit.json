@@ -1,0 +1,14 @@
+{
+  "type": "VelocitySplit",
+  "inputs": 1,
+  "outputs": 2,
+  "props": {
+    "thresh": {
+      "type": "number",
+      "default": 63,
+      "min": 0,
+      "max": 127,
+      "step": 1
+    }
+  }
+}

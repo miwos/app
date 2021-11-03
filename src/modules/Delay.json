@@ -1,0 +1,18 @@
+{
+  "type": "Delay",
+  "inputs": 1,
+  "outputs": 1,
+  "props": {
+    "time": {
+      "type": "number",
+      "min": 0,
+      "max": 1000,
+      "default": 500
+    },
+    "feedback": {
+      "type": "number",
+      "min": 0,
+      "max": 1
+    }
+  }
+}
