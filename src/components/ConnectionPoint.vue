@@ -70,12 +70,12 @@ const handleDrop = () => {
   border-radius: 50%;
   background: black;
 
-  &.dragging {
-    background: blue;
-  }
+  // &.dragging {
+  //   background: blue;
+  // }
 
-  &.focus {
-    background: blue;
-  }
+  // &.focus {
+  //   background: blue;
+  // }
 }
 </style>

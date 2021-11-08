@@ -1,8 +1,11 @@
+import { markRaw } from 'vue'
 import { defineStore } from 'pinia'
-import { useBridge } from '../bridge'
-import { createLuaPatch } from '../utils'
+import { replaceIdWithClass } from '../utils'
 import { useConnections } from './connections'
 import { usePatch } from './patch'
+
+import shapeRound from '../assets/module-shape-round.svg?raw'
+import shapeSplit from '../assets/module-shape-split.svg?raw'
 
 const definitionModules = import.meta.globEager('../modules/*.json')
 const definitions: Record<string, ModuleDefinition> = Object.fromEntries(
@@ -12,12 +15,18 @@ const definitions: Record<string, ModuleDefinition> = Object.fromEntries(
   ])
 )
 
+const shapes: Record<string, string> = {
+  default: replaceIdWithClass(shapeRound),
+  split: replaceIdWithClass(shapeSplit),
+}
+
 export const useModules = defineStore({
   id: 'modules',
 
   state: () => ({
     isInit: false,
-    definitions,
+    definitions: markRaw(definitions),
+    shapes: markRaw(shapes),
     items: {} as Record<number, Module>,
     // We use a one-based index to be consistent with lua.
     nextModuleId: 1,

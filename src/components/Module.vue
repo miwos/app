@@ -1,9 +1,17 @@
 <template>
-  <div class="module" ref="el" tabindex="-1" @keydown.delete="remove">
+  <div
+    class="module"
+    :class="{ 'drop-target': isDropTarget }"
+    ref="el"
+    tabindex="-1"
+    @dragover="isDropTarget = true"
+    @dragleave="isDropTarget = false"
+    @keydown.delete="remove"
+  >
     <div
       class="svg-container"
       ref="svg"
-      v-html="replaceIdWithClass(moduleSvg)"
+      v-html="modules.shapes[props.category] ?? modules.shapes.default"
     ></div>
     <div class="connection-points inputs">
       <ConnectionPoint
@@ -46,8 +54,6 @@
 </template>
 
 <script setup lang="ts">
-import moduleSvg from '../assets/Module-Round.svg?raw'
-
 import { onMounted, ref, watch } from 'vue'
 import { useBridge } from '../bridge'
 import { useDragElement } from '../composables/useDragElement'
@@ -60,6 +66,7 @@ import ModuleProp from './ModuleProp.vue'
 const props = defineProps<{
   id: number
   type: string
+  category: string
   position: Point
   inputDeltas: Array<{ x: number; y: number }>
   outputDeltas: Array<{ x: number; y: number }>
@@ -78,6 +85,7 @@ const bridge = useBridge()
 const modules = useModules()
 const interfaces = useInterfaces()
 const definition = modules.definitions[props.type]
+const isDropTarget = ref(false)
 
 watch(position, (position) => emit('update:position', position))
 watch(isDragging, (value) => document.body.classList.toggle('dragging', value))
@@ -90,7 +98,9 @@ onMounted(() => {
   const [inputDeltas, outputDeltas] = getInputOutputDeltas(svg.value)
   emit('update:inputDeltas', inputDeltas)
   emit('update:outputDeltas', outputDeltas)
-  svg.value.querySelectorAll('.input, .output').forEach((el) => el.remove())
+  svg.value
+    .querySelectorAll('[class^="input"], [class^="output"]')
+    .forEach((el) => el.remove())
 })
 
 const sendPropValue = (name: string, value: number) => {
@@ -113,14 +123,14 @@ const remove = (event: KeyboardEvent) => {
     vector-effect: non-scaling-stroke;
     stroke-width: 1px;
   }
-
-  // .input {
-  //   display: none;
-  // }
-  // .output {
-  //   display: none;
-  // }
 }
+
+// .module.drop-target,
+// .module:hover {
+//   .connection-point {
+//     z-index: 1;
+//   }
+// }
 
 .module {
   position: absolute;
@@ -135,7 +145,6 @@ const remove = (event: KeyboardEvent) => {
   &:deep(svg .background) {
     fill: antiquewhite;
   }
-  outline: none;
 }
 
 .props {

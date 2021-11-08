@@ -5,6 +5,7 @@
       :key="id"
       :id="module.id"
       :type="module.type"
+      :category="modules.definitions[module.type].category"
       v-model:position="module.position"
       v-model:inputDeltas="module.inputDeltas"
       v-model:outputDeltas="module.outputDeltas"

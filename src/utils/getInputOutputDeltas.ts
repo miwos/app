@@ -8,12 +8,12 @@ const getCenter = (el: Element) => {
 export const getInputOutputDeltas = (el: HTMLElement) => {
   const bounds = el.getBoundingClientRect()
 
-  const inputElements = Array.from(el.querySelectorAll('.input'))
+  const inputElements = Array.from(el.querySelectorAll('[class^="input"]'))
   const inputDeltas = inputElements.map((el) =>
     getOffset(bounds, getCenter(el))
   )
 
-  const outputElements = Array.from(el.querySelectorAll('.output'))
+  const outputElements = Array.from(el.querySelectorAll('[class^="output"]'))
   const outputDeltas = outputElements.map((el) =>
     getOffset(bounds, getCenter(el))
   )

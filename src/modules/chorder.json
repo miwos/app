@@ -1,5 +1,6 @@
 {
   "type": "Chorder",
+  "category": "effect",
   "inputs": 1,
   "outputs": 1,
   "props": {

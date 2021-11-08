@@ -32,6 +32,7 @@ interface ModuleProp {
 
 interface ModuleDefinition {
   type: string
+  category: string
   inputs: number
   outputs: number
   props: Record<string, ModuleProp>

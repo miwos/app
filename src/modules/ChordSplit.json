@@ -1,5 +1,6 @@
 {
   "type": "ChordSplit",
+  "category": "split",
   "inputs": 1,
   "outputs": 2,
   "props": {
