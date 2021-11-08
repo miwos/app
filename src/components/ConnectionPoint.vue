@@ -57,17 +57,25 @@ const handleDrop = () => {
 
 <style lang="scss" scoped>
 .connection-point {
-  width: 1em;
-  height: 1em;
+  position: absolute;
+  transform: translate(-50%, -50%);
+
+  top: var(--y);
+  left: var(--x);
+
+  --size: 10px;
+  width: var(--size);
+  height: var(--size);
+
   border-radius: 50%;
-  background: blue;
+  background: black;
 
   &.dragging {
-    background: aqua;
+    background: blue;
   }
 
   &.focus {
-    background: yellowgreen;
+    background: blue;
   }
 }
 </style>
