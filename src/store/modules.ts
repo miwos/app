@@ -11,7 +11,7 @@ const definitionModules = import.meta.globEager('../modules/*.json')
 const definitions: Record<string, ModuleDefinition> = Object.fromEntries(
   Object.values(definitionModules).map((module) => [
     module.default.type,
-    module.default,
+    { category: 'default', ...module.default },
   ])
 )
 
@@ -25,6 +25,7 @@ export const useModules = defineStore({
 
   state: () => ({
     isInit: false,
+    isHovering: false,
     definitions: markRaw(definitions),
     shapes: markRaw(shapes),
     items: {} as Record<number, Module>,

@@ -60,8 +60,16 @@ const remove = () => connections.removeConnection(props.id)
   .line-hit-area {
     stroke-width: 10px;
     pointer-events: all;
+
     &:focus {
       outline: none;
+    }
+
+    // The hit area is covering the connection points, so we hide the hit area
+    // as soon as module is hovered, so we can easily access the connection
+    // points.
+    body.module-hover & {
+      display: none;
     }
   }
 

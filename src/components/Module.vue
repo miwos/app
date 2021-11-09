@@ -4,6 +4,8 @@
     :class="{ 'drop-target': isDropTarget }"
     ref="el"
     tabindex="-1"
+    @mouseenter="toggleBodyHover(true)"
+    @mouseleave="toggleBodyHover(false)"
     @dragover="isDropTarget = true"
     @dragleave="isDropTarget = false"
     @keydown.delete="remove"
@@ -11,7 +13,7 @@
     <div
       class="svg-container"
       ref="svg"
-      v-html="modules.shapes[props.category] ?? modules.shapes.default"
+      v-html="modules.shapes[props.category]"
     ></div>
     <div class="connection-points inputs">
       <ConnectionPoint
@@ -89,6 +91,9 @@ const isDropTarget = ref(false)
 
 watch(position, (position) => emit('update:position', position))
 watch(isDragging, (value) => document.body.classList.toggle('dragging', value))
+
+const toggleBodyHover = (state: boolean) =>
+  document.body.classList.toggle('module-hover', state)
 
 onMounted(() => {
   if (!svg.value) return
