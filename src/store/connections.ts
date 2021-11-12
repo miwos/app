@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import { useBridge } from '../bridge'
-import { createLuaPatch, getConnectionId } from '../utils'
+import { getConnectionId } from '../utils'
 import { usePatch } from './patch'
 
 export const useConnections = defineStore({
