@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "async-osc": "file:../../async-osc",
+    "hobby-curve": "^0.2.0",
     "lua-json": "^1.0.0",
     "osc-js": "^2.1.2",
     "pinia": "^2.0.0-beta.3",

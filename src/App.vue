@@ -1,4 +1,5 @@
 <template>
+  <svg><path :d="pathDescription" fill="none" stroke="red" /></svg>
   <div class="modules">
     <Module
       v-for="(module, id) in modules.items"
@@ -46,12 +47,24 @@ import ConnectionLine from './components/ConnectionLine.vue'
 import Logger from './components/Logger.vue'
 import { useBridge } from './bridge'
 import { usePatch } from './store/patch'
+import { createHobbyCurve } from 'hobby-curve'
 
 const bridge = useBridge()
 const connections = useConnections()
 const modules = useModules()
 const patch = usePatch()
 modules.init()
+
+const points = [
+  { x: 0, y: 0 },
+  { x: 200, y: 133 },
+  { x: 130, y: 300 },
+  { x: 33, y: 233 },
+  { x: 100, y: 167 },
+]
+
+const pathDescription = createHobbyCurve(points, { tension: 1, cyclic: true })
+console.log({ pathDescription })
 
 const createModule = (type: string) =>
   modules.addModule(type, {
