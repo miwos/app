@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export type LogType = 'info' | 'warning' | 'error' | 'success' | 'print'
+export type LogType = 'info' | 'warn' | 'error' | 'success' | 'print'
 
 export const useLogs = defineStore({
   id: 'logs',
