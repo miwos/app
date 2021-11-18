@@ -13,8 +13,9 @@ export const usePatch = defineStore({
 
   actions: {
     update() {
-      console.log(createLuaPatch())
-      useBridge().updatePatch(this.name, createLuaPatch())
+      const bridge = useBridge()
+      if (bridge.isConnected.value)
+        bridge.updatePatch(this.name, createLuaPatch())
     },
 
     clear() {

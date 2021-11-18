@@ -1,0 +1,7 @@
+<svg width="189" height="83" viewBox="0 0 189 83" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="module-shape-output">
+<rect id="background" x="2" y="2" width="185" height="79" rx="39.5" fill="#C4C4C4"/>
+<path id="outline" d="M58.5 2H41.5C19.6848 2 2 19.6848 2 41.5C2 63.3152 19.6847 81 41.5 81H147.5C169.315 81 187 63.3152 187 41.5C187 19.6848 169.315 2 147.5 2H130.5" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle id="input" cx="94" cy="42" r="18" fill="black"/>
+</g>
+</svg>

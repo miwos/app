@@ -12,15 +12,15 @@
   >
     <div
       class="svg-container"
-      ref="svg"
+      ref="svgContainer"
       v-html="modules.shapes[props.category]"
     ></div>
     <div class="connection-points inputs">
       <ConnectionPoint
         v-for="i in definition.inputs"
         :style="{
-          '--x': props.inputDeltas[i - 1]?.x + 'px',
-          '--y': props.inputDeltas[i - 1]?.y + 'px',
+          '--x': props.inputs[i - 1]?.delta.x + 'px',
+          '--y': props.inputs[i - 1]?.delta.y + 'px',
         }"
         :data-input="i"
         :moduleId="id"
@@ -28,8 +28,8 @@
         type="input"
       />
     </div>
-    <!-- <div class="props">
-      <ModuleProp
+    <div class="props">
+      <!-- <ModuleProp
         v-for="(prop, name) in definition.props"
         :name="name"
         :prop="prop"
@@ -37,14 +37,14 @@
         :encoder="interfaces.getEncoderId(id, name).value"
         @update:encoder="interfaces.mapEncoder($event, id, name)"
         @update:value="sendPropValue(name, $event)"
-      />
-    </div> -->
+      /> -->
+    </div>
     <div class="connection-points outputs">
       <ConnectionPoint
         v-for="i in definition.outputs"
         :style="{
-          '--x': props.outputDeltas[i - 1]?.x + 'px',
-          '--y': props.outputDeltas[i - 1]?.y + 'px',
+          '--x': props.outputs[i - 1]?.delta.x + 'px',
+          '--y': props.outputs[i - 1]?.delta.y + 'px',
         }"
         :data-output="i"
         :moduleId="id"
@@ -61,7 +61,7 @@ import { useBridge } from '../bridge'
 import { useDragElement } from '../composables/useDragElement'
 import { useInterfaces } from '../store/interfaces'
 import { useModules } from '../store/modules'
-import { getInputOutputDeltas, replaceIdWithClass } from '../utils'
+import { getInputOutputInformation } from '../utils'
 import ConnectionPoint from './ConnectionPoint.vue'
 import ModuleProp from './ModuleProp.vue'
 
@@ -70,18 +70,14 @@ const props = defineProps<{
   type: string
   category: string
   position: Point
-  inputDeltas: Array<{ x: number; y: number }>
-  outputDeltas: Array<{ x: number; y: number }>
+  inputs: ModuleInput[]
+  outputs: ModuleOutput[]
 }>()
 
-const emit = defineEmits([
-  'update:position',
-  'update:inputDeltas',
-  'update:outputDeltas',
-])
+const emit = defineEmits(['update:position', 'update:inputs', 'update:outputs'])
 
 const el = ref<HTMLElement | null>(null)
-const svg = ref<HTMLElement | null>(null)
+const svgContainer = ref<HTMLElement | null>(null)
 const { position, isDragging } = useDragElement(el)
 const bridge = useBridge()
 const modules = useModules()
@@ -95,15 +91,25 @@ watch(isDragging, (value) => document.body.classList.toggle('dragging', value))
 const toggleBodyHover = (state: boolean) =>
   document.body.classList.toggle('module-hover', state)
 
-onMounted(() => {
-  if (!svg.value) return
-  // The position of the inputs and outputs relative to the module won't change
-  // during runtime, so we measure them once and can then use them to calculate
-  // the connection line positions.
-  const [inputDeltas, outputDeltas] = getInputOutputDeltas(svg.value)
-  emit('update:inputDeltas', inputDeltas)
-  emit('update:outputDeltas', outputDeltas)
-  svg.value
+const scaleModuleShape = (shape: SVGElement) => {
+  const width = shape.getAttribute('width')
+  if (width) {
+    const rems = parseInt(width) / 16
+    shape.style.width = `${rems * 0.35}rem`
+  }
+}
+
+onMounted(async () => {
+  const svg = svgContainer.value?.querySelector('svg')
+  if (!svg) return
+
+  scaleModuleShape(svg)
+
+  const [inputs, outputs] = getInputOutputInformation(svg)
+  emit('update:inputs', inputs)
+  emit('update:outputs', outputs)
+
+  svg
     .querySelectorAll('[class^="input"], [class^="output"]')
     .forEach((el) => el.remove())
 })
@@ -119,10 +125,17 @@ const remove = (event: KeyboardEvent) => {
 
 <style lang="scss" scoped>
 .svg-container:deep(svg) {
-  width: 100%;
-  height: auto;
   display: block;
   overflow: visible;
+  height: auto;
+
+  .outline {
+    stroke: var(--module-stroke-color);
+  }
+
+  .background {
+    fill: var(--module-fill-color);
+  }
 
   * {
     vector-effect: non-scaling-stroke;

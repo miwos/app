@@ -14,12 +14,19 @@ interface Connection {
   to: ConnectionPoint
 }
 
+interface ModuleInput {
+  delta: Point
+  angle: number
+}
+
+type ModuleOutput = ModuleInput
+
 interface Module {
   id: number
   type: string
   position: Point
-  inputDeltas: Point[]
-  outputDeltas: Point[]
+  inputs: ModuleInput[]
+  outputs: ModuleOutput[]
   props: Record<string, number>
 }
 

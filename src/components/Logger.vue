@@ -37,7 +37,7 @@ logs.$subscribe(() => {
   color: red;
 }
 
-.log-warning {
+.log-warn {
   color: orange;
 }
 </style>

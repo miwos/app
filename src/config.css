@@ -1,0 +1,12 @@
+:root {
+  --background-color: #616161;
+
+  --module-stroke-color: white;
+  --module-fill-color: #929292;
+  --module-input-color: white;
+  --module-output-color: white;
+
+  --connection-color: white;
+  --connection-highlight-color: blue;
+  --connection-point-color: white;
+}

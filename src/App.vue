@@ -7,8 +7,8 @@
       :type="module.type"
       :category="modules.definitions[module.type].category"
       v-model:position="module.position"
-      v-model:inputDeltas="module.inputDeltas"
-      v-model:outputDeltas="module.outputDeltas"
+      v-model:inputs="module.inputs"
+      v-model:outputs="module.outputs"
     />
   </div>
   <div class="connections">
@@ -42,7 +42,6 @@ import { useModules } from './store/modules'
 import { useConnections } from './store/connections'
 import Module from './components/Module.vue'
 import ConnectionLine from './components/ConnectionLine.vue'
-import Logger from './components/Logger.vue'
 import { useBridge } from './bridge'
 import { usePatch } from './store/patch'
 
@@ -68,7 +67,19 @@ const createModule = (type: string) =>
 </script>
 
 <style lang="scss">
+@import './config.css';
+
+html,
 body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background-color: var(--background-color);
+
   &.dragging * {
     user-select: none;
   }

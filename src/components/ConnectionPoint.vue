@@ -68,7 +68,7 @@ const handleDrop = () => {
   height: var(--size);
 
   border-radius: 50%;
-  background: black;
+  background: var(--connection-point-color);
 
   // &.dragging {
   //   background: blue;

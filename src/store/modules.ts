@@ -6,6 +6,9 @@ import { usePatch } from './patch'
 
 import shapeRound from '../assets/module-shape-round.svg?raw'
 import shapeSplit from '../assets/module-shape-split.svg?raw'
+import shapeEffect from '../assets/module-shape-effect.svg?raw'
+import shapeInput from '../assets/module-shape-input.svg?raw'
+import shapeOutput from '../assets/module-shape-output.svg?raw'
 
 const definitionModules = import.meta.globEager('../modules/*.json')
 const definitions: Record<string, ModuleDefinition> = Object.fromEntries(
@@ -17,7 +20,10 @@ const definitions: Record<string, ModuleDefinition> = Object.fromEntries(
 
 const shapes: Record<string, string> = {
   default: replaceIdWithClass(shapeRound),
+  input: replaceIdWithClass(shapeInput),
+  output: replaceIdWithClass(shapeOutput),
   split: replaceIdWithClass(shapeSplit),
+  effect: replaceIdWithClass(shapeEffect),
 }
 
 export const useModules = defineStore({
@@ -65,8 +71,8 @@ export const useModules = defineStore({
         id,
         type,
         position,
-        inputDeltas: [],
-        outputDeltas: [],
+        inputs: [],
+        outputs: [],
         props,
       }
 
