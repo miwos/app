@@ -1,11 +1,17 @@
 import AsyncOsc from 'async-osc'
 import WebSerialTransport from 'async-osc/dist/WebSerialTransport'
 import { LogType, useLogs } from './store/logs'
-import { ref } from 'vue'
+import { ref, markRaw } from 'vue'
 import { useModules } from './store/modules'
 
+const logToConsole = (type: string, text: string) => {
+  // @ts-ignore
+  console[type]?.(text)
+}
+
 class Bridge {
-  private osc = new AsyncOsc(new WebSerialTransport())
+  private osc = markRaw(new AsyncOsc(new WebSerialTransport()))
+  private memoryInterval: number | undefined
 
   isConnected = ref(false)
   usedMemory = ref(0)
@@ -19,17 +25,18 @@ class Bridge {
     //   console.log(new TextDecoder().decode(data))
     // )
 
-    this.osc.on('/log/:type', (message, params) =>
-      useLogs().addLog(params.type as LogType, message.args[0])
-    )
+    this.osc.on('/log/:type', (message, { type }) => {
+      const [text] = message.args
+      logToConsole(type, text)
+      useLogs().addLog(type as LogType, text)
+    })
 
-    this.osc.on(
-      '/raw/log/:type',
-      async (_message: Object, params: Record<string, any>) => {
-        const data = await this.osc.waitForRawData()
-        useLogs().addLog(params.type as LogType, new TextDecoder().decode(data))
-      }
-    )
+    this.osc.on('/raw/log/:type', async (_, { type }) => {
+      const data = await this.osc.waitForRawData()
+      const text = new TextDecoder().decode(data)
+      logToConsole(type, text)
+      useLogs().addLog(type as LogType, text)
+    })
 
     this.osc.on('/patch/prop', (message) => {
       const [moduleId, propName, value] = message.args
@@ -42,7 +49,7 @@ class Bridge {
     this.osc.sendMessage('/bridge/connect')
     this.isConnected.value = true
 
-    setInterval(async () => {
+    this.memoryInterval = setInterval(async () => {
       this.usedMemory.value = parseInt(
         await this.osc.sendRequest('/info/memory-usage')
       )
@@ -76,11 +83,13 @@ class Bridge {
   }
 
   private logError(message: string) {
+    console.error(message)
     useLogs().addLog('error', message)
   }
 
   async close() {
     await this.osc.close()
+    clearInterval(this.memoryInterval)
     this.isConnected.value = false
   }
 }
