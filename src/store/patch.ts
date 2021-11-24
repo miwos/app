@@ -19,8 +19,8 @@ export const usePatch = defineStore({
     },
 
     clear() {
-      useModules().clearAll(false)
-      useConnections().clearAll(false)
+      useModules().clear(false)
+      useConnections().clear(false)
       this.update()
     },
   },

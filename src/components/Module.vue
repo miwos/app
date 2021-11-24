@@ -1,11 +1,13 @@
 <template>
   <div
     class="module"
-    :class="{ 'drop-target': isDropTarget }"
+    :class="{ 'drop-target': isDropTarget, dragging }"
     ref="el"
     tabindex="-1"
     @mouseenter="toggleBodyHover(true)"
     @mouseleave="toggleBodyHover(false)"
+    @focus="modules.focus(props.id)"
+    @blur="modules.focus(null)"
     @dragover="isDropTarget = true"
     @dragleave="isDropTarget = false"
     @keydown.delete="remove"
@@ -56,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watchEffect } from 'vue'
 import { useBridge } from '../bridge'
 import { useDragElement } from '../composables/useDragElement'
 import { useInterfaces } from '../store/interfaces'
@@ -78,15 +80,19 @@ const emit = defineEmits(['update:position', 'update:inputs', 'update:outputs'])
 
 const el = ref<HTMLElement | null>(null)
 const svgContainer = ref<HTMLElement | null>(null)
-const { position, isDragging } = useDragElement(el)
+const { position, isDragging: dragging } = useDragElement(el)
 const bridge = useBridge()
 const modules = useModules()
 const interfaces = useInterfaces()
 const definition = modules.definitions[props.type]
 const isDropTarget = ref(false)
+const focused = modules.isFocused(props.id)
 
-watch(position, (position) => emit('update:position', position))
-watch(isDragging, (value) => document.body.classList.toggle('dragging', value))
+const focus = () => el.value?.focus()
+const blur = () => el.value?.blur()
+watchEffect(() => (focused.value ? focus() : blur()))
+watchEffect(() => emit('update:position', position))
+watchEffect(() => document.body.classList.toggle('dragging', dragging.value))
 
 const toggleBodyHover = (state: boolean) =>
   document.body.classList.toggle('module-hover', state)
@@ -119,7 +125,8 @@ const sendPropValue = (name: string, value: number) => {
 }
 
 const remove = (event: KeyboardEvent) => {
-  if (event.target === el.value) modules.removeModule(props.id)
+  console.log('remove')
+  if (event.target === el.value) modules.remove(props.id)
 }
 </script>
 
@@ -160,8 +167,12 @@ const remove = (event: KeyboardEvent) => {
 }
 
 .module:focus {
+  z-index: var(--z-focused-module);
   &:deep(svg .background) {
-    fill: antiquewhite;
+    fill: var(--module-focused-fill-color);
+  }
+  &:deep(svg .outline) {
+    stroke: var(--module-focused-stroke-color);
   }
 }
 

@@ -1,8 +1,8 @@
 <template>
   <div class="modules">
     <Module
-      v-for="(module, id) in modules.items"
-      :key="id"
+      v-for="(module, index) in modules.sorted"
+      :key="module.id"
       :id="module.id"
       :type="module.type"
       :category="modules.definitions[module.type].category"
@@ -60,7 +60,7 @@ const points = [
 ]
 
 const createModule = (type: string) =>
-  modules.addModule(type, {
+  modules.add(type, {
     x: Math.random() * window.innerWidth,
     y: Math.random() * window.innerHeight,
   })

@@ -5,8 +5,14 @@
   --module-fill-color: #929292;
   --module-input-color: white;
   --module-output-color: white;
+  --module-focused-fill-color: #8f8271;
+  --module-focused-stroke-color: #eec590;
 
   --connection-color: white;
   --connection-highlight-color: blue;
   --connection-point-color: white;
+
+  --z-connection-point: 1;
+  --z-focused-module: 2;
+  --z-focused-connection: 3;
 }

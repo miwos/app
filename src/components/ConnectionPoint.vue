@@ -2,15 +2,24 @@
   <div
     class="connection-point"
     ref="el"
-    :class="{ focus, dragging }"
+    :class="{
+      hovered: hovered || dragging,
+      dragging,
+      'connection-hovered': connectionHovered,
+      'connection-focused': connectionFocused,
+      'module-focused': moduleFocused,
+    }"
+    tabindex="-1"
     draggable="true"
     @mousedown.stop
     @mouseup.stop
+    @mouseenter="hovered = true"
+    @mouseleave="hovered = false"
     @dragstart="handleDragStart"
-    @dragover.prevent
-    @dragenter="canConnect && (focus = true)"
-    @dragleave="focus = false"
     @dragend="dragging = false"
+    @dragenter="canConnect && (hovered = true)"
+    @dragleave="hovered = false"
+    @dragover.prevent
     @drop.prevent="handleDrop"
   ></div>
 </template>
@@ -18,6 +27,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useConnections } from '../store/connections'
+import { useModules } from '../store/modules'
 import { emptyImage } from '../utils'
 
 const props = defineProps<{
@@ -28,8 +38,32 @@ const props = defineProps<{
 }>()
 
 const connections = useConnections()
-const focus = ref(false)
+const modules = useModules()
+const hovered = ref(false)
 const dragging = ref(false)
+
+const existsOnConnection = (connection: Connection | null) => {
+  if (!connection) return false
+  const { moduleId, index } =
+    props.type === 'input' ? connection.to : connection.from
+  return moduleId === props.moduleId && index === props.index
+}
+
+const connectionHovered = computed(() =>
+  existsOnConnection(connections.hoveredConnection)
+)
+
+const connectionFocused = computed(() =>
+  existsOnConnection(connections.focusedConnection)
+)
+
+const moduleFocused = computed(
+  () =>
+    modules.focusedModuleId !== null &&
+    connections
+      .connectedToModule(modules.focusedModuleId)
+      .find((el) => existsOnConnection(el))
+)
 
 const handleDragStart = (event: DragEvent) => {
   if (!event.dataTransfer) return
@@ -51,7 +85,7 @@ const handleDrop = () => {
     const { moduleId, index, type } = props
     connections.connectTo({ moduleId, index, type })
   }
-  focus.value = false
+  hovered.value = false
 }
 </script>
 
@@ -59,6 +93,8 @@ const handleDrop = () => {
 .connection-point {
   position: absolute;
   transform: translate(-50%, -50%);
+  // z-index: var(--z-connection-point);
+  z-index: 999;
 
   top: var(--y);
   left: var(--x);
@@ -74,8 +110,14 @@ const handleDrop = () => {
   //   background: blue;
   // }
 
-  // &.focus {
-  //   background: blue;
-  // }
+  &.module-focused {
+    background-color: var(--module-focused-stroke-color);
+  }
+
+  &.hovered,
+  &.connection-hovered,
+  &.connection-focused {
+    background-color: var(--connection-highlight-color);
+  }
 }
 </style>

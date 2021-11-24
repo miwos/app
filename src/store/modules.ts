@@ -1,4 +1,4 @@
-import { markRaw } from 'vue'
+import { markRaw, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { replaceIdWithClass } from '../utils'
 import { useConnections } from './connections'
@@ -35,27 +35,45 @@ export const useModules = defineStore({
     definitions: markRaw(definitions),
     shapes: markRaw(shapes),
     items: {} as Record<number, Module>,
+    sortedIds: [] as number[],
+    focusedModuleId: null as number | null,
     // We use a one-based index to be consistent with lua.
     nextModuleId: 1,
   }),
 
   getters: {
+    list: (state) => Object.values(state.items),
+
+    sorted: (state) => state.sortedIds.map((id) => state.items[id]),
+
     definitionsList: (state) => Object.values(state.definitions),
+
+    isFocused: (state) => (moduleId: number) =>
+      computed(() => state.focusedModuleId === moduleId),
   },
 
   actions: {
     init() {
       if (this.isInit) return
-      this.addModule('Input', { x: 200, y: 200 }, false)
-      this.addModule('Output', { x: 400, y: 400 }, false)
+      this.add('Input', { x: 200, y: 200 }, false)
+      this.add('Output', { x: 400, y: 400 }, false)
       this.isInit = true
+    },
+
+    focus(moduleId: number | null) {
+      this.focusedModuleId = moduleId
+      if (moduleId) {
+        const { sortedIds } = this
+        sortedIds.splice(sortedIds.indexOf(moduleId), 1).push(moduleId)
+        sortedIds.push(moduleId)
+      }
     },
 
     addDefinition(definition: ModuleDefinition) {
       this.definitions[definition.type] = definition
     },
 
-    addModule(type: string, position: Point, update = true) {
+    add(type: string, position: Point, update = true) {
       const definition = this.definitions[type]
       if (!this.definitions[type])
         throw new Error(`Can't find module definition for type '${type}'.`)
@@ -75,22 +93,24 @@ export const useModules = defineStore({
         outputs: [],
         props,
       }
+      this.sortedIds.push(id)
 
       if (update) usePatch().update()
     },
 
-    removeModule(moduleId: number, update = true) {
+    remove(moduleId: number, update = true) {
       // Remove all connections that are connected to the module we are about
       // to remove.
       const connections = useConnections()
       for (const connection of connections.connectedToModule(moduleId))
-        connections.removeConnection(connection.id, false)
+        connections.remove(connection.id, false)
 
+      this.sortedIds.splice(this.sortedIds.indexOf(moduleId), 1)
       delete this.items[moduleId]
       if (update) usePatch().update()
     },
 
-    clearAll(update = true) {
+    clear(update = true) {
       this.nextModuleId = 1
       this.items = {}
       if (update) usePatch().update()
