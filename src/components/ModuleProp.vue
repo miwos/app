@@ -47,6 +47,12 @@ const map = async () => {
 <style lang="scss" scoped>
 .prop {
   display: flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--module-stroke-color);
+  font-family: 'Vevey positive';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: antialiased;
 
   &-point,
   &-name {
@@ -63,7 +69,7 @@ const map = async () => {
 
 input {
   border: none;
-  background-color: wheat;
+  background-color: white;
   width: 3rem;
 }
 </style>
