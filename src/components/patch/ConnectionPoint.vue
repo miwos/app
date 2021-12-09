@@ -26,9 +26,9 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useConnections } from '../store/connections'
-import { useModules } from '../store/modules'
-import { emptyImage } from '../utils'
+import { useConnections } from '@/store/connections'
+import { useModules } from '@/store/modules'
+import { emptyImage } from '@/utils'
 
 const props = defineProps<{
   moduleId: number
@@ -93,8 +93,7 @@ const handleDrop = () => {
 .connection-point {
   position: absolute;
   transform: translate(-50%, -50%);
-  // z-index: var(--z-connection-point);
-  z-index: 999;
+  z-index: var(--z-connection-point);
 
   top: var(--y);
   left: var(--x);

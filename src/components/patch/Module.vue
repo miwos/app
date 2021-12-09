@@ -31,7 +31,7 @@
       />
     </div>
     <div class="props">
-      <!-- <ModuleProp
+      <ModuleProp
         v-for="(prop, name) in definition.props"
         :name="name"
         :prop="prop"
@@ -39,7 +39,7 @@
         :encoder="interfaces.getEncoderId(id, name).value"
         @update:encoder="interfaces.mapEncoder($event, id, name)"
         @update:value="sendPropValue(name, $event)"
-      /> -->
+      />
     </div>
     <div class="connection-points outputs">
       <ConnectionPoint
@@ -59,11 +59,11 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watchEffect } from 'vue'
-import { useBridge } from '../bridge'
-import { useDragElement } from '../composables/useDragElement'
-import { useInterfaces } from '../store/interfaces'
-import { useModules } from '../store/modules'
-import { getInputOutputInformation } from '../utils'
+import { useBridge } from '@/bridge'
+import { useDragElement } from '@/composables/useDragElement'
+import { useInterfaces } from '@/store/interfaces'
+import { useModules } from '@/store/modules'
+import { getInputOutputInformation } from '@/utils'
 import ConnectionPoint from './ConnectionPoint.vue'
 import ModuleProp from './ModuleProp.vue'
 
@@ -166,6 +166,12 @@ const remove = (event: KeyboardEvent) => {
   left: v-bind('props.position.x + `px`');
 }
 
+.module.drop-target {
+  .inputs {
+    z-index: 2;
+  }
+}
+
 .module:focus {
   z-index: var(--z-focused-module);
   &:deep(svg .background) {
@@ -177,7 +183,7 @@ const remove = (event: KeyboardEvent) => {
 }
 
 .props {
-  transform: translate(100%);
+  transform: translate(150%);
 }
 
 .connection-points {

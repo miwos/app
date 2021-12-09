@@ -9,6 +9,7 @@ import shapeSplit from '../assets/module-shape-split.svg?raw'
 import shapeEffect from '../assets/module-shape-effect.svg?raw'
 import shapeInput from '../assets/module-shape-input.svg?raw'
 import shapeOutput from '../assets/module-shape-output.svg?raw'
+import shapeTransform from '../assets/module-shape-transform.svg?raw'
 
 const definitionModules = import.meta.globEager('../modules/*.json')
 const definitions: Record<string, ModuleDefinition> = Object.fromEntries(
@@ -24,6 +25,7 @@ const shapes: Record<string, string> = {
   output: replaceIdWithClass(shapeOutput),
   split: replaceIdWithClass(shapeSplit),
   effect: replaceIdWithClass(shapeEffect),
+  transform: replaceIdWithClass(shapeTransform),
 }
 
 export const useModules = defineStore({

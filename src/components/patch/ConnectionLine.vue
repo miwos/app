@@ -24,9 +24,9 @@
 
 <script setup lang="ts">
 import { ref, watchEffect, computed } from 'vue'
-import { useConnectionCurve } from '../composables/useConnectionCurve'
-import { useConnections } from '../store/connections'
-import { useModules } from '../store/modules'
+import { useConnectionCurve } from '@/composables/useConnectionCurve'
+import { useConnections } from '@/store/connections'
+import { useModules } from '@/store/modules'
 
 const props = defineProps<{
   id: string
