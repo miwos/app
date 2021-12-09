@@ -4,11 +4,6 @@ import { LogType, useLogs } from './store/logs'
 import { ref, markRaw } from 'vue'
 import { useModules } from './store/modules'
 
-const logToConsole = (type: string, text: string) => {
-  // @ts-ignore
-  console[type]?.(text)
-}
-
 class Bridge {
   private osc = markRaw(new AsyncOsc(new WebSerialTransport()))
   private memoryInterval: number | undefined
@@ -27,14 +22,14 @@ class Bridge {
 
     this.osc.on('/log/:type', (message, { type }) => {
       const [text] = message.args
-      logToConsole(type, text)
+      ;(console as any)[type]?.(text)
       useLogs().addLog(type as LogType, text)
     })
 
     this.osc.on('/raw/log/:type', async (_, { type }) => {
       const data = await this.osc.waitForRawData()
       const text = new TextDecoder().decode(data)
-      logToConsole(type, text)
+      ;(console as any)[type]?.(text)
       useLogs().addLog(type as LogType, text)
     })
 
@@ -49,7 +44,7 @@ class Bridge {
     this.osc.sendMessage('/bridge/connect')
     this.isConnected.value = true
 
-    this.memoryInterval = setInterval(async () => {
+    this.memoryInterval = window.setInterval(async () => {
       this.usedMemory.value = parseInt(
         await this.osc.sendRequest('/info/memory-usage')
       )
