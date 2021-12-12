@@ -1,13 +1,13 @@
 <template>
-  <Splitpanes class="default-theme" @resize="sideBar?.resize()">
-    <Pane>
+  <Splitpanes @resize="sideBar?.resize()">
+    <Pane class="pane-patch">
       <AppPatch />
+      <AppMenu />
     </Pane>
-    <Pane>
+    <Pane v-if="false">
       <AppSidebar ref="sideBar" />
     </Pane>
   </Splitpanes>
-  <!-- <AppMenu /> -->
 </template>
 
 <script setup lang="ts">
@@ -24,12 +24,10 @@ const modules = useModules()
 modules.init()
 
 const sideBar = ref<InstanceType<typeof AppSidebar>>()
-
-let sidebarSize = 0
 </script>
 
 <style lang="scss">
-@import './config.css';
+@import './styles/config.css';
 
 html,
 body {
@@ -50,5 +48,17 @@ body {
 #app {
   width: 100%;
   height: 100%;
+  font-family: 'Vevey positive';
+}
+
+.pane {
+  &-patch {
+    position: relative;
+  }
+}
+
+.splitpanes__splitter {
+  width: 7px;
+  background-color: var(--module-fill-color);
 }
 </style>
