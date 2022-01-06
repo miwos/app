@@ -2,8 +2,5 @@
   "type": "Input",
   "category": "input",
   "inputs": 0,
-  "outputs": 1,
-  "props": {
-    "cable": { "type": "number", "min": 1, "max": 16, "step": 1 }
-  }
+  "outputs": 1
 }

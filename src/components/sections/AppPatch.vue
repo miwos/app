@@ -32,10 +32,6 @@ import Module from '@/components/patch/Module.vue'
 
 const connections = useConnections()
 const modules = useModules()
-
-const test = () => console.log('yeah!')
-
-defineExpose({ test })
 </script>
 
 <style scoped>

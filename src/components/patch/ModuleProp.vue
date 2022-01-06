@@ -1,9 +1,9 @@
 <template>
   <div class="prop" @dblclick="map">
-    <div class="prop-point"></div>
+    <div class="prop-point" v-html="knobSvg"></div>
     <div class="prop-name">
       <span>{{ props.name }}</span
-      >&nbsp;
+      >&nbsp;=&nbsp;
       <input
         type="number"
         :value="props.value"
@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
+import knobSvg from '@/assets/knob.svg?raw'
 
 const props = defineProps<{
   name: string
@@ -60,16 +61,28 @@ const map = async () => {
   }
 
   &-point {
-    width: 1em;
-    height: 1em;
-    border-radius: 50%;
-    background-color: darkorchid;
+    --size: 1.4rem;
+    width: var(--size);
+    height: var(--size);
+    &:deep(path) {
+      fill: var(--module-fill-color);
+    }
+  }
+
+  &-name {
+    display: flex;
+    text-transform: capitalize;
   }
 }
 
 input {
+  display: block;
   border: none;
-  background-color: white;
+  background-color: transparent;
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
   width: 3rem;
+  padding: 0;
 }
 </style>

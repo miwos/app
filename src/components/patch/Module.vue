@@ -157,11 +157,17 @@ const remove = (event: KeyboardEvent) => {
 //   }
 // }
 
+.props {
+  justify-content: center;
+  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
 .module {
   position: absolute;
   display: flex;
-  flex-direction: column;
-  width: 100px;
+  flex-direction: row;
   top: v-bind('props.position.y + `px`');
   left: v-bind('props.position.x + `px`');
 }
@@ -180,10 +186,6 @@ const remove = (event: KeyboardEvent) => {
   &:deep(svg .outline) {
     stroke: var(--module-focused-stroke-color);
   }
-}
-
-.props {
-  transform: translate(150%);
 }
 
 .connection-points {

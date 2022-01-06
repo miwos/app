@@ -1,20 +1,9 @@
 <template>
   <div class="menu">
-    <div>
-      <span>{{ bridge.usedMemory }}</span>
-      <button
-        v-for="definition of modules.definitions"
-        @click="createModule(definition.type)"
-      >
-        {{ definition.type }}
-      </button>
-    </div>
-    <button @click="bridge.connect()">Connect</button>
-    <button @click="bridge.close()">Close</button>
-    <button @click="patch.update()">Patch</button>
-    <button @click="bridge.init()">Init</button>
-    <button @click="patch.clear()">Clear</button>
-    <div>{{ bridge.isConnected }}</div>
+    <DeviceIndicator />
+    <MappingNavigation />
+    <PartNavigation />
+    <ModulePicker />
   </div>
 </template>
 
@@ -22,6 +11,10 @@
 import { useBridge } from '@/bridge'
 import { useModules } from '@/store/modules'
 import { usePatch } from '@/store/patch'
+import DeviceIndicator from './DeviceIndicator.vue'
+import MappingNavigation from './MappingNavigation.vue'
+import PartNavigation from './PartNavigation.vue'
+import ModulePicker from './ModulePicker.vue'
 
 const bridge = useBridge()
 const modules = useModules()
