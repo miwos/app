@@ -3,22 +3,23 @@
     class="connection-point"
     ref="el"
     :class="{
-      hovered: hovered || dragging,
-      dragging,
-      'connection-hovered': connectionHovered,
-      'connection-focused': connectionFocused,
-      'module-focused': moduleFocused,
+      hovered: isHovered || isDragging,
+      active: isActive,
+      dragging: isDragging,
+      'connection-hovered': isConnectionHovered,
+      'connection-focused': isConnectionFocused,
+      'module-focused': isModuleFocused,
     }"
     tabindex="-1"
     draggable="true"
     @mousedown.stop
     @mouseup.stop
-    @mouseenter="hovered = true"
-    @mouseleave="hovered = false"
+    @mouseenter="isHovered = true"
+    @mouseleave="isHovered = false"
     @dragstart="handleDragStart"
-    @dragend="dragging = false"
-    @dragenter="canConnect && (hovered = true)"
-    @dragleave="hovered = false"
+    @dragend="isDragging = false"
+    @dragenter="canConnect && (isHovered = true)"
+    @dragleave="isHovered = false"
     @dragover.prevent
     @drop.prevent="handleDrop"
   ></div>
@@ -39,8 +40,8 @@ const props = defineProps<{
 
 const connections = useConnections()
 const modules = useModules()
-const hovered = ref(false)
-const dragging = ref(false)
+const isHovered = ref(false)
+const isDragging = ref(false)
 
 const existsOnConnection = (connection: Connection | null) => {
   if (!connection) return false
@@ -49,20 +50,36 @@ const existsOnConnection = (connection: Connection | null) => {
   return moduleId === props.moduleId && index === props.index
 }
 
-const connectionHovered = computed(() =>
+const isConnectionHovered = computed(() =>
   existsOnConnection(connections.hoveredConnection)
 )
 
-const connectionFocused = computed(() =>
+const isConnectionFocused = computed(() =>
   existsOnConnection(connections.focusedConnection)
 )
 
-const moduleFocused = computed(
+const isModuleFocused = computed(
   () =>
     modules.focusedModuleId !== null &&
     connections
       .connectedToModule(modules.focusedModuleId)
       .find((el) => existsOnConnection(el))
+)
+
+const isActiveOutput = () =>
+  modules.getOutput(props.moduleId, props.index - 1)?.isActive
+
+const isConnectedToActiveOutput = () =>
+  !!connections
+    .connectedToModule(props.moduleId)
+    .find(
+      (el) =>
+        el.to.moduleId === props.moduleId &&
+        modules.getOutput(el.from.moduleId, el.from.index - 1)?.isActive
+    )
+
+const isActive = computed(() =>
+  props.type === 'input' ? isConnectedToActiveOutput() : isActiveOutput()
 )
 
 const handleDragStart = (event: DragEvent) => {
@@ -71,7 +88,7 @@ const handleDragStart = (event: DragEvent) => {
   event.dataTransfer.dropEffect = 'link'
   const { moduleId, index, type } = props
   connections.connectFrom({ moduleId, index, type })
-  dragging.value = true
+  isDragging.value = true
 }
 
 const canConnect = computed(() => {
@@ -85,7 +102,7 @@ const handleDrop = () => {
     const { moduleId, index, type } = props
     connections.connectTo({ moduleId, index, type })
   }
-  hovered.value = false
+  isHovered.value = false
 }
 </script>
 
@@ -108,6 +125,15 @@ const handleDrop = () => {
   // &.dragging {
   //   background: blue;
   // }
+
+  &.active {
+    background-color: red;
+  }
+
+  &.active,
+  &:not(.connection-hovered) {
+    transition: background-color var(--active-fade-duration);
+  }
 
   &.module-focused {
     background-color: var(--module-focused-stroke-color);

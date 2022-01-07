@@ -37,6 +37,11 @@ class Bridge {
       const [moduleId, propName, value] = message.args
       useModules().items[moduleId].props[propName] = value
     })
+
+    this.osc.on('/module/output', (message) => {
+      const [moduleId, index, type] = message.args
+      useModules().activateOutput(moduleId, index, type)
+    })
   }
 
   async connect() {

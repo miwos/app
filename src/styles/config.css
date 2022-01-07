@@ -12,7 +12,10 @@
   --connection-highlight-color: blue;
   --connection-point-color: white;
 
+  --active-fade-duration: 0.2s;
+
   --z-connection-point: 1;
   --z-focused-module: 2;
   --z-focused-connection: 3;
+  --z-menu: 4;
 }

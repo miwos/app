@@ -6,6 +6,7 @@ export const useInterfaces = defineStore({
   id: 'interfaces',
 
   state: () => ({
+    currentPage: 1,
     pages: [
       {
         encoders: [{ moduleId: 3, propName: 'speed' }],
@@ -30,6 +31,10 @@ export const useInterfaces = defineStore({
       // Subtract 1 to convert lua's 1-based index to javascript index.
       this.pages[0].encoders[encoderId - 1] = { moduleId, propName }
       usePatch().update()
+    },
+
+    selectPage(index: number) {
+      this.currentPage = index
     },
   },
 })

@@ -2,7 +2,12 @@
   <svg
     ref="el"
     class="connection-line"
-    :class="{ hovered, focused, 'module-focused': moduleFocused }"
+    :class="{
+      hovered: isHovered,
+      focused: isFocused,
+      active: isActive,
+      'module-focused': isModuleFocused,
+    }"
     @mouseenter="connections.hover(props.id)"
     @mouseleave="connections.hover(null)"
     @focus="connections.focus(props.id)"
@@ -48,10 +53,13 @@ const curve = useConnectionCurve(
 )
 
 const el = ref<HTMLElement | null>(null)
-const hovered = connections.isHovered(props.id)
-const focused = connections.isFocused(props.id)
+const isHovered = connections.isHovered(props.id)
+const isFocused = connections.isFocused(props.id)
+const isActive = computed(
+  () => modules.getOutput(props.from.moduleId, props.from.index - 1).isActive
+)
 
-const moduleFocused = computed(
+const isModuleFocused = computed(
   () =>
     modules.focusedModuleId !== null &&
     connections
@@ -61,7 +69,7 @@ const moduleFocused = computed(
 
 const focus = () => el.value?.focus()
 const blur = () => el.value?.blur()
-watchEffect(() => (focused.value ? focus() : blur()))
+watchEffect(() => (isFocused.value ? focus() : blur()))
 
 const remove = () => connections.remove(props.id)
 </script>
@@ -102,6 +110,18 @@ const remove = () => connections.remove(props.id)
     z-index: var(--z-focused-module);
     .line-display {
       stroke: var(--module-focused-stroke-color);
+    }
+  }
+
+  &.active .line-display {
+    stroke: red;
+    transition: stroke 0.2s;
+  }
+
+  &.active,
+  &:not(.hovered) {
+    .line-display {
+      transition: stroke var(--active-fade-duration);
     }
   }
 

@@ -17,6 +17,7 @@ interface Connection {
 interface ModuleInput {
   delta: Point
   angle: number
+  isActive: boolean
 }
 
 type ModuleOutput = ModuleInput

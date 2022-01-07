@@ -2,7 +2,10 @@
   <Splitpanes @resize="sideBar?.resize()">
     <Pane class="pane-patch">
       <AppPatch />
-      <AppMenu />
+      <MenuMain />
+      <MenuMappings />
+      <ModulePicker />
+      <MenuParts />
     </Pane>
     <Pane v-if="false">
       <AppSidebar ref="sideBar" />
@@ -14,11 +17,14 @@
 import { ref } from 'vue'
 import AppPatch from './components/sections/AppPatch.vue'
 import AppSidebar from './components/sections/AppSidebar.vue'
-import AppMenu from './components/sections/AppMenu.vue'
 import { useModules } from './store/modules'
 // @ts-ignore
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
+import MenuMain from './components/sections/MenuMain.vue'
+import MenuMappings from './components/sections/MenuMappings.vue'
+import MenuParts from './components/sections/MenuParts.vue'
+import ModulePicker from './components/sections/ModulePicker.vue'
 
 const modules = useModules()
 modules.init()
@@ -27,7 +33,7 @@ const sideBar = ref<InstanceType<typeof AppSidebar>>()
 </script>
 
 <style lang="scss">
-@import './styles/config.css';
+@import '@/styles/config.css';
 
 html,
 body {

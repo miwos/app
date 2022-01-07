@@ -1,24 +1,31 @@
 <template>
-  <div class="device-indicator">{{ connectionStatus }}</div>
+  <ButtonCircle
+    class="device-indicator"
+    :class="{ connected }"
+    @click="toggleConnection"
+  />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useBridge } from '@/bridge'
+import { computed } from 'vue'
+import ButtonCircle from '../ui/ButtonCircle.vue'
 
 const bridge = useBridge()
 
-const connectionStatus = computed(() =>
-  bridge.isConnected.value ? 'connected' : 'disconnected'
-)
+const connected = computed(() => bridge.isConnected.value)
+
+const toggleConnection = () => {
+  bridge.isConnected.value ? bridge.close() : bridge.connect()
+}
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .device-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 2rem;
-  background-color: #767676;
+  --color: grey;
+
+  &.connected {
+    --color: salmon;
+  }
 }
 </style>

@@ -1,6 +1,6 @@
 import { markRaw, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { replaceIdWithClass } from '../utils'
+import { getOutputId, replaceIdWithClass, MidiType } from '../utils'
 import { useConnections } from './connections'
 import { usePatch } from './patch'
 
@@ -45,6 +45,14 @@ export const useModules = defineStore({
 
   getters: {
     list: (state) => Object.values(state.items),
+
+    getItem: (state) => (moduleId: number) => state.items[moduleId],
+
+    getInput: (state) => (moduleId: number, index: number) =>
+      state.items[moduleId].inputs[index],
+
+    getOutput: (state) => (moduleId: number, index: number) =>
+      state.items[moduleId].outputs[index],
 
     sorted: (state) => state.sortedIds.map((id) => state.items[id]),
 
@@ -98,6 +106,16 @@ export const useModules = defineStore({
       this.sortedIds.push(id)
 
       if (update) usePatch().update()
+    },
+
+    activateOutput(moduleId: number, index: number, type: MidiType) {
+      const output = this.items[moduleId].outputs[index]
+
+      const isNoteOn = type === MidiType.NoteOn
+      const isNoteOff = type === MidiType.NoteOff
+      if (isNoteOn || isNoteOff) {
+        output.isActive = isNoteOn
+      }
     },
 
     remove(moduleId: number, update = true) {
