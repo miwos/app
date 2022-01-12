@@ -1,6 +1,6 @@
 <template>
   <div
-    class="connection-point"
+    class="module-handle"
     ref="el"
     :class="{
       hovered: isHovered || isDragging,
@@ -8,8 +8,9 @@
       dragging: isDragging,
       'connection-hovered': isConnectionHovered,
       'connection-focused': isConnectionFocused,
-      'module-focused': isModuleFocused,
+      'module-focused': isInstanceFocused,
     }"
+    :[`data-${props.type}`]="props.index"
     tabindex="-1"
     draggable="true"
     @mousedown.stop
@@ -27,56 +28,66 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useConnections } from '@/store/connections'
-import { useModules } from '@/store/modules'
+import { Connection, useConnections } from '@/store/connections'
 import { emptyImage } from '@/utils'
+import { ShapeHandle } from '@/store/shapes'
+import { ModuleInstance, useModuleInstances } from '@/store/moduleInstances'
 
 const props = defineProps<{
-  moduleId: number
-  // Note: the index is one-based to be consistent with lua.
+  type: ShapeHandle['type']
+  delta: Point
+  angle: number
   index: number
-  type: 'input' | 'output'
+  instanceId: ModuleInstance['id']
 }>()
 
 const connections = useConnections()
-const modules = useModules()
+const instances = useModuleInstances()
 const isHovered = ref(false)
 const isDragging = ref(false)
+const deltaWithUnit = computed(() => ({
+  x: props.delta.x + 'px',
+  y: props.delta.y + 'px',
+}))
 
 const existsOnConnection = (connection: Connection | null) => {
   if (!connection) return false
-  const { moduleId, index } =
+  const { instanceId, index } =
     props.type === 'input' ? connection.to : connection.from
-  return moduleId === props.moduleId && index === props.index
+  return instanceId === props.instanceId && index === props.index
 }
 
 const isConnectionHovered = computed(() =>
-  existsOnConnection(connections.hoveredConnection)
+  existsOnConnection(connections.hovered)
 )
 
 const isConnectionFocused = computed(() =>
-  existsOnConnection(connections.focusedConnection)
+  existsOnConnection(connections.focused)
 )
 
-const isModuleFocused = computed(
+const isInstanceFocused = computed(
   () =>
-    modules.focusedModuleId !== null &&
-    connections
-      .connectedToModule(modules.focusedModuleId)
+    instances.focusedId !== null &&
+    !!connections
+      .listConnectedToInstance(instances.focusedId)
       .find((el) => existsOnConnection(el))
 )
 
-const isActiveOutput = () =>
-  modules.getOutput(props.moduleId, props.index - 1)?.isActive
+const isActiveOutput = () => false
+const isConnectedToActiveOutput = () => false
 
-const isConnectedToActiveOutput = () =>
-  !!connections
-    .connectedToModule(props.moduleId)
-    .find(
-      (el) =>
-        el.to.moduleId === props.moduleId &&
-        modules.getOutput(el.from.moduleId, el.from.index - 1)?.isActive
-    )
+// const isActiveOutput = () =>
+//   instances.findHandle(props.instanceId, 'output', props.index)?.isActive
+
+// const isConnectedToActiveOutput = () =>
+//   !!connections
+//     .listConnectedToInstance(props.instanceId)
+//     .find(
+//       (el) =>
+//         el.to.instanceId === props.instanceId &&
+//         instances.findHandle(el.from.instanceId, 'output', el.from.index)
+//           ?.isActive
+//     )
 
 const isActive = computed(() =>
   props.type === 'input' ? isConnectedToActiveOutput() : isActiveOutput()
@@ -86,34 +97,39 @@ const handleDragStart = (event: DragEvent) => {
   if (!event.dataTransfer) return
   event.dataTransfer.setDragImage(emptyImage(), 0, 0)
   event.dataTransfer.dropEffect = 'link'
-  const { moduleId, index, type } = props
-  connections.connectFrom({ moduleId, index, type })
+  const { type, index, instanceId } = props
+  connections.connectFrom({ type, index, instanceId })
   isDragging.value = true
 }
 
 const canConnect = computed(() => {
-  if (!connections.startConnectionPoint) return false
-  const { moduleId, type } = connections.startConnectionPoint
-  return moduleId !== props.moduleId && type !== props.type
+  if (!connections.startPoint) return false
+  const { instanceId, type } = connections.startPoint
+
+  const areDifferentInstance = instanceId !== props.instanceId
+  const areDifferent = type !== props.type
+  const areTransform = type === 'transform' && !areDifferent
+
+  return areDifferentInstance && (areDifferent || areTransform)
 })
 
 const handleDrop = () => {
   if (canConnect.value) {
-    const { moduleId, index, type } = props
-    connections.connectTo({ moduleId, index, type })
+    const { type, index, instanceId } = props
+    connections.connectTo({ type, index, instanceId })
   }
   isHovered.value = false
 }
 </script>
 
-<style lang="scss" scoped>
-.connection-point {
+<style scoped lang="scss">
+.module-handle {
   position: absolute;
   transform: translate(-50%, -50%);
   z-index: var(--z-connection-point);
 
-  top: var(--y);
-  left: var(--x);
+  top: v-bind('deltaWithUnit.y');
+  left: v-bind('deltaWithUnit.x');
 
   --size: 10px;
   width: var(--size);

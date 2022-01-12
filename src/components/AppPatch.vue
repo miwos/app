@@ -2,14 +2,12 @@
   <div class="patch">
     <div class="modules">
       <Module
-        v-for="(module, index) in modules.sorted"
-        :key="module.id"
-        :id="module.id"
-        :type="module.type"
-        :category="modules.definitions[module.type].category"
-        v-model:position="module.position"
-        v-model:inputs="module.inputs"
-        v-model:outputs="module.outputs"
+        v-for="(instance, index) in instances.sorted"
+        :key="instance.id"
+        :id="instance.id"
+        :moduleId="instance.moduleId"
+        :propValues="instance.propValues"
+        v-model:position="instance.position"
       />
     </div>
     <div class="connections">
@@ -25,13 +23,13 @@
 </template>
 
 <script setup lang="ts">
-import { useModules } from '@/store/modules'
 import { useConnections } from '@/store/connections'
-import ConnectionLine from '@/components/patch/ConnectionLine.vue'
-import Module from '@/components/patch/Module.vue'
+import ConnectionLine from '@/components/ConnectionLine.vue'
+import Module from '@/components/Module.vue'
+import { useModuleInstances } from '@/store/moduleInstances'
 
 const connections = useConnections()
-const modules = useModules()
+const instances = useModuleInstances()
 </script>
 
 <style scoped>

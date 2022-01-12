@@ -1,8 +1,6 @@
 {
-  "type": "Switch",
-  "category": "split",
-  "inputs": 1,
-  "outputs": 2,
+  "id": "Switch",
+  "shapeId": "split",
   "props": {
     "state": {
       "type": "number",

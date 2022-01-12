@@ -1,8 +1,6 @@
 {
-  "type": "Arp",
-  "category": "effect",
-  "inputs": 1,
-  "outputs": 1,
+  "id": "Arp",
+  "shapeId": "effect",
   "props": {
     "speed": {
       "type": "number",

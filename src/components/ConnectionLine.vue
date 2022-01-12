@@ -5,8 +5,8 @@
     :class="{
       hovered: isHovered,
       focused: isFocused,
-      active: isActive,
-      'module-focused': isModuleFocused,
+      // active: isActive,
+      'module-focused': instanceIsFocused,
     }"
     @mouseenter="connections.hover(props.id)"
     @mouseleave="connections.hover(null)"
@@ -30,8 +30,9 @@
 <script setup lang="ts">
 import { ref, watchEffect, computed } from 'vue'
 import { useConnectionCurve } from '@/composables/useConnectionCurve'
-import { useConnections } from '@/store/connections'
+import { ConnectionPoint, useConnections } from '@/store/connections'
 import { useModules } from '@/store/modules'
+import { useModuleInstances } from '@/store/moduleInstances'
 
 const props = defineProps<{
   id: string
@@ -40,30 +41,26 @@ const props = defineProps<{
 }>()
 
 const modules = useModules()
+const instances = useModuleInstances()
 const connections = useConnections()
 
-const fromModule = modules.items[props.from.moduleId]
-const toModule = modules.items[props.to.moduleId]
-
-const curve = useConnectionCurve(
-  fromModule,
-  props.from.index,
-  toModule,
-  props.to.index
-)
+const curve = useConnectionCurve(props.from, props.to)
 
 const el = ref<HTMLElement | null>(null)
 const isHovered = connections.isHovered(props.id)
 const isFocused = connections.isFocused(props.id)
-const isActive = computed(
-  () => modules.getOutput(props.from.moduleId, props.from.index - 1).isActive
-)
 
-const isModuleFocused = computed(
+// const isActive = instances.findHandle(
+//   props.from.instanceId,
+//   'output',
+//   props.from.index
+// ).isActive
+
+const instanceIsFocused = computed(
   () =>
-    modules.focusedModuleId !== null &&
-    connections
-      .connectedToModule(modules.focusedModuleId)
+    instances.focusedId !== null &&
+    !!connections
+      .listConnectedToInstance(instances.focusedId)
       .find((el) => el.id === props.id)
 )
 

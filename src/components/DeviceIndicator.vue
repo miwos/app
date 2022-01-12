@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { useBridge } from '@/bridge'
 import { computed } from 'vue'
-import ButtonCircle from '../ui/ButtonCircle.vue'
+import ButtonCircle from './ButtonCircle.vue'
 
 const bridge = useBridge()
 

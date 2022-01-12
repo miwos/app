@@ -1,7 +1,5 @@
 {
-  "type": "Chords",
-  "inputs": 1,
-  "outputs": 1,
+  "id": "Chords",
   "props": {
     "count": {
       "type": "number",

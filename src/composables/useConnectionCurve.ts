@@ -3,30 +3,25 @@ import { computed } from 'vue'
 
 import Vec from 'tiny-vec'
 import { toRadians } from '../utils'
+import { ConnectionPoint } from '@/store/connections'
+import { useModuleInstances } from '@/store/moduleInstances'
 
 export const useConnectionCurve = (
-  fromModule: Module,
-  outputIndex: number,
-  toModule: Module,
-  inputIndex: number
+  from: ConnectionPoint,
+  to: ConnectionPoint
 ) =>
   computed(() => {
-    const fromAngle = fromModule.outputs[outputIndex - 1].angle
-    const toAngle = toModule.inputs[inputIndex - 1].angle
+    const instances = useModuleInstances()
 
-    const from = new Vec({
-      // Index is one-based to be consistent with lua so we have to decrease it.
-      x: fromModule.position.x + fromModule.outputs[outputIndex - 1].delta.x,
-      y: fromModule.position.y + fromModule.outputs[outputIndex - 1].delta.y,
-    })
+    const fromInstance = instances.find(from.instanceId)
+    const fromHandle = fromInstance.shape.handles[from.type][from.index]
+    const fromPosition = new Vec(fromInstance.position).add(fromHandle.delta)
 
-    const to = new Vec({
-      // Index is one-based to be consistent with lua so we have to decrease it.
-      x: toModule.position.x + toModule.inputs[inputIndex - 1].delta.x,
-      y: toModule.position.y + toModule.inputs[inputIndex - 1].delta.y,
-    })
+    const toInstance = instances.find(to.instanceId)
+    const toHandle = toInstance.shape.handles[to.type][to.index]
+    const toPosition = new Vec(toInstance.position).add(toHandle.delta)
 
-    const delta = new Vec(to).subtract(from)
+    const delta = new Vec(toPosition).subtract(fromPosition)
 
     const x = delta.x / 100 + (delta.x > 0 ? 10 : -10)
     const y = Math.abs(delta.y / 10) + 20
@@ -38,13 +33,17 @@ export const useConnectionCurve = (
 
     // console.log(dx * 0.8 + (1 - dy) * 0.2)
 
+    let { angle: fromAngle } = fromHandle
+    if (fromHandle.type === 'transform') fromAngle += 180
+    const { angle: toAngle } = toHandle
+
     const a = toAngle - dx * 45
-    const p2 = to.add(
+    const p2 = toPosition.add(
       new Vec(0, -1).multiply(20 + Math.abs(dy * 100)).rotate(toRadians(a))
     )
 
     const b = fromAngle - dx * 45
-    const p1 = from.add(
+    const p1 = fromPosition.add(
       new Vec(0, -1).multiply(20 + Math.abs(dy * 100)).rotate(toRadians(b))
     )
 
@@ -60,5 +59,8 @@ export const useConnectionCurve = (
     const handles = [p1, p2]
     // const handles = delta.y > 0 ? [p1, p2] : [p1, p3, p4, p2]
 
-    return { description: createHobbyCurve([from, ...handles, to]), handles }
+    return {
+      description: createHobbyCurve([fromPosition, ...handles, toPosition]),
+      handles,
+    }
   })

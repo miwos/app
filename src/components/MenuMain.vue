@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import DeviceIndicator from './DeviceIndicator.vue'
-import BaseMenu from '../ui/BaseMenu.vue'
+import BaseMenu from './BaseMenu.vue'
 </script>
 
 <style scoped lang="scss">
