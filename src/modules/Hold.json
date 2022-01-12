@@ -1,5 +1,4 @@
 {
-  "type": "Hold",
-  "inputs": 1,
-  "outputs": 1
+  "id": "Hold",
+  "shapeId": "transform"
 }

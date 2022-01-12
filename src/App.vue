@@ -1,4 +1,5 @@
 <template>
+  <ShapeTemplates />
   <Splitpanes @resize="sideBar?.resize()">
     <Pane class="pane-patch">
       <AppPatch />
@@ -15,19 +16,21 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import AppPatch from './components/sections/AppPatch.vue'
-import AppSidebar from './components/sections/AppSidebar.vue'
-import { useModules } from './store/modules'
+import AppPatch from './components/AppPatch.vue'
+import AppSidebar from './components/AppSidebar.vue'
 // @ts-ignore
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
-import MenuMain from './components/sections/MenuMain.vue'
-import MenuMappings from './components/sections/MenuMappings.vue'
-import MenuParts from './components/sections/MenuParts.vue'
-import ModulePicker from './components/sections/ModulePicker.vue'
+import MenuMain from './components/MenuMain.vue'
+import MenuMappings from './components/MenuMappings.vue'
+import MenuParts from './components/MenuParts.vue'
+import ModulePicker from './components/ModulePicker.vue'
+import ShapeTemplates from './components/ShapeTemplates.vue'
+import { useModuleInstances } from './store/moduleInstances'
 
-const modules = useModules()
-modules.init()
+const instances = useModuleInstances()
+instances.add('Input', { x: 200, y: 200 })
+instances.add('Output', { x: 200, y: 400 })
 
 const sideBar = ref<InstanceType<typeof AppSidebar>>()
 </script>

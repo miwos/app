@@ -3,17 +3,19 @@ import { useInterfaces } from '../store/interfaces'
 import { useModules } from '../store/modules'
 // @ts-ignore
 import { format } from 'lua-json'
+import { useModuleInstances } from '@/store/moduleInstances'
 
 export const createLuaPatch = () => {
+  const instances = useModuleInstances()
   const modules = useModules()
   const connections = useConnections()
 
   const requiredModules = new Set()
   const types = {} as Record<string, string>
 
-  for (const { id, type } of Object.values(modules.items)) {
-    requiredModules.add(type)
-    types[`%${id}%`] = `%${type}%`
+  for (const { id, moduleId } of Object.values(instances.items)) {
+    requiredModules.add(moduleId)
+    types[`%${id}%`] = `%${moduleId}%`
   }
 
   const require = Array.from(requiredModules)
@@ -25,7 +27,10 @@ export const createLuaPatch = () => {
 
     connections: Object.values(connections.items).map(
       ({ from, to }) =>
-        `%{ ${from.moduleId}, ${from.index}, ${to.moduleId}, ${to.index} }%`
+        // Use 1-based indexes to be consistent with lua.
+        `%{ ${from.instanceId}, ${from.index + 1}, ${to.instanceId}, ${
+          to.index + 1
+        } }%`
     ),
 
     interface: useInterfaces().pages.map((page) =>
@@ -44,5 +49,8 @@ export const createLuaPatch = () => {
   // Each string that starts and ends with a `%` will be ignored from lua-json
   // and the quotes and the `%` characters removed afterwards.
   const patchLua = format(patch).replace(/('%|%')/g, '')
+
+  console.log(`${require}\n\n${patchLua}`)
+
   return `${require}\n\n${patchLua}`
 }

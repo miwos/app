@@ -1,8 +1,6 @@
 {
-  "type": "Delay",
-  "category": "effect",
-  "inputs": 1,
-  "outputs": 1,
+  "id": "Delay",
+  "shapeId": "effect",
   "props": {
     "time": {
       "type": "number",

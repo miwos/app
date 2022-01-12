@@ -1,6 +1,4 @@
 {
-  "type": "Output",
-  "category": "output",
-  "inputs": 1,
-  "outputs": 0
+  "id": "Output",
+  "shapeId": "output"
 }

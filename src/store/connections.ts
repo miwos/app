@@ -1,61 +1,90 @@
 import { computed } from 'vue'
 import { defineStore } from 'pinia'
-import { getConnectionId } from '../utils'
 import { usePatch } from './patch'
+import { ModuleInstance, useModuleInstances } from './moduleInstances'
+import { ShapeHandle } from './shapes'
+import { useModules } from './modules'
+
+export interface ConnectionPoint {
+  type: ShapeHandle['type']
+  index: number
+  instanceId: ModuleInstance['id']
+}
+
+export interface Connection {
+  id: string
+  from: ConnectionPoint
+  to: ConnectionPoint
+}
+
+const getConnectionId = (from: ConnectionPoint, to: ConnectionPoint) =>
+  `(${from.instanceId},${from.index})-(${to.instanceId},${to.index})`
+
+const sortPointsByPosition = (a: ConnectionPoint, b: ConnectionPoint) => {
+  const instances = useModuleInstances()
+  const positionA = instances.find(a.instanceId).position
+  const positionB = instances.find(b.instanceId).position
+  return positionA.y < positionB.y ? [a, b] : [b, a]
+}
 
 export const useConnections = defineStore({
   id: 'connections',
 
   state: () => ({
     items: {} as Record<string, Connection>,
-    hoveredConnectionId: null as string | null,
-    focusedConnectionId: null as string | null,
-    startConnectionPoint: null as ConnectionPoint | null,
+    hoveredId: null as string | null,
+    focusedId: null as string | null,
+    startPoint: null as ConnectionPoint | null,
   }),
 
   getters: {
-    connectedToModule: (state) => (moduleId: number) =>
+    find: (state) => (id: Connection['id']) => state.items[id],
+
+    listConnectedToInstance: (state) => (id: ModuleInstance['id']) =>
       Object.values(state.items).filter(
-        (item) =>
-          item.from.moduleId === moduleId || item.to.moduleId === moduleId
+        (item) => item.from.instanceId === id || item.to.instanceId === id
       ),
 
-    isHovered: (state) => (connectionId: string) =>
-      computed(() => state.hoveredConnectionId === connectionId),
+    hovered: (state) => (state.hoveredId ? state.items[state.hoveredId] : null),
 
-    isFocused: (state) => (connectionId: string) =>
-      computed(() => state.focusedConnectionId === connectionId),
+    focused: (state) => (state.focusedId ? state.items[state.focusedId] : null),
 
-    hoveredConnection: (state) =>
-      state.hoveredConnectionId ? state.items[state.hoveredConnectionId] : null,
+    isHovered: (state) => (id: Connection['id']) =>
+      computed(() => state.hoveredId === id),
 
-    focusedConnection: (state) =>
-      state.focusedConnectionId ? state.items[state.focusedConnectionId] : null,
+    isFocused: (state) => (id: Connection['id']) =>
+      computed(() => state.focusedId === id),
   },
 
   actions: {
-    hover(connectionId: string | null) {
-      this.hoveredConnectionId = connectionId
+    hover(id: Connection['id'] | null) {
+      this.hoveredId = id
     },
 
-    focus(connectionId: string | null) {
-      this.focusedConnectionId = connectionId
+    focus(id: Connection['id'] | null) {
+      this.focusedId = id
     },
 
-    connectFrom(connectionPoint: ConnectionPoint) {
-      this.startConnectionPoint = connectionPoint
+    connectFrom(point: ConnectionPoint) {
+      this.startPoint = point
     },
 
-    async connectTo(connectionPoint: ConnectionPoint) {
-      if (!this.startConnectionPoint) return
-      const { type: startType } = this.startConnectionPoint
-      if (startType === connectionPoint.type)
-        throw new Error(`Can't connect type '${startType}' to '${startType}'`)
+    async connectTo(point: ConnectionPoint) {
+      const { startPoint } = this
+      if (!startPoint) return
 
-      // We always store the points in the order from output to input. But it is
-      // also possible to draw the connections from input to output.
-      const connectionPoints = [this.startConnectionPoint, connectionPoint]
-      if (startType === 'input') connectionPoints.reverse()
+      const bothAreTransforms =
+        point.type === 'transform' && startPoint.type === 'transform'
+
+      // Sort the points so our connection will always flow from `input` to
+      // `output`. If both points are of type `transform` we have to make a
+      // guess based on the points positions, treating the higher point as the
+      // `output` and the lower as the `input`.
+      const connectionPoints = bothAreTransforms
+        ? sortPointsByPosition(startPoint, point)
+        : startPoint.type === 'output' || point.type === 'input'
+        ? [startPoint, point]
+        : [point, startPoint]
 
       const [from, to] = connectionPoints
       const id = getConnectionId(from, to)
@@ -64,8 +93,8 @@ export const useConnections = defineStore({
       usePatch().update()
     },
 
-    remove(connectionId: string, update = true) {
-      delete this.items[connectionId]
+    remove(id: Connection['id'], update = true) {
+      delete this.items[id]
       this.hover(null)
       this.focus(null)
       if (update) usePatch().update()
@@ -73,7 +102,7 @@ export const useConnections = defineStore({
 
     clear(update = true) {
       this.items = {}
-      this.startConnectionPoint = null
+      this.startPoint = null
       if (update) usePatch().update()
     },
   },

@@ -28,8 +28,7 @@ export const useInterfaces = defineStore({
 
   actions: {
     mapEncoder(encoderId: number, moduleId: number, propName: string) {
-      // Subtract 1 to convert lua's 1-based index to javascript index.
-      this.pages[0].encoders[encoderId - 1] = { moduleId, propName }
+      this.pages[0].encoders[encoderId] = { moduleId, propName }
       usePatch().update()
     },
 

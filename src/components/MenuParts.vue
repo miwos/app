@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import BaseMenu from '../ui/BaseMenu.vue'
-import ButtonCircleTriplet from '../ui/ButtonCircleTriplet.vue'
+import BaseMenu from './BaseMenu.vue'
+import ButtonCircleTriplet from './ButtonCircleTriplet.vue'
 </script>
 
 <style lang="scss" scoped>

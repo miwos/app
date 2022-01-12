@@ -1,21 +1,23 @@
 <template>
   <div class="module-picker">
     <button
-      v-for="(definition, id) of modules.definitions"
+      v-for="(module, id) of modules.items"
       :key="id"
-      @click="createModule(definition.type)"
+      @click="createModule(id)"
     >
-      {{ definition.type }}
+      {{ id }}
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useModules } from '@/store/modules'
+import { useModuleInstances } from '@/store/moduleInstances'
+import { Module, useModules } from '@/store/modules'
 const modules = useModules()
+const instances = useModuleInstances()
 
-const createModule = (type: string) =>
-  modules.add(type, {
+const createModule = (id: Module['id']) =>
+  instances.add(id, {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
   })
