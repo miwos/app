@@ -2,7 +2,8 @@ import AsyncOsc from 'async-osc'
 import WebSerialTransport from 'async-osc/dist/WebSerialTransport'
 import { LogType, useLogs } from './store/logs'
 import { ref, markRaw } from 'vue'
-import { useModules } from './store/modules'
+import { useModuleInstances } from './store/moduleInstances'
+import { MidiType } from './utils'
 
 class Bridge {
   private osc = markRaw(new AsyncOsc(new WebSerialTransport()))
@@ -34,13 +35,14 @@ class Bridge {
     })
 
     this.osc.on('/patch/prop', (message) => {
-      const [moduleId, propName, value] = message.args
-      useModules().items[moduleId].props[propName] = value
+      const [instanceId, propName, value] = message.args
+      useModuleInstances().find(instanceId).propValues[propName] = value
     })
 
     this.osc.on('/module/output', (message) => {
-      const [moduleId, index, type] = message.args
-      useModules().activateOutput(moduleId, index, type)
+      const [instanceId, index, midiType] = message.args
+      const isActive = midiType !== MidiType.NoteOff
+      useModuleInstances().updateHandle(instanceId, 'output', index, isActive)
     })
   }
 
