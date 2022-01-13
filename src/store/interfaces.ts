@@ -6,7 +6,7 @@ export const useInterfaces = defineStore({
   id: 'interfaces',
 
   state: () => ({
-    currentPage: 1,
+    currentPage: 0,
     pages: [
       {
         encoders: [{ moduleId: 3, propName: 'speed' }],
