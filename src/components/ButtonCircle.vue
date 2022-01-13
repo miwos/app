@@ -13,7 +13,6 @@ const emit = defineEmits(['click'])
   width: var(--size);
   height: var(--size);
   border-radius: calc(var(--size) / 2);
-  background-color: var(--color);
   border: none;
 }
 </style>

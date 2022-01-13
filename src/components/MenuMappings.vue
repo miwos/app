@@ -13,14 +13,14 @@ import { useInterfaces } from '@/store/interfaces'
 <style lang="scss" scoped>
 .menu-mappings {
   position: absolute;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 0;
+  right: 0;
+  margin-right: 2rem;
   gap: 0.5rem;
   display: flex;
 }
 
-.button {
-  --color: blue;
+.button-circle-triplet {
+  --color: #00ce78;
 }
 </style>

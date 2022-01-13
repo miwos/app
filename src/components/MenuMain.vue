@@ -1,5 +1,5 @@
 <template>
-  <BaseMenu>
+  <BaseMenu class="menu-main">
     <DeviceIndicator />
     <button>File</button>
     <button>Edit</button>
@@ -12,10 +12,10 @@ import BaseMenu from './BaseMenu.vue'
 </script>
 
 <style scoped lang="scss">
-.menu {
+.menu-main {
   position: absolute;
   top: 0;
   left: 0;
-  margin: 0.5rem;
+  height: 2.5rem;
 }
 </style>

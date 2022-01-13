@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .menu {
   --size: 2.5rem;
 

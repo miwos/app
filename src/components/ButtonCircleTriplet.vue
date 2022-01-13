@@ -34,7 +34,12 @@ const select = (index: number) => emit('update:value', index)
   }
 }
 
+.button {
+  background-color: transparent;
+  --size: 2.5rem;
+}
+
 .button[aria-selected='true'] {
-  --color: rgb(12, 214, 103);
+  background-color: var(--color);
 }
 </style>
