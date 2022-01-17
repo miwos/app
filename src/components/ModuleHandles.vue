@@ -1,27 +1,19 @@
 <template>
-  <div
-    v-for="(handles, name) in props.handles"
-    :key="name"
-    class="module-handles"
-    :class="name"
-  >
-    <ModuleHandle
-      v-for="(handle, index) in handles"
-      :key="index"
-      :index="index"
-      :instanceId="props.instanceId"
-      v-bind="handle"
-    />
-  </div>
+  <ModuleHandle
+    v-for="(handle, id) in handles"
+    :key="id"
+    :instanceId="props.instanceId"
+    v-bind="handle"
+  />
 </template>
 
 <script setup lang="ts">
-import { ModuleInstance } from '@/store/moduleInstances'
-import { ShapeHandles } from '@/store/shapes'
+import { ModuleInstance } from '@/types/ModuleInstance'
+import { Shape } from 'shape-compiler'
 import ModuleHandle from './ModuleHandle.vue'
 
 const props = defineProps<{
-  handles: ShapeHandles
+  handles: Shape['handles']
   instanceId: ModuleInstance['id']
 }>()
 </script>

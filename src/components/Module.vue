@@ -12,7 +12,7 @@
     @dragleave="isDropTarget = false"
     @keydown.delete="remove"
   >
-    <ModuleShape :type="shape.type" :templateId="shape.templateId" />
+    <ModuleShape :id="shape.id" :templateId="shape.templateId" />
     <ModuleHandles :handles="shape.handles" :instanceId="props.id" />
     <ModuleProps
       :props="instance.module.props"

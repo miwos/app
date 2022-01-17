@@ -1,6 +1,6 @@
 {
   "id": "VelocitySplit",
-  "shapeId": "split",
+  "shapeId": "Split",
   "props": {
     "thresh": {
       "type": "number",

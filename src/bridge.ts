@@ -1,9 +1,10 @@
 import AsyncOsc from 'async-osc'
 import WebSerialTransport from 'async-osc/dist/WebSerialTransport'
-import { LogType, useLogs } from './store/logs'
+import { useLogs } from './store/logs'
 import { ref, markRaw } from 'vue'
 import { useModuleInstances } from './store/moduleInstances'
 import { MidiType } from './utils'
+import { Log } from './types/Log'
 
 class Bridge {
   private osc = markRaw(new AsyncOsc(new WebSerialTransport()))
@@ -24,14 +25,14 @@ class Bridge {
     this.osc.on('/log/:type', (message, { type }) => {
       const [text] = message.args
       ;(console as any)[type]?.(text)
-      useLogs().addLog(type as LogType, text)
+      useLogs().addLog(type as Log['type'], text)
     })
 
     this.osc.on('/raw/log/:type', async (_, { type }) => {
       const data = await this.osc.waitForRawData()
       const text = new TextDecoder().decode(data)
       ;(console as any)[type]?.(text)
-      useLogs().addLog(type as LogType, text)
+      useLogs().addLog(type as Log['type'], text)
     })
 
     this.osc.on('/patch/prop', (message) => {
@@ -40,9 +41,16 @@ class Bridge {
     })
 
     this.osc.on('/module/output', (message) => {
-      const [instanceId, index, midiType] = message.args
+      const [instanceId, _index, midiType] = message.args
       const isActive = midiType !== MidiType.NoteOff
-      useModuleInstances().updateHandle(instanceId, 'output', index, isActive)
+      const instance = useModuleInstances().find(instanceId)
+
+      // TODO: make this actually work.
+      if (isActive) {
+        instance.activeHandleIds.add('midi-out-1')
+      } else {
+        instance.activeHandleIds.delete('midi-out-1')
+      }
     })
   }
 

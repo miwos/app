@@ -1,21 +1,9 @@
 import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import { usePatch } from './patch'
-import { ModuleInstance, useModuleInstances } from './moduleInstances'
-import { ShapeHandle } from './shapes'
-import { useModules } from './modules'
-
-export interface ConnectionPoint {
-  type: ShapeHandle['type']
-  index: number
-  instanceId: ModuleInstance['id']
-}
-
-export interface Connection {
-  id: string
-  from: ConnectionPoint
-  to: ConnectionPoint
-}
+import { useModuleInstances } from './moduleInstances'
+import { Connection, ConnectionPoint } from '@/types/Connection'
+import { ModuleInstance } from '@/types/ModuleInstance'
 
 const getConnectionId = (from: ConnectionPoint, to: ConnectionPoint) =>
   `(${from.instanceId},${from.index})-(${to.instanceId},${to.index})`
@@ -54,6 +42,21 @@ export const useConnections = defineStore({
 
     isFocused: (state) => (id: Connection['id']) =>
       computed(() => state.focusedId === id),
+
+    canConnect: (state) => (point: ConnectionPoint) =>
+      computed(() => {
+        if (!state.startPoint) return false
+        const { instanceId, signal, direction } = state.startPoint
+
+        const haveDifferentInstance = instanceId !== point.instanceId
+        const haveSameSignals = signal === point.signal
+        const haveCompatibleDirections =
+          direction != point.direction || direction === 'inout'
+
+        return (
+          haveDifferentInstance && haveSameSignals && haveCompatibleDirections
+        )
+      }),
   },
 
   actions: {
@@ -73,16 +76,16 @@ export const useConnections = defineStore({
       const { startPoint } = this
       if (!startPoint) return
 
-      const bothAreTransforms =
-        point.type === 'transform' && startPoint.type === 'transform'
+      const bothAreInout =
+        point.direction === 'inout' && startPoint.direction === 'inout'
 
-      // Sort the points so our connection will always flow from `input` to
-      // `output`. If both points are of type `transform` we have to make a
-      // guess based on the points positions, treating the higher point as the
-      // `output` and the lower as the `input`.
-      const connectionPoints = bothAreTransforms
+      // Sort the points so our connection will always flow from `out` to
+      // `in`. If both points have the special direction `inout` we have to make
+      // a guess based on the points positions, treating the higher point as
+      // `out` and the lower as the `in`.
+      const connectionPoints = bothAreInout
         ? sortPointsByPosition(startPoint, point)
-        : startPoint.type === 'output' || point.type === 'input'
+        : startPoint.direction === 'out' || point.direction === 'in'
         ? [startPoint, point]
         : [point, startPoint]
 
@@ -90,6 +93,7 @@ export const useConnections = defineStore({
       const id = getConnectionId(from, to)
       this.items[id] = { id, from, to }
 
+      this.startPoint = null
       usePatch().update()
     },
 

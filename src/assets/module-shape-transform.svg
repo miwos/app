@@ -1,7 +1,0 @@
-<svg width="211" height="182" viewBox="0 0 211 182" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="module-shape-transform">
-<rect id="background" width="137.816" height="137.816" transform="matrix(0.751001 0.660301 -0.751001 0.660301 105.5 0)" fill="#C4C4C4"/>
-<path id="outline" d="M75.1856 26.6533L2.00001 91L75.3651 155.505M135.814 26.6533L209 91L135.635 155.505" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<circle id="transform" cx="105" cy="91" r="18" fill="black"/>
-</g>
-</svg>

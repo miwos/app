@@ -1,25 +1,47 @@
 <template>
-  <div ref="el"></div>
+  <div class="module-shape" ref="el"></div>
 </template>
 
 <script setup lang="ts">
-import { useModules } from '@/store/modules'
 import { onMounted, ref } from 'vue'
 
 const props = defineProps<{
-  type: string
+  id: string
   templateId: string
 }>()
 
 const el = ref<HTMLElement | null>(null)
-const modules = useModules()
 
 onMounted(() => {
   const shapeTemplate = document.getElementById(props.templateId)
 
   if (!shapeTemplate?.firstChild)
-    throw new Error(`Can't find template for shape '${props.type}'`)
+    throw new Error(`Can't find template for shape '${props.id}'`)
 
   el.value?.prepend(shapeTemplate.firstChild.cloneNode(true))
 })
 </script>
+
+<style lang="scss">
+.module-shape svg {
+  display: block;
+  overflow: visible;
+  height: auto;
+
+  .outline {
+    stroke: var(--module-stroke-color);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+
+  .shape {
+    fill: var(--module-fill-color);
+  }
+
+  * {
+    vector-effect: non-scaling-stroke;
+    stroke-width: 1px;
+  }
+}
+</style>

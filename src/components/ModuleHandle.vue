@@ -10,7 +10,6 @@
       'connection-focused': isConnectionFocused,
       'module-focused': isInstanceFocused,
     }"
-    :[`data-${props.type}`]="props.index"
     tabindex="-1"
     draggable="true"
     @mousedown.stop
@@ -27,22 +26,27 @@
 </template>
 
 <script setup lang="ts">
+import { useConnections } from '@/store/connections'
+import { useModuleInstances } from '@/store/moduleInstances'
+import { Connection } from '@/types/Connection'
+import { ModuleInstance } from '@/types/ModuleInstance'
+import { emptyImage, pointsAreEqual } from '@/utils'
+import { Handle } from 'shape-compiler'
 import { computed, ref } from 'vue'
-import { Connection, useConnections } from '@/store/connections'
-import { emptyImage } from '@/utils'
-import { ShapeHandle } from '@/store/shapes'
-import { ModuleInstance, useModuleInstances } from '@/store/moduleInstances'
 
 const props = defineProps<{
-  type: ShapeHandle['type']
+  id: Handle['id']
+  index: number
+  signal: Handle['signal']
+  direction: Handle['direction']
   delta: Point
   angle: number
-  index: number
   instanceId: ModuleInstance['id']
 }>()
 
 const connections = useConnections()
 const instances = useModuleInstances()
+const instance = instances.find(props.instanceId)
 const isHovered = ref(false)
 const isDragging = ref(false)
 const deltaWithUnit = computed(() => ({
@@ -50,11 +54,13 @@ const deltaWithUnit = computed(() => ({
   y: props.delta.y + 'px',
 }))
 
+const isActive = computed(() => instance.activeHandleIds.has(props.id))
+const canConnect = connections.canConnect(props)
+
 const existsOnConnection = (connection: Connection | null) => {
   if (!connection) return false
-  const { instanceId, index } =
-    props.type === 'input' ? connection.to : connection.from
-  return instanceId === props.instanceId && index === props.index
+  const { from, to } = connection
+  return pointsAreEqual(props, from) || pointsAreEqual(props, to)
 }
 
 const isConnectionHovered = computed(() =>
@@ -68,55 +74,25 @@ const isConnectionFocused = computed(() =>
 const isInstanceFocused = computed(
   () =>
     instances.focusedId !== null &&
-    !!connections
-      .listConnectedToInstance(instances.focusedId)
-      .find((el) => existsOnConnection(el))
-)
-
-const isActiveOutput = () => false
-const isConnectedToActiveOutput = () => false
-
-// const isActiveOutput = () =>
-//   instances.findHandle(props.instanceId, 'output', props.index)?.isActive
-
-// const isConnectedToActiveOutput = () =>
-//   !!connections
-//     .listConnectedToInstance(props.instanceId)
-//     .find(
-//       (el) =>
-//         el.to.instanceId === props.instanceId &&
-//         instances.findHandle(el.from.instanceId, 'output', el.from.index)
-//           ?.isActive
-//     )
-
-const isActive = computed(() =>
-  props.type === 'input' ? isConnectedToActiveOutput() : isActiveOutput()
+    (instances.focusedId === props.instanceId ||
+      !!connections
+        .listConnectedToInstance(instances.focusedId)
+        .find((el) => existsOnConnection(el)))
 )
 
 const handleDragStart = (event: DragEvent) => {
   if (!event.dataTransfer) return
   event.dataTransfer.setDragImage(emptyImage(), 0, 0)
   event.dataTransfer.dropEffect = 'link'
-  const { type, index, instanceId } = props
-  connections.connectFrom({ type, index, instanceId })
+  const { id, signal, direction, index, instanceId } = props
+  connections.connectFrom({ id, signal, direction, index, instanceId })
   isDragging.value = true
 }
 
-const canConnect = computed(() => {
-  if (!connections.startPoint) return false
-  const { instanceId, type } = connections.startPoint
-
-  const areDifferentInstance = instanceId !== props.instanceId
-  const areDifferent = type !== props.type
-  const areTransform = type === 'transform' && !areDifferent
-
-  return areDifferentInstance && (areDifferent || areTransform)
-})
-
 const handleDrop = () => {
   if (canConnect.value) {
-    const { type, index, instanceId } = props
-    connections.connectTo({ type, index, instanceId })
+    const { id, signal, direction, index, instanceId } = props
+    connections.connectTo({ id, signal, direction, index, instanceId })
   }
   isHovered.value = false
 }

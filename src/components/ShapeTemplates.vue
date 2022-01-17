@@ -1,16 +1,21 @@
 <template>
-  <ShapeTemplate
+  <div
     v-for="shape in shapes.items"
+    class="shape-template"
     :id="shape.templateId"
-    :svg="shape.svg"
-    :type="shape.type"
-    @update:handles="shape.handles = $event"
-  />
+    v-html="shape.svg"
+  ></div>
 </template>
 
 <script setup lang="ts">
 import { useShapes } from '@/store/shapes'
-import ShapeTemplate from './ShapeTemplate.vue'
-
 const shapes = useShapes()
 </script>
+
+<style scoped lang="scss">
+.shape-template {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+</style>
