@@ -1,8 +1,0 @@
-<svg width="351" height="332" viewBox="0 0 351 332" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="module-shape-round">
-<rect id="background" x="2" width="347" height="332" rx="166" fill="#C4C4C4"/>
-<path id="outline" d="M211.199 2.38525C289.447 15.7754 349 83.933 349 166C349 247.093 290.852 314.605 213.976 329.115M138.714 2.57505C61.002 16.4078 2 84.3135 2 166C2 246.716 59.6086 313.977 135.952 328.909" stroke="black" stroke-width="3" stroke-linecap="round"/>
-<circle id="output" cx="175" cy="292" r="18" transform="rotate(-180 175 292)" fill="black"/>
-<circle id="input" cx="175" cy="42" r="18" fill="black"/>
-</g>
-</svg>

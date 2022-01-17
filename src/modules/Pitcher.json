@@ -1,6 +1,6 @@
 {
   "id": "Pitcher",
-  "shapeId": "transform",
+  "shapeId": "Transform",
   "props": {
     "semitones": {
       "min": -24,

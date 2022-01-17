@@ -1,16 +1,15 @@
+import { Log } from '@/types/Log'
 import { defineStore } from 'pinia'
-
-export type LogType = 'info' | 'warn' | 'error' | 'success' | 'print'
 
 export const useLogs = defineStore({
   id: 'logs',
 
   state: () => ({
-    logs: [] as { type: LogType; text: string }[],
+    logs: [] as Log[],
   }),
 
   actions: {
-    addLog(type: LogType, text: string) {
+    addLog(type: Log['type'], text: Log['text']) {
       this.logs.push({ type, text })
     },
   },

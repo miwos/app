@@ -27,10 +27,7 @@ export const createLuaPatch = () => {
 
     connections: Object.values(connections.items).map(
       ({ from, to }) =>
-        // Use 1-based indexes to be consistent with lua.
-        `%{ ${from.instanceId}, ${from.index + 1}, ${to.instanceId}, ${
-          to.index + 1
-        } }%`
+        `%{ ${from.instanceId}, ${from.index}, ${to.instanceId}, ${to.index} }%`
     ),
 
     interface: useInterfaces().pages.map((page) =>

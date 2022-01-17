@@ -1,18 +1,6 @@
 import { markRaw } from 'vue'
 import { defineStore } from 'pinia'
-
-export interface Prop {
-  type: string
-  default: number
-  min?: number
-  max?: number
-}
-
-export interface Module {
-  id: string
-  shapeId: string
-  props: Record<Prop['type'], Prop>
-}
+import { Module } from '@/types/Module'
 
 const moduleImports = import.meta.globEager('../modules/*.json')
 const modules: Record<Module['id'], Module> = Object.fromEntries(

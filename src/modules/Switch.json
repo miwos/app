@@ -1,6 +1,6 @@
 {
   "id": "Switch",
-  "shapeId": "split",
+  "shapeId": "Split",
   "props": {
     "state": {
       "type": "number",

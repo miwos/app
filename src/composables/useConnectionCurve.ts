@@ -3,8 +3,8 @@ import { computed } from 'vue'
 
 import Vec from 'tiny-vec'
 import { toRadians } from '../utils'
-import { ConnectionPoint } from '@/store/connections'
 import { useModuleInstances } from '@/store/moduleInstances'
+import { ConnectionPoint } from '@/types/Connection'
 
 export const useConnectionCurve = (
   from: ConnectionPoint,
@@ -14,11 +14,11 @@ export const useConnectionCurve = (
     const instances = useModuleInstances()
 
     const fromInstance = instances.find(from.instanceId)
-    const fromHandle = fromInstance.shape.handles[from.type][from.index]
+    const fromHandle = fromInstance.shape.handles[from.id]
     const fromPosition = new Vec(fromInstance.position).add(fromHandle.delta)
 
     const toInstance = instances.find(to.instanceId)
-    const toHandle = toInstance.shape.handles[to.type][to.index]
+    const toHandle = toInstance.shape.handles[to.id]
     const toPosition = new Vec(toInstance.position).add(toHandle.delta)
 
     const delta = new Vec(toPosition).subtract(fromPosition)
@@ -34,15 +34,15 @@ export const useConnectionCurve = (
     // console.log(dx * 0.8 + (1 - dy) * 0.2)
 
     let { angle: fromAngle } = fromHandle
-    if (fromHandle.type === 'transform') fromAngle += 180
+    if (fromHandle.direction === 'inout') fromAngle += 180
     const { angle: toAngle } = toHandle
 
-    const a = toAngle - dx * 45
+    const a = toAngle + 90 - dx * 45
     const p2 = toPosition.add(
       new Vec(0, -1).multiply(20 + Math.abs(dy * 100)).rotate(toRadians(a))
     )
 
-    const b = fromAngle - dx * 45
+    const b = fromAngle + 90 - dx * 45
     const p1 = fromPosition.add(
       new Vec(0, -1).multiply(20 + Math.abs(dy * 100)).rotate(toRadians(b))
     )

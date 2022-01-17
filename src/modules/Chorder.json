@@ -1,6 +1,6 @@
 {
   "id": "Chorder",
-  "shapeId": "effect",
+  "shapeId": "Effect",
   "props": {
     "pitch1": {
       "type": "number",

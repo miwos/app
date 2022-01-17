@@ -25,12 +25,12 @@ import MenuMain from './components/MenuMain.vue'
 import MenuMappings from './components/MenuMappings.vue'
 import MenuParts from './components/MenuParts.vue'
 import ModulePicker from './components/ModulePicker.vue'
-import ShapeTemplates from './components/ShapeTemplates.vue'
 import { useModuleInstances } from './store/moduleInstances'
+import ShapeTemplates from './components/ShapeTemplates.vue'
 
 const instances = useModuleInstances()
 instances.add('Input', { x: 200, y: 200 })
-instances.add('Output', { x: 200, y: 400 })
+// instances.add('Output', { x: 200, y: 400 })
 
 const sideBar = ref<InstanceType<typeof AppSidebar>>()
 </script>

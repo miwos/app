@@ -14,6 +14,7 @@
     "monaco-editor-core": "^0.31.0",
     "osc-js": "^2.1.2",
     "pinia": "^2.0.0-beta.3",
+    "shape-compiler": "file:../shape-compiler",
     "slip": "^1.0.2",
     "splitpanes": "^3.0.6",
     "tiny-vec": "^0.3.0",

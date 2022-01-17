@@ -1,25 +1,11 @@
+import { Handle } from '@/types/Handle'
+import { ModuleInstance } from '@/types/ModuleInstance'
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
 import { useConnections } from './connections'
 import { useModules } from './modules'
 import { usePatch } from './patch'
-import { ShapeHandle, useShapes } from './shapes'
-
-export interface HandleState {
-  isActive: boolean
-}
-
-export interface ModuleInstance {
-  id: number
-  moduleId: string
-  position: Point
-  propValues: Record<string, any>
-  handles: {
-    input: HandleState[]
-    output: HandleState[]
-    transform: HandleState[]
-  }
-}
+import { useShapes } from './shapes'
 
 export const useModuleInstances = defineStore({
   id: 'moduleInstances',
@@ -64,8 +50,13 @@ export const useModuleInstances = defineStore({
         ])
       )
 
-      const handles = { input: [], output: [], transform: [] }
-      this.items[id] = { id, moduleId, position, propValues, handles }
+      this.items[id] = {
+        id,
+        moduleId,
+        position,
+        propValues,
+        activeHandleIds: new Set(),
+      }
       this.sortedIds.push(id)
 
       if (shouldUpdatePatch) usePatch().update()
@@ -95,11 +86,12 @@ export const useModuleInstances = defineStore({
 
     updateHandle(
       id: ModuleInstance['id'],
-      type: ShapeHandle['type'],
+      type: Handle['type'],
       index: number,
       isActive: boolean
     ) {
-      this.items[id].handles[type][index].isActive = isActive
+      // this.items[id].handles
+      // this.items[id].handles[type][index].isActive = isActive
     },
 
     clear(shouldUpdatePatch = true) {

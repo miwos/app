@@ -1,39 +1,16 @@
 import { defineStore } from 'pinia'
+import { compileShape, Shape } from 'shape-compiler/src'
 
-export interface ShapeHandle {
-  type: 'input' | 'output' | 'transform'
-  angle: number
-  delta: Point
-}
-
-export interface ShapeHandles {
-  input: ShapeHandle[]
-  output: ShapeHandle[]
-  transform: ShapeHandle[]
-}
-
-export interface Shape {
-  type: string
-  svg: string
-  templateId: string
-  handles: ShapeHandles
-}
-
-const shapeImports = import.meta.globEager('../assets/module-shape-*.svg')
-const shapes: Record<Shape['type'], Shape> = Object.fromEntries(
+const shapeImports = import.meta.globEager('../assets/shapes/*.svg')
+const shapes: Record<Shape['id'], Shape> = Object.fromEntries(
   Object.entries(shapeImports).map(([path, module]) => {
-    const type = path.match(/module-shape-(.+)\.svg/)![1]
+    const id = path.match(/\/([^/]+)\.(.+)$/)![1]
     return [
-      type,
+      id,
       {
-        type,
-        templateId: `template-module-shape-${type}`,
-        svg: module.default,
-        handles: {
-          input: [],
-          output: [],
-          transform: [],
-        },
+        id,
+        templateId: `template-shape-${id}`,
+        ...compileShape(module.default),
       },
     ]
   })
@@ -47,6 +24,10 @@ export const useShapes = defineStore({
   }),
 
   getters: {
-    find: (state) => (type: Shape['type']) => state.items[type],
+    find: (state) => (id: Shape['id']) => {
+      const shape = state.items[id]
+      if (!shape) throw new Error(`Couldn't find shape '${id}'`)
+      return shape
+    },
   },
 })

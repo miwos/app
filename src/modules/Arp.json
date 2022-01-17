@@ -1,6 +1,6 @@
 {
   "id": "Arp",
-  "shapeId": "effect",
+  "shapeId": "Effect",
   "props": {
     "speed": {
       "type": "number",
