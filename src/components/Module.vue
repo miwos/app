@@ -26,7 +26,7 @@
 import { useDragElement } from '@/composables/useDragElement'
 import { useModuleInstances } from '@/store/moduleInstances'
 import { Point } from '@/types/Point'
-import { computed, ref, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import ModuleHandles from './ModuleHandles.vue'
 import ModuleProps from './ModuleProps.vue'
 import ModuleShape from './ModuleShape.vue'
@@ -45,13 +45,13 @@ const { position, isDragging } = useDragElement(el)
 const instances = useModuleInstances()
 const instance = instances.find(props.id)
 const shape = computed(() => instance.shape)
-
 const isDropTarget = ref(false)
 
 const focus = () => el.value?.focus()
 const blur = () => el.value?.blur()
+
+watch(position, () => emit('update:position', position))
 watchEffect(() => (instance.isFocused ? focus() : blur()))
-watchEffect(() => emit('update:position', position))
 watchEffect(() => document.body.classList.toggle('dragging', isDragging.value))
 
 const toggleBodyHover = (state: boolean) =>

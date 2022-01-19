@@ -1,5 +1,5 @@
-import { Handle } from '@/types/Handle'
 import { ModuleInstance } from '@/types/ModuleInstance'
+import { Point } from '@/types/Point'
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
 import { useConnections } from './connections'
@@ -82,16 +82,6 @@ export const useModuleInstances = defineStore({
         sortedIds.splice(sortedIds.indexOf(id), 1).push(id)
         sortedIds.push(id)
       }
-    },
-
-    updateHandle(
-      id: ModuleInstance['id'],
-      type: Handle['type'],
-      index: number,
-      isActive: boolean
-    ) {
-      // this.items[id].handles
-      // this.items[id].handles[type][index].isActive = isActive
     },
 
     clear(shouldUpdatePatch = true) {

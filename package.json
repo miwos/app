@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "@monaco-lua/client": "file:../../monaco-lua/client",
+    "@vueuse/core": "^7.5.3",
     "async-osc": "file:../../async-osc",
+    "fuse.js": "^6.5.3",
     "hobby-curve": "^0.2.0",
     "lua-json": "^1.0.0",
     "monaco-editor-core": "^0.31.0",

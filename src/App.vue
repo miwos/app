@@ -5,7 +5,7 @@
       <AppPatch />
       <MenuMain />
       <MenuMapping />
-      <ModulePicker />
+      <MenuModuleSearch />
       <MenuParts />
     </Pane>
     <Pane v-if="false">
@@ -27,6 +27,7 @@ import MenuParts from './components/MenuParts.vue'
 import ModulePicker from './components/ModulePicker.vue'
 import { useModuleInstances } from './store/moduleInstances'
 import ShapeTemplates from './components/ShapeTemplates.vue'
+import MenuModuleSearch from './components/MenuModuleSearch.vue'
 
 const instances = useModuleInstances()
 instances.add('Input', { x: 200, y: 200 })

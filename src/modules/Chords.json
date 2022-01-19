@@ -1,5 +1,6 @@
 {
   "id": "Chords",
+  "shapeId": "Round",
   "props": {
     "count": {
       "type": "number",

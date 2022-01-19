@@ -3,17 +3,19 @@
 </template>
 
 <script setup lang="ts">
+import { useShapes } from '@/store/shapes'
+import { Shape } from 'shape-compiler'
 import { onMounted, ref } from 'vue'
 
 const props = defineProps<{
-  id: string
-  templateId: string
+  id: Shape['id']
 }>()
 
 const el = ref<HTMLElement | null>(null)
+const shape = useShapes().find(props.id)
 
 onMounted(() => {
-  const shapeTemplate = document.getElementById(props.templateId)
+  const shapeTemplate = document.getElementById(shape.templateId)
 
   if (!shapeTemplate?.firstChild)
     throw new Error(`Can't find template for shape '${props.id}'`)
