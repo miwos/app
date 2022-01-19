@@ -1,5 +1,5 @@
 <template>
-  <BaseMenu class="menu-mappings">
+  <BaseMenu class="menu-mapping">
     <ButtonCircleTriplet v-model:value="useMapping().currentPage" />
   </BaseMenu>
 </template>
@@ -11,7 +11,7 @@ import { useMapping } from '@/store/mapping'
 </script>
 
 <style lang="scss" scoped>
-.menu-mappings {
+.menu-mapping {
   position: absolute;
   bottom: 0;
   right: 0;
