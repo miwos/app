@@ -25,6 +25,7 @@
 <script setup lang="ts">
 import { useDragElement } from '@/composables/useDragElement'
 import { useModuleInstances } from '@/store/moduleInstances'
+import { Point } from '@/types/Point'
 import { computed, ref, watchEffect } from 'vue'
 import ModuleHandles from './ModuleHandles.vue'
 import ModuleProps from './ModuleProps.vue'
@@ -86,10 +87,10 @@ const remove = (event: KeyboardEvent) => {
 .module:focus {
   z-index: var(--z-focused-module);
   &:deep(svg .background) {
-    fill: var(--module-focused-fill-color);
+    fill: var(--module-focused-shape-color);
   }
   &:deep(svg .outline) {
-    stroke: var(--module-focused-stroke-color);
+    stroke: var(--module-focused-outline-color);
   }
 }
 

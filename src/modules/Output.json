@@ -1,4 +1,11 @@
 {
   "id": "Output",
-  "shapeId": "Output"
+  "shapeId": "Output",
+  "props": {
+    "cable": {
+      "min": 1,
+      "max": 16,
+      "default": 1
+    }
+  }
 }

@@ -1,12 +1,13 @@
 :root {
   --background-color: #616161;
+  --active-color: #d885ff;
+  --disabled-color: #cecece;
 
-  --module-stroke-color: white;
-  --module-fill-color: #929292;
-  --module-input-color: white;
-  --module-output-color: white;
-  --module-focused-fill-color: #8f8271;
-  --module-focused-stroke-color: #eec590;
+  --module-outline-color: white;
+  --module-shape-color: #929292;
+  --module-handle-color: white;
+  --module-focused-shape-color: #8f8271;
+  --module-focused-outline-color: #eec590;
 
   --connection-color: white;
   --connection-highlight-color: blue;

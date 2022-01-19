@@ -2,9 +2,10 @@
   "id": "Pitcher",
   "shapeId": "Transform",
   "props": {
-    "semitones": {
+    "pitch": {
       "min": -24,
-      "max": 24
+      "max": 24,
+      "default": 0
     }
   }
 }

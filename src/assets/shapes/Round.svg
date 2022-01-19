@@ -1,7 +1,7 @@
 <svg width="120" height="125" viewBox="0 0 120 125" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Round">
 <path id="shape" d="M0 62.5C0 30.7436 25.7436 5 57.5 5H62.5C94.2564 5 120 30.7436 120 62.5C120 94.2564 94.2564 120 62.5 120H57.5C25.7436 120 0 94.2564 0 62.5Z" fill="#C4C4C4"/>
-<path id="midi-out" d="M60.5 10L60.5 -2.18556e-08L59.5 2.18556e-08L59.5 10L60.5 10Z" fill="black"/>
-<path id="midi-in" d="M59.5 115L59.5 125L60.5 125L60.5 115L59.5 115Z" fill="black"/>
+<path id="midi-in" d="M60 10V0" stroke="black"/>
+<path id="midi-out" d="M60 115V125" stroke="black"/>
 </g>
 </svg>

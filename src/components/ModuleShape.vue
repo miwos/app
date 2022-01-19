@@ -29,14 +29,14 @@ onMounted(() => {
   height: auto;
 
   .outline {
-    stroke: var(--module-stroke-color);
+    stroke: var(--module-outline-color);
     stroke-linecap: round;
     stroke-linejoin: round;
     fill: none;
   }
 
   .shape {
-    fill: var(--module-fill-color);
+    fill: var(--module-shape-color);
   }
 
   * {

@@ -7,14 +7,14 @@
       <input
         type="number"
         :value="props.value"
-        @change="$emit('update:value', parseInt(($event.target as HTMLInputElement)?.value))"
+        @change="sendProp(parseInt(($event.target as any).value))"
       />
     </div>
     <div class="prop-mapping" v-if="showMapping">
       <select
         ref="mappingSelect"
-        :value="encoder"
-        @change="$emit('update:encoder', parseInt(($event.target as HTMLInputElement)?.value))"
+        :value="mappedEncoder?.id"
+        @change="mapEncoder(parseInt(($event.target as any).value))"
         @blur="showMapping = false"
       >
         <option value="1">Encoder 1</option>
@@ -28,15 +28,29 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import knobSvg from '@/assets/knob.svg?raw'
+import { useMapping } from '@/store/mapping'
+import { ModuleInstance } from '@/types/ModuleInstance'
+import { useBridge } from '@/bridge'
 
 const props = defineProps<{
+  instanceId: ModuleInstance['id']
   name: string
   value: number
-  encoder: number
 }>()
+
+const mapping = useMapping()
+const bridge = useBridge()
 
 const mappingSelect = ref<HTMLElement | null>(null)
 const showMapping = ref(false)
+
+const mappedEncoder = mapping.findMappedEncoder(props.instanceId, props.name)
+
+const sendProp = (value: number) =>
+  bridge.sendProp(props.instanceId, props.name, value)
+
+const mapEncoder = (encoderId: number) =>
+  mapping.mapEncoder(encoderId, props.instanceId, props.name)
 
 const map = async () => {
   showMapping.value = true
@@ -50,7 +64,7 @@ const map = async () => {
   display: flex;
   align-items: center;
   gap: 0.5em;
-  color: var(--module-stroke-color);
+  color: var(--module-outline-color);
   font-family: 'Vevey positive';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: antialiased;
@@ -65,7 +79,7 @@ const map = async () => {
     width: var(--size);
     height: var(--size);
     &:deep(path) {
-      fill: var(--module-fill-color);
+      fill: var(--module-shape-color);
     }
   }
 

@@ -37,12 +37,12 @@ export const useConnectionCurve = (
     if (fromHandle.direction === 'inout') fromAngle += 180
     const { angle: toAngle } = toHandle
 
-    const a = toAngle + 90 - dx * 45
+    const a = toAngle - 90 - dx * 45
     const p2 = toPosition.add(
       new Vec(0, -1).multiply(20 + Math.abs(dy * 100)).rotate(toRadians(a))
     )
 
-    const b = fromAngle + 90 - dx * 45
+    const b = fromAngle - 90 - dx * 45
     const p1 = fromPosition.add(
       new Vec(0, -1).multiply(20 + Math.abs(dy * 100)).rotate(toRadians(b))
     )

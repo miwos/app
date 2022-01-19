@@ -1,6 +1,6 @@
 <svg width="65" height="85" viewBox="0 0 65 85" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Transform">
 <path id="shape" d="M32.5 5.00012L65 42.5001L32.5 80.0001L0 42.5001L32.5 5.00012Z" fill="#C4C4C4"/>
-<path id="midi-inout" d="M33 85L33 -2.18557e-08L32 2.18557e-08L32 85L33 85Z" fill="black"/>
+<path id="midi-inout" d="M32.5 85V0" stroke="black"/>
 </g>
 </svg>

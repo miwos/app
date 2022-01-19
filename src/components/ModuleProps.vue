@@ -5,29 +5,18 @@
       :name="name"
       :prop="prop"
       :value="values[name]"
-      :encoder="interfaces.getEncoderId(instanceId, name).value"
-      @update:encoder="interfaces.mapEncoder($event, instanceId, name)"
-      @update:value="sendPropValue(name, $event)"
+      :instanceId="props.instanceId"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useBridge } from '@/bridge'
-import { useInterfaces } from '@/store/interfaces'
-import type { Prop } from '@/store/modules'
 import ModuleProp from './ModuleProp.vue'
+import { ModuleProp as ModulePropType } from '@/types/Module'
 
 const props = defineProps<{
-  props: Record<string, Prop>
+  props: Record<string, ModulePropType>
   values: Record<string, any>
   instanceId: number
 }>()
-
-const interfaces = useInterfaces()
-const bridge = useBridge()
-
-const sendPropValue = (name: string, value: number) => {
-  bridge.sendProp(props.instanceId, name, value)
-}
 </script>

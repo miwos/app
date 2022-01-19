@@ -22,10 +22,11 @@ const toggleConnection = () => {
 
 <style lang="scss" scoped>
 .device-indicator {
-  --color: grey;
+  background-color: var(--disabled-color);
 
   &.connected {
-    --color: salmon;
+    background-color: var(--active-color);
+    transition: background-color var(--active-fade-duration);
   }
 }
 </style>

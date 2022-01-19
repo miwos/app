@@ -22,7 +22,12 @@
     @dragleave="isHovered = false"
     @dragover.prevent
     @drop.prevent="handleDrop"
-  ></div>
+  >
+    <svg viewBox="0 0 16 16">
+      <circle class="module-handle-hit" cx="8" cy="8" r="8" />
+      <circle class="module-handle-display" cx="8" cy="8" r="5" />
+    </svg>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -30,6 +35,7 @@ import { useConnections } from '@/store/connections'
 import { useModuleInstances } from '@/store/moduleInstances'
 import { Connection } from '@/types/Connection'
 import { ModuleInstance } from '@/types/ModuleInstance'
+import { Point } from '@/types/Point'
 import { emptyImage, pointsAreEqual } from '@/utils'
 import { Handle } from 'shape-compiler'
 import { computed, ref } from 'vue'
@@ -55,6 +61,7 @@ const deltaWithUnit = computed(() => ({
 }))
 
 const isActive = computed(() => instance.activeHandleIds.has(props.id))
+
 const canConnect = connections.canConnect(props)
 
 const existsOnConnection = (connection: Connection | null) => {
@@ -81,6 +88,7 @@ const isInstanceFocused = computed(
 )
 
 const handleDragStart = (event: DragEvent) => {
+  console.log('start')
   if (!event.dataTransfer) return
   event.dataTransfer.setDragImage(emptyImage(), 0, 0)
   event.dataTransfer.dropEffect = 'link'
@@ -100,6 +108,7 @@ const handleDrop = () => {
 
 <style scoped lang="scss">
 .module-handle {
+  display: block;
   position: absolute;
   transform: translate(-50%, -50%);
   z-index: var(--z-connection-point);
@@ -107,34 +116,39 @@ const handleDrop = () => {
   top: v-bind('deltaWithUnit.y');
   left: v-bind('deltaWithUnit.x');
 
-  --size: 10px;
-  width: var(--size);
-  height: var(--size);
-
-  border-radius: 50%;
-  background: var(--connection-point-color);
-
-  // &.dragging {
-  //   background: blue;
-  // }
-
-  &.active {
-    background-color: red;
+  svg {
+    display: block;
+    overflow: visible;
+    width: 16px;
+    height: 16px;
   }
 
-  &.active,
-  &:not(.connection-hovered) {
-    transition: background-color var(--active-fade-duration);
+  &-display {
+    pointer-events: none;
+    fill: var(--connection-point-color);
   }
 
-  &.module-focused {
-    background-color: var(--module-focused-stroke-color);
+  &-hit {
+    fill: none;
   }
 
-  &.hovered,
-  &.connection-hovered,
-  &.connection-focused {
-    background-color: var(--connection-highlight-color);
+  &.active &-display {
+    fill: var(--active-color);
+  }
+
+  &.active &-display,
+  &:not(.connection-hovered) &-display {
+    transition: fill var(--active-fade-duration);
+  }
+
+  &.module-focused &-display {
+    fill: var(--module-focused-outline-color);
+  }
+
+  &.hovered &-display,
+  &.connection-hovered &-display,
+  &.connection-focused &-display {
+    fill: var(--connection-highlight-color);
   }
 }
 </style>

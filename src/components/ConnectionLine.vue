@@ -5,7 +5,7 @@
     :class="{
       hovered: isHovered,
       focused: isFocused,
-      // active: isActive,
+      active: isActive,
       'module-focused': instanceIsFocused,
     }"
     @mouseenter="connections.hover(props.id)"
@@ -30,9 +30,10 @@
 <script setup lang="ts">
 import { ref, watchEffect, computed } from 'vue'
 import { useConnectionCurve } from '@/composables/useConnectionCurve'
-import { ConnectionPoint, useConnections } from '@/store/connections'
+import { useConnections } from '@/store/connections'
 import { useModules } from '@/store/modules'
 import { useModuleInstances } from '@/store/moduleInstances'
+import { ConnectionPoint } from '@/types/Connection'
 
 const props = defineProps<{
   id: string
@@ -50,11 +51,9 @@ const el = ref<HTMLElement | null>(null)
 const isHovered = connections.isHovered(props.id)
 const isFocused = connections.isFocused(props.id)
 
-// const isActive = instances.findHandle(
-//   props.from.instanceId,
-//   'output',
-//   props.from.index
-// ).isActive
+const isActive = computed(() =>
+  instances.find(props.from.instanceId).activeHandleIds.has(props.from.id)
+)
 
 const instanceIsFocused = computed(
   () =>
@@ -83,6 +82,7 @@ const remove = () => connections.remove(props.id)
   .line-hit-area {
     stroke-width: 20px;
     pointer-events: stroke;
+
     fill: none;
 
     &:focus {
@@ -106,12 +106,12 @@ const remove = () => connections.remove(props.id)
   &.module-focused {
     z-index: var(--z-focused-module);
     .line-display {
-      stroke: var(--module-focused-stroke-color);
+      stroke: var(--module-focused-outline-color);
     }
   }
 
   &.active .line-display {
-    stroke: red;
+    stroke: var(--active-color);
     transition: stroke 0.2s;
   }
 

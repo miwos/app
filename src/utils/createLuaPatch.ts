@@ -1,21 +1,16 @@
 import { useConnections } from '../store/connections'
-import { useInterfaces } from '../store/interfaces'
-import { useModules } from '../store/modules'
+import { useMapping } from '../store/mapping'
 // @ts-ignore
 import { format } from 'lua-json'
 import { useModuleInstances } from '@/store/moduleInstances'
 
 export const createLuaPatch = () => {
-  const instances = useModuleInstances()
-  const modules = useModules()
-  const connections = useConnections()
-
   const requiredModules = new Set()
-  const types = {} as Record<string, string>
+  const instances = {} as Record<string, string>
 
-  for (const { id, moduleId } of Object.values(instances.items)) {
+  for (const { id, moduleId } of Object.values(useModuleInstances().items)) {
     requiredModules.add(moduleId)
-    types[`%${id}%`] = `%${moduleId}%`
+    instances[`%${id}%`] = `%{ Module = ${moduleId} }%`
   }
 
   const require = Array.from(requiredModules)
@@ -23,19 +18,22 @@ export const createLuaPatch = () => {
     .join('\n')
 
   const patch = {
-    types,
+    instances,
 
-    connections: Object.values(connections.items).map(
+    connections: Object.values(useConnections().items).map(
       ({ from, to }) =>
         `%{ ${from.instanceId}, ${from.index}, ${to.instanceId}, ${to.index} }%`
     ),
 
-    interface: useInterfaces().pages.map((page) =>
+    mapping: useMapping().pages.map((page) =>
       Object.fromEntries(
         Object.entries(page).map(([name, entries]) => [
           name,
-          entries.map(
-            (entry) => `%{ ${entry.moduleId}, "${entry.propName}" }%`
+          Object.fromEntries(
+            Object.values(entries).map((entry) => [
+              `%${entry.id}%`,
+              `%{ ${entry.instanceId}, "${entry.propName}" }%`,
+            ])
           ),
         ])
       )

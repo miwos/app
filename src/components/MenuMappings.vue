@@ -1,13 +1,13 @@
 <template>
   <BaseMenu class="menu-mappings">
-    <ButtonCircleTriplet v-model:value="useInterfaces().currentPage" />
+    <ButtonCircleTriplet v-model:value="useMapping().currentPage" />
   </BaseMenu>
 </template>
 
 <script setup lang="ts">
 import BaseMenu from './BaseMenu.vue'
 import ButtonCircleTriplet from './ButtonCircleTriplet.vue'
-import { useInterfaces } from '@/store/interfaces'
+import { useMapping } from '@/store/mapping'
 </script>
 
 <style lang="scss" scoped>

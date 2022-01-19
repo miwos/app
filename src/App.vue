@@ -68,6 +68,6 @@ body {
 
 .splitpanes__splitter {
   width: 7px;
-  background-color: var(--module-fill-color);
+  background-color: var(--module-shape-color);
 }
 </style>

@@ -5,6 +5,7 @@ import { ref, markRaw } from 'vue'
 import { useModuleInstances } from './store/moduleInstances'
 import { MidiType } from './utils'
 import { Log } from './types/Log'
+import { Handle } from 'shape-compiler/src'
 
 class Bridge {
   private osc = markRaw(new AsyncOsc(new WebSerialTransport()))
@@ -22,8 +23,8 @@ class Bridge {
     //   console.log(new TextDecoder().decode(data))
     // )
 
-    this.osc.on('/log/:type', (message, { type }) => {
-      const [text] = message.args
+    this.osc.on('/log/:type', ({ args }, { type }) => {
+      const [text] = args
       ;(console as any)[type]?.(text)
       useLogs().addLog(type as Log['type'], text)
     })
@@ -35,21 +36,30 @@ class Bridge {
       useLogs().addLog(type as Log['type'], text)
     })
 
-    this.osc.on('/patch/prop', (message) => {
-      const [instanceId, propName, value] = message.args
+    this.osc.on('/instance/prop', ({ args }) => {
+      const [instanceId, propName, value] = args
       useModuleInstances().find(instanceId).propValues[propName] = value
     })
 
-    this.osc.on('/module/output', (message) => {
-      const [instanceId, _index, midiType] = message.args
-      const isActive = midiType !== MidiType.NoteOff
-      const instance = useModuleInstances().find(instanceId)
+    this.osc.on('/instance/in-out', ({ args }) => {
+      // TODO: make this work for non-midi data.
 
-      // TODO: make this actually work.
+      const [direction, instanceId, index] = args
+      const midiMessage = args.slice(3)
+      const [status] = midiMessage
+      const midiType = status & 0xf0
+
+      const isActive = midiType !== MidiType.NoteOff
+      const { activeHandleIds } = useModuleInstances().find(instanceId)
+      const handleId = `midi-${direction}-${index}` as Handle['id']
+      const inoutHandleId = `midi-inout-${index}` as Handle['id']
+
       if (isActive) {
-        instance.activeHandleIds.add('midi-out-1')
+        activeHandleIds.add(handleId)
+        activeHandleIds.add(inoutHandleId)
       } else {
-        instance.activeHandleIds.delete('midi-out-1')
+        activeHandleIds.delete(handleId)
+        activeHandleIds.delete(inoutHandleId)
       }
     })
   }
