@@ -10,8 +10,11 @@
   z-index: var(--z-menu);
 
   font-family: 'Inter';
-  font-weight: 300;
+  /* Light on dark font rendering isn't good on windows...
+  but this might be too thin for MacOS */
+  font-weight: 200;
   letter-spacing: 1px;
+  font-size: 14px;
   color: var(--module-outline-color);
 }
 </style>

@@ -3,6 +3,7 @@
     <DeviceIndicator />
     <button>File</button>
     <button>Edit</button>
+    <button>Clear</button>
   </BaseMenu>
 </template>
 
@@ -16,5 +17,7 @@ import BaseMenu from './BaseMenu.vue'
   position: absolute;
   top: 0;
   left: 0;
+  gap: 0.5em;
+  padding-right: 1em;
 }
 </style>
