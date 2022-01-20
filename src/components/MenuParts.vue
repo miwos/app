@@ -1,5 +1,5 @@
 <template>
-  <BaseMenu class="menu-parts">
+  <BaseMenu class="menu-parts glass">
     <ButtonCircleTriplet :value="0" />
     <svg
       width="75"

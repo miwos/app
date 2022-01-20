@@ -1,5 +1,5 @@
 <template>
-  <BaseMenu class="menu-mapping">
+  <BaseMenu class="menu-mapping glass pill">
     <ButtonCircleTriplet v-model:value="useMapping().currentPage" />
   </BaseMenu>
 </template>

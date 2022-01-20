@@ -1,6 +1,6 @@
 <template>
   <div
-    class="module"
+    class="module-instance"
     :class="{ 'drop-target': isDropTarget, dragging: isDragging }"
     ref="el"
     tabindex="-1"
@@ -70,27 +70,25 @@ const remove = (event: KeyboardEvent) => {
   flex-direction: column;
 }
 
-.module {
+.module-instance {
   position: absolute;
   display: flex;
   flex-direction: row;
   top: v-bind('props.position.y + `px`');
   left: v-bind('props.position.x + `px`');
-}
 
-.module.drop-target {
-  .inputs {
-    z-index: 2;
-  }
-}
+  &:focus {
+    z-index: var(--z-focused-module);
 
-.module:focus {
-  z-index: var(--z-focused-module);
-  &:deep(svg .background) {
-    fill: var(--module-focused-shape-color);
-  }
-  &:deep(svg .outline) {
-    stroke: var(--module-focused-outline-color);
+    &:deep(svg) {
+      .outline {
+        stroke: var(--module-focused-outline-color);
+      }
+
+      .shape {
+        fill: var(--module-focused-shape-color);
+      }
+    }
   }
 }
 
@@ -99,9 +97,5 @@ const remove = (event: KeyboardEvent) => {
   display: flex;
   justify-content: space-between;
   width: 100%;
-}
-
-.outputs {
-  bottom: 0;
 }
 </style>

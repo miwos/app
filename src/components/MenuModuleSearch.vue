@@ -1,65 +1,63 @@
 <template>
-  <div class="menu-module-search" v-if="isOpen" ref="el">
+  <BaseMenu class="menu-module-search" v-if="isOpen" ref="el">
     <input
+      class="modules-search-input glass pill"
       ref="input"
       placeholder="Search..."
+      spellcheck="false"
+      value=""
       @input="search(($event.target as any).value)"
     />
-    <div class="menu-module-search-results">
-      <div
-        v-for="(module, index) in searchResults"
-        class="result"
-        :key="module.id"
-        @click="createInstance(module.id)"
-      >
-        <ModuleShape class="result-shape" :id="module.shapeId" />
-        <div class="result-name">{{ module.id }}</div>
-      </div>
-    </div>
-  </div>
+    <ModulesSelect
+      v-if="results.length"
+      class="modules-search-results"
+      :modules="results"
+      @update:value="createInstance($event)"
+    />
+  </BaseMenu>
 </template>
 
 <script setup lang="ts">
 import { useModuleInstances } from '@/store/moduleInstances'
 import { useModules } from '@/store/modules'
 import { Module } from '@/types/Module'
-import { useMagicKeys, onClickOutside, useMouse } from '@vueuse/core'
-import { nextTick, ref, watch } from 'vue'
-import ModuleShape from './ModuleShape.vue'
+import { onClickOutside, useMouse, onKeyDown } from '@vueuse/core'
+import { ref } from 'vue'
+import BaseMenu from './BaseMenu.vue'
+import ModulesSelect from './ModulesSelect.vue'
+
+const mouse = useMouse()
+const instances = useModuleInstances()
+const modules = useModules()
 
 const el = ref<HTMLElement | null>()
-const input = ref<HTMLElement | null>()
-
-const { space, escape } = useMagicKeys()
-const mouse = useMouse()
-const modules = useModules()
-const instances = useModuleInstances()
-
+const input = ref<HTMLInputElement | null>()
 const isOpen = ref(false)
 const position = ref({ x: 0, y: 0 })
-const searchResults = ref<Module[]>()
+const results = ref<Module[]>([])
 
-watch(space, () => open())
-watch(escape, () => close())
+onKeyDown(' ', () => open())
+onKeyDown('Escape', () => close())
 onClickOutside(el, () => close())
 
 const open = async () => {
   if (isOpen.value) return
-
   // Break reactivity, because we don't want the menu to move while it's open.
   position.value = { x: mouse.x.value, y: mouse.y.value }
   isOpen.value = true
 
-  await nextTick()
-  input.value?.focus()
+  // Somehow focusing the input after a `nextTick()` won't display the
+  // placeholder. With `setTimeout()` it works though...
+  setTimeout(() => input.value?.focus())
 }
 
 const close = () => {
   isOpen.value = false
+  results.value = []
 }
 
 const search = (pattern: string) => {
-  searchResults.value = modules.search(pattern)
+  results.value = modules.search(pattern)
 }
 
 const createInstance = (moduleId: Module['id']) => {
@@ -73,27 +71,24 @@ const createInstance = (moduleId: Module['id']) => {
   position: absolute;
   top: v-bind('position.y + `px`');
   left: v-bind('position.x + `px`');
+}
+
+.modules-search {
+  &-input {
+    padding: 0 1em;
+    &::placeholder {
+      font-weight: 400;
+      // A sightly lighter color than the default placeholder.
+      color: #a1a1a1;
+    }
+  }
 
   &-results {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-  }
-}
-
-.result {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-
-  &-shape:deep(svg) {
-    width: 2rem;
-    .outline {
-      display: none;
-    }
-    .shape {
-      fill: var(--module-outline-color);
-    }
+    margin-top: 0.5rem;
+    margin-left: 1.5rem;
   }
 }
 </style>

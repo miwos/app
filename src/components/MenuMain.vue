@@ -1,5 +1,5 @@
 <template>
-  <BaseMenu class="menu-main">
+  <BaseMenu class="menu-main glass pill">
     <DeviceIndicator />
     <button>File</button>
     <button>Edit</button>
@@ -16,6 +16,5 @@ import BaseMenu from './BaseMenu.vue'
   position: absolute;
   top: 0;
   left: 0;
-  height: 2.5rem;
 }
 </style>

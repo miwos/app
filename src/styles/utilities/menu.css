@@ -1,0 +1,4 @@
+.menu {
+  margin: 1rem;
+  z-index: var(--z-menu);
+}

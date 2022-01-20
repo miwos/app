@@ -1,7 +1,7 @@
 <template>
   <div class="patch">
     <div class="modules">
-      <Module
+      <ModuleInstance
         v-for="(instance, index) in instances.sorted"
         :key="instance.id"
         :id="instance.id"
@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { useConnections } from '@/store/connections'
 import ConnectionLine from '@/components/ConnectionLine.vue'
-import Module from '@/components/Module.vue'
+import ModuleInstance from '@/components/ModuleInstance.vue'
 import { useModuleInstances } from '@/store/moduleInstances'
 
 const connections = useConnections()

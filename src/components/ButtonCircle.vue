@@ -10,9 +10,9 @@ const emit = defineEmits(['click'])
 
 <style scoped>
 .button-circle {
-  width: var(--size);
-  height: var(--size);
-  border-radius: calc(var(--size) / 2);
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
   border: none;
 }
 </style>
