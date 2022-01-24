@@ -23,9 +23,19 @@
     @dragover.prevent
     @drop.prevent="handleDrop"
   >
-    <svg viewBox="0 0 16 16">
-      <circle class="module-handle-hit" cx="8" cy="8" r="8" />
-      <circle class="module-handle-display" cx="8" cy="8" r="5" />
+    <svg width="12" height="10" viewBox="0 0 12 10">
+      <circle
+        v-if="props.signal === 'midi'"
+        class="module-handle-path signal-midi"
+        cx="5"
+        cy="5"
+        r="5"
+      />
+      <polygon
+        v-else
+        class="module-handle-path signal-trigger"
+        points="0,10 12,10 6,0"
+      />
     </svg>
   </div>
 </template>
@@ -88,7 +98,6 @@ const isInstanceFocused = computed(
 )
 
 const handleDragStart = (event: DragEvent) => {
-  console.log('start')
   if (!event.dataTransfer) return
   event.dataTransfer.setDragImage(emptyImage(), 0, 0)
   event.dataTransfer.dropEffect = 'link'
@@ -119,35 +128,39 @@ const handleDrop = () => {
   svg {
     display: block;
     overflow: visible;
-    width: 16px;
-    height: 16px;
+
+    .signal-trigger {
+      --angle: v-bind('props.angle - 90 + `deg`');
+      transform: translateY(-50%) rotate(var(--angle));
+      transform-origin: bottom center;
+    }
   }
 
-  &-display {
-    pointer-events: none;
+  &-path {
     fill: var(--connection-point-color);
+    stroke: transparent;
+    // We want the hit area to be 3px wider than the display. The stroke is
+    // is drawn on the center so we have to use a 6px stroke.
+    stroke-width: 6;
+    paint-order: stroke;
   }
 
-  &-hit {
-    fill: none;
-  }
-
-  &.active &-display {
+  &.active &-path {
     fill: var(--active-color);
   }
 
-  &.active &-display,
-  &:not(.connection-hovered) &-display {
+  &.active &-path,
+  &:not(.connection-hovered) &-path {
     transition: fill var(--active-fade-duration);
   }
 
-  &.module-focused &-display {
+  &.module-focused &-path {
     fill: var(--module-focused-outline-color);
   }
 
-  &.hovered &-display,
-  &.connection-hovered &-display,
-  &.connection-focused &-display {
+  &.hovered &-path,
+  &.connection-hovered &-path,
+  &.connection-focused &-path {
     fill: var(--connection-highlight-color);
   }
 }
