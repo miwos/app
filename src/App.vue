@@ -1,5 +1,4 @@
 <template>
-  <ShapeTemplates />
   <Splitpanes @resize="sideBar?.resize()">
     <Pane class="pane-patch">
       <AppPatch />
@@ -24,9 +23,7 @@ import 'splitpanes/dist/splitpanes.css'
 import MenuMain from './components/MenuMain.vue'
 import MenuMapping from './components/MenuMapping.vue'
 import MenuParts from './components/MenuParts.vue'
-import ModulePicker from './components/ModulePicker.vue'
 import { useModuleInstances } from './store/moduleInstances'
-import ShapeTemplates from './components/ShapeTemplates.vue'
 import MenuModuleSearch from './components/MenuModuleSearch.vue'
 
 const instances = useModuleInstances()

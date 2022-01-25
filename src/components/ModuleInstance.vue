@@ -12,7 +12,15 @@
     @dragleave="isDropTarget = false"
     @keydown.delete="remove"
   >
-    <ModuleShape :id="shape.id" :templateId="shape.templateId" />
+    <ShapeViewBox class="module-path" :shape="shape">
+      <g v-html="shape.path"></g>
+      <clipPath :id="clipPathId" v-html="shape.path" />
+    </ShapeViewBox>
+    <ShapeViewBox
+      class="module-outline"
+      :shape="shape"
+      v-html="shape.outline"
+    ></ShapeViewBox>
     <ModuleHandles :handles="shape.handles" :instanceId="props.id" />
     <ModuleProps
       :props="instance.module.props"
@@ -29,7 +37,7 @@ import { Point } from '@/types/Point'
 import { computed, ref, watch, watchEffect } from 'vue'
 import ModuleHandles from './ModuleHandles.vue'
 import ModuleProps from './ModuleProps.vue'
-import ModuleShape from './ModuleShape.vue'
+import ShapeViewBox from './ShapeViewBox.vue'
 
 const props = defineProps<{
   id: number
@@ -46,6 +54,7 @@ const instances = useModuleInstances()
 const instance = instances.find(props.id)
 const shape = computed(() => instance.shape)
 const isDropTarget = ref(false)
+const clipPathId = computed(() => `clip-path-${props.id}`)
 
 const focus = () => el.value?.focus()
 const blur = () => el.value?.blur()
@@ -77,6 +86,10 @@ const remove = (event: KeyboardEvent) => {
   top: v-bind('props.position.y + `px`');
   left: v-bind('props.position.x + `px`');
 
+  .fu {
+    clip-path: v-bind('`url(#${clipPathId})`');
+  }
+
   &:focus {
     z-index: var(--z-focused-module);
 
@@ -90,6 +103,28 @@ const remove = (event: KeyboardEvent) => {
       }
     }
   }
+}
+
+.module-path {
+  fill: var(--module-shape-color);
+}
+
+.module-outline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  fill: none;
+  stroke: var(--module-outline-color);
+  stroke-width: 1px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  z-index: var(--z-outline);
+}
+
+.module-clip-path {
+  position: absolute;
 }
 
 .connection-points {

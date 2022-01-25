@@ -9,17 +9,22 @@
       :aria-selected="props.value === module.id"
       @click="emit('update:value', module.id)"
     >
-      <ModuleShape class="modules-select-shape" :id="module.shapeId" />
+      <ShapeViewBox
+        class="modules-select-thumb"
+        :shape="shapes.find(module.shapeId)"
+        v-html="shapes.find(module.shapeId).path"
+      />
       <div class="result-name">{{ module.id }}</div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useShapes } from '@/store/shapes'
 import { Module } from '@/types/Module'
 import { onKeyDown } from '@vueuse/core'
-import { ref, watch, watchEffect } from 'vue'
-import ModuleShape from './ModuleShape.vue'
+import { ref, watch } from 'vue'
+import ShapeViewBox from './ShapeViewBox.vue'
 
 const props = defineProps<{
   value?: Module['id']
@@ -30,6 +35,7 @@ const emit = defineEmits<{
   (e: 'update:value', id: Module['id']): void
 }>()
 
+const shapes = useShapes()
 const focusedIndex = ref(0)
 
 watch(
@@ -66,18 +72,12 @@ const focus = (index: number) => {
     gap: 0.5em;
   }
 
-  &-shape:deep(svg) {
+  &-thumb {
     height: 2.5rem;
     width: 2.5rem;
     padding: 0.5rem;
     box-sizing: border-box;
-
-    .outline {
-      display: none;
-    }
-    .shape {
-      fill: var(--module-shape-color-lighter);
-    }
+    fill: var(--module-shape-color-lighter);
   }
 }
 </style>

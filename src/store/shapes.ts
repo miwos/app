@@ -5,14 +5,7 @@ const shapeImports = import.meta.globEager('../assets/shapes/*.svg')
 const shapes: Record<Shape['id'], Shape> = Object.fromEntries(
   Object.entries(shapeImports).map(([path, module]) => {
     const id = path.match(/\/([^/]+)\.(.+)$/)![1]
-    return [
-      id,
-      {
-        id,
-        templateId: `template-shape-${id}`,
-        ...compileShape(module.default),
-      },
-    ]
+    return [id, compileShape(module.default, id)]
   })
 )
 

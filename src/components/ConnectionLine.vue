@@ -15,12 +15,12 @@
     @keydown.delete="remove"
     tabindex="-1"
   >
-    <path class="line-hit-area" :d="curve.description" />
-    <path class="line-display" :d="curve.description" />
+    <path class="line-hit-area" :d="curve.data" />
+    <path class="line-display" :d="curve.data" />
     <!-- <circle
-      v-for="handle in curve.handles"
-      :cx="handle.x"
-      :cy="handle.y"
+      v-for="control in curve.controls"
+      :cx="control.x"
+      :cy="control.y"
       r="5"
       fill="svgrey"
     /> -->

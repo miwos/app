@@ -27,7 +27,7 @@
       <circle
         v-if="props.signal === 'midi'"
         class="module-handle-path signal-midi"
-        cx="5"
+        cx="6"
         cy="5"
         r="5"
       />
@@ -55,7 +55,7 @@ const props = defineProps<{
   index: number
   signal: Handle['signal']
   direction: Handle['direction']
-  delta: Point
+  position: Point
   angle: number
   instanceId: ModuleInstance['id']
 }>()
@@ -65,11 +65,6 @@ const instances = useModuleInstances()
 const instance = instances.find(props.instanceId)
 const isHovered = ref(false)
 const isDragging = ref(false)
-const deltaWithUnit = computed(() => ({
-  x: props.delta.x + 'px',
-  y: props.delta.y + 'px',
-}))
-
 const isActive = computed(() => instance.activeHandleIds.has(props.id))
 
 const canConnect = connections.canConnect(props)
@@ -122,8 +117,8 @@ const handleDrop = () => {
   transform: translate(-50%, -50%);
   z-index: var(--z-connection-point);
 
-  top: v-bind('deltaWithUnit.y');
-  left: v-bind('deltaWithUnit.x');
+  top: v-bind('position.y + `px`');
+  left: v-bind('position.x + `px`');
 
   svg {
     display: block;
