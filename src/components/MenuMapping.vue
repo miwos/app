@@ -5,9 +5,9 @@
 </template>
 
 <script setup lang="ts">
+import { useMapping } from '@/store/mapping'
 import BaseMenu from './BaseMenu.vue'
 import ButtonCircleTriplet from './ButtonCircleTriplet.vue'
-import { useMapping } from '@/store/mapping'
 </script>
 
 <style lang="scss" scoped>

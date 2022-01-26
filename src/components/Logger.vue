@@ -8,14 +8,13 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
-import { useLogs } from '../store/logs'
+import { useLogs } from '@/store/logs'
 
-const el = ref(null)
+const el = ref<HTMLElement | null>(null)
 const logs = useLogs()
 
 logs.$subscribe(() => {
   nextTick(() => {
-    // @ts-ignore (don't know why ts is warning)
     if (el.value) el.value.scrollTop = el.value.scrollHeight
   })
 })

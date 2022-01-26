@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { Shape } from 'shape-compiler'
+import type { Shape } from 'shape-compiler'
 
 const props = defineProps<{
   shape: Shape

@@ -12,7 +12,6 @@ import { computed } from 'vue'
 import ButtonCircle from './ButtonCircle.vue'
 
 const bridge = useBridge()
-
 const connected = computed(() => bridge.isConnected.value)
 
 const toggleConnection = () => {

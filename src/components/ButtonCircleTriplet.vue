@@ -15,8 +15,8 @@ import ButtonCircle from './ButtonCircle.vue'
 const props = defineProps<{
   value: number
 }>()
-const emit = defineEmits(['update:value'])
 
+const emit = defineEmits(['update:value'])
 const isSelected = (index: number) => index === props.value
 const select = (index: number) => emit('update:value', index)
 </script>

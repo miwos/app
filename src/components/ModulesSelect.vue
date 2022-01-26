@@ -2,10 +2,10 @@
   <div class="modules-select" role="listbox">
     <div
       v-for="(module, index) in modules"
+      :key="module.id"
       class="modules-select-option pill"
       :class="index === focusedIndex ? 'glass-darker' : 'glass'"
       role="option"
-      :key="module.id"
       :aria-selected="props.value === module.id"
       @click="emit('update:value', module.id)"
     >

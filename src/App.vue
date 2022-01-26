@@ -4,7 +4,7 @@
       <AppPatch />
       <MenuMain />
       <MenuMapping />
-      <MenuModuleSearch />
+      <MenuModulesSearch />
       <MenuParts />
     </Pane>
     <Pane v-if="false">
@@ -24,11 +24,11 @@ import MenuMain from './components/MenuMain.vue'
 import MenuMapping from './components/MenuMapping.vue'
 import MenuParts from './components/MenuParts.vue'
 import { useInstances } from './store/instances'
-import MenuModuleSearch from './components/MenuModuleSearch.vue'
+import MenuModulesSearch from './components/MenuModulesSearch.vue'
 
 const instances = useInstances()
 instances.add('Input', { x: 200, y: 200 })
-// instances.add('Output', { x: 200, y: 400 })
+instances.add('Output', { x: 200, y: 400 })
 
 const sideBar = ref<InstanceType<typeof AppSidebar>>()
 </script>

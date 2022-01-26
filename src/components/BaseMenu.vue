@@ -8,7 +8,6 @@
 .menu {
   margin: 1rem;
   z-index: var(--z-menu);
-
   font-family: 'Inter';
   /* Light on dark font rendering isn't good on windows...
   but this might be too thin for MacOS */

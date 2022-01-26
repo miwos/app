@@ -6,14 +6,13 @@
       hovered: isHovered,
       focused: isFocused,
       active: isActive,
-      'module-focused': instanceIsFocused,
+      instanceFocused: instanceIsFocused,
     }"
-    @mouseenter="connections.hover(props.id)"
+    tabindex="0"
+    @mousedown="connections.focus(id)"
+    @mouseenter="connections.hover(id)"
     @mouseleave="connections.hover(null)"
-    @focus="connections.focus(props.id)"
-    @blur="connections.focus(null)"
     @keydown.delete="remove"
-    tabindex="-1"
   >
     <path class="line-hit-area" :d="curve.data" />
     <path class="line-display" :d="curve.data" />
@@ -28,12 +27,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect, computed } from 'vue'
+import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useConnectionCurve } from '@/composables/useConnectionCurve'
 import { useConnections } from '@/store/connections'
-import { useModules } from '@/store/modules'
 import { useInstances } from '@/store/instances'
 import { ConnectionPoint } from '@/types/Connection'
+import { computed, ref, watchEffect } from 'vue'
 
 const props = defineProps<{
   id: string
@@ -41,12 +40,9 @@ const props = defineProps<{
   to: ConnectionPoint
 }>()
 
-const modules = useModules()
 const instances = useInstances()
 const connections = useConnections()
-
 const curve = useConnectionCurve(props.from, props.to)
-
 const el = ref<HTMLElement | null>(null)
 const isHovered = connections.isHovered(props.id)
 const isFocused = connections.isFocused(props.id)
@@ -63,38 +59,28 @@ const instanceIsFocused = computed(
       .find((el) => el.id === props.id)
 )
 
-const focus = () => el.value?.focus()
-const blur = () => el.value?.blur()
-watchEffect(() => (isFocused.value ? focus() : blur()))
-
+watchEffect(() => (isFocused.value ? el.value?.focus() : el.value?.blur()))
+onMouseDownOutside(el, () => connections.focus(null))
 const remove = () => connections.remove(props.id)
 </script>
 
 <style scoped lang="scss">
 .connection-line {
+  pointer-events: none;
   position: absolute;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  pointer-events: none;
 
   .line-hit-area {
-    stroke-width: 20px;
     pointer-events: stroke;
-
+    stroke-width: 20px;
     fill: none;
 
     &:focus {
       outline: none;
     }
-
-    // The hit area is covering the connection points, so we hide the hit area
-    // as soon as module is hovered, so we can easily access the connection
-    // points.
-    // body.module-hover & {
-    //   display: none;
-    // }
   }
 
   .line-display {
@@ -103,7 +89,7 @@ const remove = () => connections.remove(props.id)
     fill: none;
   }
 
-  &.module-focused {
+  &.instanceFocused {
     z-index: var(--z-focused-module);
     .line-display {
       stroke: var(--module-focused-outline-color);
@@ -115,11 +101,9 @@ const remove = () => connections.remove(props.id)
     transition: stroke 0.2s;
   }
 
-  &.active,
-  &:not(.hovered) {
-    .line-display {
-      transition: stroke var(--active-fade-duration);
-    }
+  &.active .line-display,
+  &:not(.hovered) .line-display {
+    transition: stroke var(--active-fade-duration);
   }
 
   &.hovered,

@@ -6,21 +6,21 @@
       hovered: isHovered || isDragging,
       active: isActive,
       dragging: isDragging,
-      'connection-hovered': isConnectionHovered,
-      'connection-focused': isConnectionFocused,
-      'module-focused': isInstanceFocused,
+      connectionHovered: isConnectionHovered,
+      connectionFocused: isConnectionFocused,
+      instanceFocused: isInstanceFocused,
     }"
     tabindex="-1"
     draggable="true"
     @mousedown.stop
     @mouseup.stop
+    @dragover.prevent
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
     @dragstart="handleDragStart"
-    @dragend="isDragging = false"
     @dragenter="canConnect && (isHovered = true)"
     @dragleave="isHovered = false"
-    @dragover.prevent
+    @dragend="isDragging = false"
     @drop.prevent="handleDrop"
   >
     <svg width="12" height="10" viewBox="0 0 12 10">
@@ -53,11 +53,11 @@ import { computed, ref } from 'vue'
 const props = defineProps<{
   id: Handle['id']
   index: number
+  instanceId: ModuleInstance['id']
   signal: Handle['signal']
   direction: Handle['direction']
   position: Point
   angle: number
-  instanceId: ModuleInstance['id']
 }>()
 
 const connections = useConnections()
@@ -66,7 +66,6 @@ const instance = instances.get(props.instanceId)
 const isHovered = ref(false)
 const isDragging = ref(false)
 const isActive = computed(() => instance.activeHandleIds.has(props.id))
-
 const canConnect = connections.canConnect(props)
 
 const existsOnConnection = (connection: Connection | null) => {
@@ -115,10 +114,9 @@ const handleDrop = () => {
   display: block;
   position: absolute;
   transform: translate(-50%, -50%);
-  z-index: var(--z-connection-point);
-
   top: v-bind('position.y + `px`');
   left: v-bind('position.x + `px`');
+  z-index: var(--z-connection-point);
 
   svg {
     display: block;
@@ -145,17 +143,17 @@ const handleDrop = () => {
   }
 
   &.active &-path,
-  &:not(.connection-hovered) &-path {
+  &:not(.connectionHovered) &-path {
     transition: fill var(--active-fade-duration);
   }
 
-  &.module-focused &-path {
+  &.instanceFocused &-path {
     fill: var(--module-focused-outline-color);
   }
 
   &.hovered &-path,
-  &.connection-hovered &-path,
-  &.connection-focused &-path {
+  &.connectionHovered &-path,
+  &.connectionFocused &-path {
     fill: var(--connection-highlight-color);
   }
 }

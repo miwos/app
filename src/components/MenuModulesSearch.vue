@@ -1,7 +1,7 @@
 <template>
-  <BaseMenu class="menu-module-search" v-if="isOpen" ref="el">
+  <BaseMenu class="menu-modules-search" v-if="isOpen" ref="el">
     <input
-      class="modules-search-input glass pill"
+      class="search-input glass pill"
       ref="input"
       placeholder="Search..."
       spellcheck="false"
@@ -10,7 +10,7 @@
     />
     <ModulesSelect
       v-if="results.length"
-      class="modules-search-results"
+      class="search-results"
       :modules="results"
       @update:value="createInstance($event)"
     />
@@ -21,7 +21,7 @@
 import { useInstances } from '@/store/instances'
 import { useModules } from '@/store/modules'
 import { Module } from '@/types/Module'
-import { onClickOutside, useMouse, onKeyDown } from '@vueuse/core'
+import { onClickOutside, onKeyDown, useMouse } from '@vueuse/core'
 import { ref } from 'vue'
 import BaseMenu from './BaseMenu.vue'
 import ModulesSelect from './ModulesSelect.vue'
@@ -29,7 +29,6 @@ import ModulesSelect from './ModulesSelect.vue'
 const mouse = useMouse()
 const instances = useInstances()
 const modules = useModules()
-
 const el = ref<HTMLElement | null>()
 const input = ref<HTMLInputElement | null>()
 const isOpen = ref(false)
@@ -67,28 +66,26 @@ const createInstance = (moduleId: Module['id']) => {
 </script>
 
 <style scoped lang="scss">
-.menu-module-search {
+.menu-modules-search {
   position: absolute;
   top: v-bind('position.y + `px`');
   left: v-bind('position.x + `px`');
 }
 
-.modules-search {
-  &-input {
-    padding: 0 1em;
-    &::placeholder {
-      font-weight: 400;
-      // A sightly lighter color than the default placeholder.
-      color: #a1a1a1;
-    }
+.search-input {
+  padding: 0 1em;
+  &::placeholder {
+    font-weight: 400;
+    // A sightly lighter color than the default placeholder.
+    color: #a1a1a1;
   }
+}
 
-  &-results {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-    margin-left: 1.5rem;
-  }
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  margin-left: 1.5rem;
 }
 </style>

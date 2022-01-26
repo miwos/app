@@ -1,5 +1,5 @@
 <template>
-  <div class="props">
+  <div class="module-props">
     <ModuleProp
       v-for="(prop, name) in props.props"
       :name="name"
@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import ModuleProp from './ModuleProp.vue'
 import { ModuleProp as ModulePropType } from '@/types/Module'
+import ModuleProp from './ModuleProp.vue'
 
 const props = defineProps<{
   props: Record<string, ModulePropType>

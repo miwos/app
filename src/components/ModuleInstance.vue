@@ -22,16 +22,16 @@
 </template>
 
 <script setup lang="ts">
+import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useDragElement } from '@/composables/useDragElement'
 import { useInstances } from '@/store/instances'
 import { Point } from '@/types/Point'
 import { computed, ref, watch } from 'vue'
 import ModuleHandles from './ModuleHandles.vue'
 import ModuleProps from './ModuleProps.vue'
-import ShapePath from './ShapePath.vue'
 import ShapeMask from './ShapeMask.vue'
 import ShapeOutline from './ShapeOutline.vue'
-import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
+import ShapePath from './ShapePath.vue'
 
 const props = defineProps<{
   id: number
@@ -43,11 +43,10 @@ const emit = defineEmits(['update:position'])
 
 const el = ref<HTMLElement | null>(null)
 const { position, isDragging } = useDragElement(el)
-
 const instances = useInstances()
 const instance = instances.get(props.id)
-const shape = computed(() => instance.shape)
 const isFocused = instances.isFocused(props.id)
+const shape = computed(() => instance.shape)
 const maskId = `instance-${props.id}-mask`
 
 watch(position, () => emit('update:position', position))
@@ -59,19 +58,19 @@ const remove = (event: KeyboardEvent) => {
 </script>
 
 <style lang="scss" scoped>
-.props {
-  justify-content: center;
-  gap: 0.5rem;
-  display: flex;
-  flex-direction: column;
-}
-
 .module-instance {
   position: absolute;
   display: flex;
   flex-direction: row;
   top: v-bind('props.position.y + `px`');
   left: v-bind('props.position.x + `px`');
+}
+
+.module-props {
+  justify-content: center;
+  gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .shape-mask,
@@ -83,9 +82,9 @@ const remove = (event: KeyboardEvent) => {
 }
 
 .shape-path {
+  // Make sure the module is only focusable when clicking ist shape.
   pointer-events: none;
   &:deep(path) {
-    // Make sure the module is only focusable when clicking ist shape.
     pointer-events: all;
   }
 
@@ -108,12 +107,5 @@ const remove = (event: KeyboardEvent) => {
   .focused & {
     stroke: var(--module-focused-outline-color);
   }
-}
-
-.connection-points {
-  /* position: absolute; */
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
 }
 </style>

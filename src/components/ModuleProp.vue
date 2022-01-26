@@ -1,7 +1,7 @@
 <template>
-  <div class="prop" @dblclick="map">
-    <div class="prop-point" v-html="knobSvg"></div>
-    <div class="prop-name">
+  <div class="module-prop" @dblclick="map">
+    <div class="module-prop-point" v-html="knobSvg"></div>
+    <div class="module-prop-name">
       <span>{{ props.name }}</span
       >&nbsp;=&nbsp;
       <input
@@ -10,7 +10,7 @@
         @change="sendProp(parseInt(($event.target as any).value))"
       />
     </div>
-    <div class="prop-mapping" v-if="showMapping">
+    <div class="module-prop-mapping" v-if="showMapping">
       <select
         ref="mappingSelect"
         :value="mappedEncoder?.id"
@@ -26,11 +26,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
 import knobSvg from '@/assets/knob.svg?raw'
+import { useBridge } from '@/bridge'
 import { useMapping } from '@/store/mapping'
 import { ModuleInstance } from '@/types/ModuleInstance'
-import { useBridge } from '@/bridge'
+import { nextTick, ref } from 'vue'
 
 const props = defineProps<{
   instanceId: ModuleInstance['id']
@@ -38,12 +38,10 @@ const props = defineProps<{
   value: number
 }>()
 
+const mappingSelect = ref<HTMLElement | null>(null)
 const mapping = useMapping()
 const bridge = useBridge()
-
-const mappingSelect = ref<HTMLElement | null>(null)
 const showMapping = ref(false)
-
 const mappedEncoder = mapping.getMappedEncoder(props.instanceId, props.name)
 
 const sendProp = (value: number) =>
@@ -60,7 +58,7 @@ const map = async () => {
 </script>
 
 <style lang="scss" scoped>
-.prop {
+.module-prop {
   display: flex;
   align-items: center;
   gap: 0.5em;
