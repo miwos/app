@@ -1,10 +1,12 @@
 <template>
-  <ModuleHandle
-    v-for="(handle, id) in handles"
-    :key="id"
-    :instanceId="props.instanceId"
-    v-bind="handle"
-  />
+  <div class="module-hanldes">
+    <ModuleHandle
+      v-for="(handle, id) in handles"
+      :key="id"
+      :instanceId="props.instanceId"
+      v-bind="handle"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">

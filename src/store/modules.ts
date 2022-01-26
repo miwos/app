@@ -23,7 +23,7 @@ export const useModules = defineStore({
   }),
 
   getters: {
-    find: (state) => (id: Module['id']) => {
+    get: (state) => (id: Module['id']) => {
       const module = state.items[id]
       if (!module) throw new Error(`Can't find module with id '${id}'`)
       return module

@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import { usePatch } from './patch'
-import { useModuleInstances } from './moduleInstances'
+import { useInstances } from './instances'
 import { Connection, ConnectionPoint } from '@/types/Connection'
 import { ModuleInstance } from '@/types/ModuleInstance'
 
@@ -9,9 +9,9 @@ const getConnectionId = (from: ConnectionPoint, to: ConnectionPoint) =>
   `(${from.instanceId},${from.index})-(${to.instanceId},${to.index})`
 
 const sortPointsByPosition = (a: ConnectionPoint, b: ConnectionPoint) => {
-  const instances = useModuleInstances()
-  const positionA = instances.find(a.instanceId).position
-  const positionB = instances.find(b.instanceId).position
+  const instances = useInstances()
+  const positionA = instances.get(a.instanceId).position
+  const positionB = instances.get(b.instanceId).position
   return positionA.y < positionB.y ? [a, b] : [b, a]
 }
 
@@ -26,7 +26,7 @@ export const useConnections = defineStore({
   }),
 
   getters: {
-    find: (state) => (id: Connection['id']) => state.items[id],
+    get: (state) => (id: Connection['id']) => state.items[id],
 
     listConnectedToInstance: (state) => (id: ModuleInstance['id']) =>
       Object.values(state.items).filter(

@@ -12,7 +12,7 @@ export const useMapping = defineStore({
   }),
 
   getters: {
-    findMappedEncoder: (state) => (instanceId: number, propName: string) =>
+    getMappedEncoder: (state) => (instanceId: number, propName: string) =>
       computed(() =>
         Object.values(state.pages[0].encoders).find(
           (encoder) =>

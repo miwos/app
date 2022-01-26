@@ -3,14 +3,14 @@ import { computed } from 'vue'
 
 import Vec from 'tiny-vec'
 import { toRadians } from '../utils'
-import { useModuleInstances } from '@/store/moduleInstances'
+import { useInstances } from '@/store/instances'
 import { ConnectionPoint } from '@/types/Connection'
 
 const getPointAndAngle = ({
   id,
   instanceId,
 }: ConnectionPoint): [Vec, number] => {
-  const instance = useModuleInstances().find(instanceId)
+  const instance = useInstances().get(instanceId)
   const { position, angle } = instance.shape.handles[id]
   const point = new Vec(instance.position).add(position)
   return [point, angle]

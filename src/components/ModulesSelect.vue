@@ -9,10 +9,9 @@
       :aria-selected="props.value === module.id"
       @click="emit('update:value', module.id)"
     >
-      <ShapeViewBox
+      <ShapePath
         class="modules-select-thumb"
-        :shape="shapes.find(module.shapeId)"
-        v-html="shapes.find(module.shapeId).path"
+        :shape="shapes.get(module.shapeId)"
       />
       <div class="result-name">{{ module.id }}</div>
     </div>
@@ -24,7 +23,7 @@ import { useShapes } from '@/store/shapes'
 import { Module } from '@/types/Module'
 import { onKeyDown } from '@vueuse/core'
 import { ref, watch } from 'vue'
-import ShapeViewBox from './ShapeViewBox.vue'
+import ShapePath from './ShapePath.vue'
 
 const props = defineProps<{
   value?: Module['id']

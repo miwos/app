@@ -26,10 +26,10 @@
 import { useConnections } from '@/store/connections'
 import ConnectionLine from '@/components/ConnectionLine.vue'
 import ModuleInstance from '@/components/ModuleInstance.vue'
-import { useModuleInstances } from '@/store/moduleInstances'
+import { useInstances } from '@/store/instances'
 
 const connections = useConnections()
-const instances = useModuleInstances()
+const instances = useInstances()
 </script>
 
 <style scoped>

@@ -32,7 +32,7 @@ import { ref, watchEffect, computed } from 'vue'
 import { useConnectionCurve } from '@/composables/useConnectionCurve'
 import { useConnections } from '@/store/connections'
 import { useModules } from '@/store/modules'
-import { useModuleInstances } from '@/store/moduleInstances'
+import { useInstances } from '@/store/instances'
 import { ConnectionPoint } from '@/types/Connection'
 
 const props = defineProps<{
@@ -42,7 +42,7 @@ const props = defineProps<{
 }>()
 
 const modules = useModules()
-const instances = useModuleInstances()
+const instances = useInstances()
 const connections = useConnections()
 
 const curve = useConnectionCurve(props.from, props.to)
@@ -52,7 +52,7 @@ const isHovered = connections.isHovered(props.id)
 const isFocused = connections.isFocused(props.id)
 
 const isActive = computed(() =>
-  instances.find(props.from.instanceId).activeHandleIds.has(props.from.id)
+  instances.get(props.from.instanceId).activeHandleIds.has(props.from.id)
 )
 
 const instanceIsFocused = computed(

@@ -2,7 +2,7 @@ import AsyncOsc from 'async-osc'
 import WebSerialTransport from 'async-osc/dist/WebSerialTransport'
 import { useLogs } from './store/logs'
 import { ref, markRaw } from 'vue'
-import { useModuleInstances } from './store/moduleInstances'
+import { useInstances } from './store/instances'
 import { MidiType } from './utils'
 import { Log } from './types/Log'
 import { Handle } from 'shape-compiler/src'
@@ -38,7 +38,7 @@ class Bridge {
 
     this.osc.on('/instance/prop', ({ args }) => {
       const [instanceId, propName, value] = args
-      useModuleInstances().find(instanceId).propValues[propName] = value
+      useInstances().get(instanceId).propValues[propName] = value
     })
 
     this.osc.on('/instance/in-out', ({ args }) => {
@@ -50,7 +50,7 @@ class Bridge {
       const midiType = status & 0xf0
 
       const isActive = midiType !== MidiType.NoteOff
-      const { activeHandleIds } = useModuleInstances().find(instanceId)
+      const { activeHandleIds } = useInstances().get(instanceId)
       const handleId = `midi-${direction}-${index}` as Handle['id']
       const inoutHandleId = `midi-inout-${index}` as Handle['id']
 

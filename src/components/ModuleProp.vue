@@ -44,7 +44,7 @@ const bridge = useBridge()
 const mappingSelect = ref<HTMLElement | null>(null)
 const showMapping = ref(false)
 
-const mappedEncoder = mapping.findMappedEncoder(props.instanceId, props.name)
+const mappedEncoder = mapping.getMappedEncoder(props.instanceId, props.name)
 
 const sendProp = (value: number) =>
   bridge.sendProp(props.instanceId, props.name, value)

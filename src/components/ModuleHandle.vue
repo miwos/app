@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { useConnections } from '@/store/connections'
-import { useModuleInstances } from '@/store/moduleInstances'
+import { useInstances } from '@/store/instances'
 import { Connection } from '@/types/Connection'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
@@ -61,8 +61,8 @@ const props = defineProps<{
 }>()
 
 const connections = useConnections()
-const instances = useModuleInstances()
-const instance = instances.find(props.instanceId)
+const instances = useInstances()
+const instance = instances.get(props.instanceId)
 const isHovered = ref(false)
 const isDragging = ref(false)
 const isActive = computed(() => instance.activeHandleIds.has(props.id))

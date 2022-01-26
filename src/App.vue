@@ -23,10 +23,10 @@ import 'splitpanes/dist/splitpanes.css'
 import MenuMain from './components/MenuMain.vue'
 import MenuMapping from './components/MenuMapping.vue'
 import MenuParts from './components/MenuParts.vue'
-import { useModuleInstances } from './store/moduleInstances'
+import { useInstances } from './store/instances'
 import MenuModuleSearch from './components/MenuModuleSearch.vue'
 
-const instances = useModuleInstances()
+const instances = useInstances()
 instances.add('Input', { x: 200, y: 200 })
 // instances.add('Output', { x: 200, y: 400 })
 
@@ -46,10 +46,6 @@ body {
 
 body {
   background-color: var(--background-color);
-
-  &.dragging * {
-    user-select: none;
-  }
 }
 
 #app {

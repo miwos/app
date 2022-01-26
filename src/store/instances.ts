@@ -7,7 +7,7 @@ import { useModules } from './modules'
 import { usePatch } from './patch'
 import { useShapes } from './shapes'
 
-export const useModuleInstances = defineStore({
+export const useInstances = defineStore({
   id: 'moduleInstances',
 
   state: () => ({
@@ -20,10 +20,10 @@ export const useModuleInstances = defineStore({
 
   getters: {
     /** Return an instance with resolved relations */
-    find: (state) => (id: ModuleInstance['id']) => {
+    get: (state) => (id: ModuleInstance['id']) => {
       const instance = state.items[id]
-      const module = useModules().find(instance.moduleId)
-      const shape = useShapes().find(module.shapeId)
+      const module = useModules().get(instance.moduleId)
+      const shape = useShapes().get(module.shapeId)
       const isFocused = id === state.focusedId
       return { ...instance, module, shape, isFocused }
     },
@@ -40,7 +40,7 @@ export const useModuleInstances = defineStore({
       position: Point,
       shouldUpdatePatch = true
     ) {
-      const module = useModules().find(moduleId)
+      const module = useModules().get(moduleId)
 
       const id = this.nextId++
       const propValues = Object.fromEntries(
@@ -63,6 +63,8 @@ export const useModuleInstances = defineStore({
     },
 
     remove(id: ModuleInstance['id'], shouldUpdatePatch = true) {
+      console.log('remove')
+
       // Remove all connections that are connected to the module we are about
       // to remove.
       const connections = useConnections()

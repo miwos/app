@@ -17,7 +17,7 @@ export const useShapes = defineStore({
   }),
 
   getters: {
-    find: (state) => (id: Shape['id']) => {
+    get: (state) => (id: Shape['id']) => {
       const shape = state.items[id]
       if (!shape) throw new Error(`Couldn't find shape '${id}'`)
       return shape

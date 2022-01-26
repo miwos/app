@@ -1,26 +1,17 @@
 <template>
   <div
     class="module-instance"
-    :class="{ 'drop-target': isDropTarget, dragging: isDragging }"
+    :class.camel="{
+      dragging: isDragging,
+      focused: isFocused,
+    }"
     ref="el"
-    tabindex="-1"
-    @mouseenter="toggleBodyHover(true)"
-    @mouseleave="toggleBodyHover(false)"
-    @focus="instances.focus(props.id)"
-    @blur="instances.focus(null)"
-    @dragover="isDropTarget = true"
-    @dragleave="isDropTarget = false"
+    tabindex="0"
     @keydown.delete="remove"
   >
-    <ShapeViewBox class="module-path" :shape="shape">
-      <g v-html="shape.path"></g>
-      <clipPath :id="clipPathId" v-html="shape.path" />
-    </ShapeViewBox>
-    <ShapeViewBox
-      class="module-outline"
-      :shape="shape"
-      v-html="shape.outline"
-    ></ShapeViewBox>
+    <ShapePath :shape="shape" @mousedown="instances.focus(id)" />
+    <ShapeMask :shape="shape" :id="maskId" />
+    <ShapeOutline :shape="shape" />
     <ModuleHandles :handles="shape.handles" :instanceId="props.id" />
     <ModuleProps
       :props="instance.module.props"
@@ -32,12 +23,15 @@
 
 <script setup lang="ts">
 import { useDragElement } from '@/composables/useDragElement'
-import { useModuleInstances } from '@/store/moduleInstances'
+import { useInstances } from '@/store/instances'
 import { Point } from '@/types/Point'
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch } from 'vue'
 import ModuleHandles from './ModuleHandles.vue'
 import ModuleProps from './ModuleProps.vue'
-import ShapeViewBox from './ShapeViewBox.vue'
+import ShapePath from './ShapePath.vue'
+import ShapeMask from './ShapeMask.vue'
+import ShapeOutline from './ShapeOutline.vue'
+import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 
 const props = defineProps<{
   id: number
@@ -50,21 +44,14 @@ const emit = defineEmits(['update:position'])
 const el = ref<HTMLElement | null>(null)
 const { position, isDragging } = useDragElement(el)
 
-const instances = useModuleInstances()
-const instance = instances.find(props.id)
+const instances = useInstances()
+const instance = instances.get(props.id)
 const shape = computed(() => instance.shape)
-const isDropTarget = ref(false)
-const clipPathId = computed(() => `clip-path-${props.id}`)
-
-const focus = () => el.value?.focus()
-const blur = () => el.value?.blur()
+const isFocused = instances.isFocused(props.id)
+const maskId = `instance-${props.id}-mask`
 
 watch(position, () => emit('update:position', position))
-watchEffect(() => (instance.isFocused ? focus() : blur()))
-watchEffect(() => document.body.classList.toggle('dragging', isDragging.value))
-
-const toggleBodyHover = (state: boolean) =>
-  document.body.classList.toggle('module-hover', state)
+onMouseDownOutside(el, () => instances.focus(null))
 
 const remove = (event: KeyboardEvent) => {
   if (event.target === el.value) instances.remove(props.id)
@@ -85,34 +72,31 @@ const remove = (event: KeyboardEvent) => {
   flex-direction: row;
   top: v-bind('props.position.y + `px`');
   left: v-bind('props.position.x + `px`');
-
-  .fu {
-    clip-path: v-bind('`url(#${clipPathId})`');
-  }
-
-  &:focus {
-    z-index: var(--z-focused-module);
-
-    &:deep(svg) {
-      .outline {
-        stroke: var(--module-focused-outline-color);
-      }
-
-      .shape {
-        fill: var(--module-focused-shape-color);
-      }
-    }
-  }
 }
 
-.module-path {
-  fill: var(--module-shape-color);
-}
-
-.module-outline {
+.shape-mask,
+.shape-outline {
+  pointer-events: none;
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.shape-path {
+  pointer-events: none;
+  &:deep(path) {
+    // Make sure the module is only focusable when clicking ist shape.
+    pointer-events: all;
+  }
+
+  fill: var(--module-shape-color);
+
+  .focused & {
+    fill: var(--module-focused-shape-color);
+  }
+}
+
+.shape-outline {
   overflow: visible;
   fill: none;
   stroke: var(--module-outline-color);
@@ -120,11 +104,10 @@ const remove = (event: KeyboardEvent) => {
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
-  z-index: var(--z-outline);
-}
 
-.module-clip-path {
-  position: absolute;
+  .focused & {
+    stroke: var(--module-focused-outline-color);
+  }
 }
 
 .connection-points {

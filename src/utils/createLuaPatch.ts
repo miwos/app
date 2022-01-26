@@ -2,13 +2,13 @@ import { useConnections } from '../store/connections'
 import { useMapping } from '../store/mapping'
 // @ts-ignore
 import { format } from 'lua-json'
-import { useModuleInstances } from '@/store/moduleInstances'
+import { useInstances } from '@/store/instances'
 
 export const createLuaPatch = () => {
   const requiredModules = new Set()
   const instances = {} as Record<string, string>
 
-  for (const { id, moduleId } of Object.values(useModuleInstances().items)) {
+  for (const { id, moduleId } of Object.values(useInstances().items)) {
     requiredModules.add(moduleId)
     instances[`%${id}%`] = `%{ Module = ${moduleId} }%`
   }

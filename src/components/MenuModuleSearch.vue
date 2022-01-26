@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { useModuleInstances } from '@/store/moduleInstances'
+import { useInstances } from '@/store/instances'
 import { useModules } from '@/store/modules'
 import { Module } from '@/types/Module'
 import { onClickOutside, useMouse, onKeyDown } from '@vueuse/core'
@@ -27,7 +27,7 @@ import BaseMenu from './BaseMenu.vue'
 import ModulesSelect from './ModulesSelect.vue'
 
 const mouse = useMouse()
-const instances = useModuleInstances()
+const instances = useInstances()
 const modules = useModules()
 
 const el = ref<HTMLElement | null>()
