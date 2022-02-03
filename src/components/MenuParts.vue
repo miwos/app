@@ -52,6 +52,6 @@ import ButtonCircleTriplet from './ButtonCircleTriplet.vue'
 }
 
 .button-circle-triplet {
-  --color: #6171ff;
+  --color: var(--parts-color);
 }
 </style>

@@ -1,6 +1,9 @@
 <template>
   <BaseMenu class="menu-mapping glass pill">
-    <ButtonCircleTriplet v-model:value="useMapping().currentPage" />
+    <ButtonCircleTriplet
+      :value="mapping.currentPageIndex"
+      @update:value="mapping.selectPage($event)"
+    />
   </BaseMenu>
 </template>
 
@@ -8,6 +11,8 @@
 import { useMapping } from '@/store/mapping'
 import BaseMenu from './BaseMenu.vue'
 import ButtonCircleTriplet from './ButtonCircleTriplet.vue'
+
+const mapping = useMapping()
 </script>
 
 <style lang="scss" scoped>
@@ -21,6 +26,6 @@ import ButtonCircleTriplet from './ButtonCircleTriplet.vue'
 }
 
 .button-circle-triplet {
-  --color: #00ce78;
+  --color: var(--mapping-color);
 }
 </style>

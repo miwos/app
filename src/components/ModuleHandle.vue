@@ -144,7 +144,7 @@ const handleDrop = () => {
 
   &.active &-path,
   &:not(.connectionHovered) &-path {
-    transition: fill var(--active-fade-duration);
+    transition: fill var(--fade-duration);
   }
 
   &.instanceFocused &-path {

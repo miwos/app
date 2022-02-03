@@ -6,6 +6,8 @@
   --background-color: #616161;
   --active-color: #d885ff;
   --disabled-color: #cecece;
+  --mapping-color: #00ce78;
+  --parts-color: #6171ff;
   --glass-color: rgb(0, 0, 0, 0.16);
   --glass-color-darker: rgb(0, 0, 0, 0.45);
 
@@ -23,7 +25,7 @@
   --connection-highlight-color: blue;
   --connection-point-color: white;
 
-  --active-fade-duration: 0.2s;
+  --fade-duration: 0.2s;
 
   --z-connection-point: 1;
   --z-outline: 1;

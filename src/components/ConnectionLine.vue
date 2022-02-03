@@ -103,7 +103,7 @@ const remove = () => connections.remove(props.id)
 
   &.active .line-display,
   &:not(.hovered) .line-display {
-    transition: stroke var(--active-fade-duration);
+    transition: stroke var(--fade-duration);
   }
 
   &.hovered,

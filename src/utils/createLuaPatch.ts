@@ -30,10 +30,12 @@ export const createLuaPatch = () => {
         Object.entries(page).map(([name, entries]) => [
           name,
           Object.fromEntries(
-            Object.values(entries).map((entry) => [
-              `%${entry.id}%`,
-              `%{ ${entry.instanceId}, "${entry.propName}" }%`,
-            ])
+            Object.values(entries)
+              .filter((v) => v.mappedTo)
+              .map((v) => [
+                `%${v.id}%`,
+                `%{ ${v.mappedTo!.instanceId}, "${v.mappedTo!.propName}" }%`,
+              ])
           ),
         ])
       )

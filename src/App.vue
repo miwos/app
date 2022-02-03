@@ -4,6 +4,7 @@
       <AppPatch />
       <MenuMain />
       <MenuMapping />
+      <MenuEncoders />
       <MenuModulesSearch />
       <MenuParts />
     </Pane>
@@ -25,6 +26,7 @@ import MenuMapping from './components/MenuMapping.vue'
 import MenuParts from './components/MenuParts.vue'
 import { useInstances } from './store/instances'
 import MenuModulesSearch from './components/MenuModulesSearch.vue'
+import MenuEncoders from './components/MenuEncoders.vue'
 
 const instances = useInstances()
 instances.add('Input', { x: 200, y: 200 })

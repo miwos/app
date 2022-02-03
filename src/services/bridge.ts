@@ -1,11 +1,12 @@
 import AsyncOsc from 'async-osc'
 import WebSerialTransport from 'async-osc/dist/WebSerialTransport'
-import { useLogs } from './store/logs'
+import { useLogs } from '@/store/logs'
 import { ref, markRaw } from 'vue'
-import { useInstances } from './store/instances'
-import { MidiType } from './utils'
-import { Log } from './types/Log'
+import { useInstances } from '@/store/instances'
+import { MidiType } from '@/utils'
+import { Log } from '@/types/Log'
 import { Handle } from 'shape-compiler/src'
+import { useMapping } from '@/store/mapping'
 
 class Bridge {
   private osc = markRaw(new AsyncOsc(new WebSerialTransport()))
@@ -34,6 +35,11 @@ class Bridge {
       const text = new TextDecoder().decode(data)
       ;(console as any)[type]?.(text)
       useLogs().addLog(type as Log['type'], text)
+    })
+
+    this.osc.on('/encoder/value', ({ args }) => {
+      const [id, value] = args
+      useMapping().currentPage.encoders[id].value = value
     })
 
     this.osc.on('/instance/prop', ({ args }) => {
@@ -86,6 +92,10 @@ class Bridge {
 
   sendProp(moduleId: number, name: string, value: number) {
     this.osc.sendMessage('patch/prop', [moduleId, name, value])
+  }
+
+  selectPage(index: number) {
+    this.osc.sendMessage('mapping/page', index)
   }
 
   async updatePatch(name: string, patch: string) {

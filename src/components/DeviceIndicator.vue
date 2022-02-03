@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { useBridge } from '@/bridge'
+import { useBridge } from '@/services/bridge'
 import { computed } from 'vue'
 import ButtonCircle from './ButtonCircle.vue'
 
@@ -25,7 +25,7 @@ const toggleConnection = () => {
 
   &.connected {
     background-color: var(--active-color);
-    transition: background-color var(--active-fade-duration);
+    transition: background-color var(--fade-duration);
   }
 }
 </style>

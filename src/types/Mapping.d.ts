@@ -1,11 +1,13 @@
+import { ModuleInstance } from './ModuleInstance'
+
 export type Mapping = MappingPage[]
 
-export type MappingEncoder = {
+export type Encoder = {
   id: number
-  instanceId: number
-  propName: string
+  value: number
+  mappedTo: { instanceId: ModuleInstance['id']; propName: string } | null
 }
 
 export interface MappingPage {
-  encoders: Record<MappingEncoder['id'], MappingEncoder>
+  encoders: Record<Encoder['id'], Encoder>
 }

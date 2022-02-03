@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
-import { useBridge } from '../bridge'
+import { useBridge } from '@/services/bridge'
 import { createLuaPatch } from '../utils'
 import { useConnections } from './connections'
-import { useModules } from './modules'
+import { useInstances } from './instances'
 
 export const usePatch = defineStore({
   id: 'patch',
@@ -19,7 +19,7 @@ export const usePatch = defineStore({
     },
 
     clear() {
-      useModules().clear(false)
+      useInstances().clear(false)
       useConnections().clear(false)
       this.update()
     },

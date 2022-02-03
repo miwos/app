@@ -1,6 +1,6 @@
 <template>
-  <div class="module-prop" @dblclick="map">
-    <div class="module-prop-point" v-html="knobSvg"></div>
+  <div class="module-prop" :class="{ mapped: !!mappedEncoder }" @dblclick="map">
+    <div class="module-prop-handle"></div>
     <div class="module-prop-name">
       <span>{{ props.name }}</span
       >&nbsp;=&nbsp;
@@ -26,8 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import knobSvg from '@/assets/knob.svg?raw'
-import { useBridge } from '@/bridge'
+import { useBridge } from '@/services/bridge'
 import { useMapping } from '@/store/mapping'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { nextTick, ref } from 'vue'
@@ -72,12 +71,14 @@ const map = async () => {
     flex-shrink: 0;
   }
 
-  &-point {
-    --size: 1.4rem;
-    width: var(--size);
-    height: var(--size);
-    &:deep(path) {
-      fill: var(--module-shape-color);
+  &-handle {
+    width: 1rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--module-shape-color);
+    transition: fill var(--fade-duration);
+    .mapped & {
+      background-color: var(--mapping-color);
     }
   }
 
