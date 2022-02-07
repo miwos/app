@@ -5,7 +5,7 @@ import { ref, markRaw } from 'vue'
 import { useInstances } from '@/store/instances'
 import { MidiType } from '@/utils'
 import { Log } from '@/types/Log'
-import { Handle } from 'shape-compiler/src'
+import { InputOutput } from 'shape-compiler'
 import { useMapping } from '@/store/mapping'
 
 class Bridge {
@@ -56,16 +56,16 @@ class Bridge {
       const midiType = status & 0xf0
 
       const isActive = midiType !== MidiType.NoteOff
-      const { activeHandleIds } = useInstances().get(instanceId)
-      const handleId = `midi-${direction}-${index}` as Handle['id']
-      const inoutHandleId = `midi-inout-${index}` as Handle['id']
+      const { activeInputOutputIds } = useInstances().get(instanceId)
+      const id = `midi-${direction}-${index}` as InputOutput['id']
+      const inoutId = `midi-inout-${index}` as InputOutput['id']
 
       if (isActive) {
-        activeHandleIds.add(handleId)
-        activeHandleIds.add(inoutHandleId)
+        activeInputOutputIds.add(id)
+        activeInputOutputIds.add(inoutId)
       } else {
-        activeHandleIds.delete(handleId)
-        activeHandleIds.delete(inoutHandleId)
+        activeInputOutputIds.delete(id)
+        activeInputOutputIds.delete(inoutId)
       }
     })
   }

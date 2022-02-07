@@ -2,13 +2,12 @@
   <div class="module-prop" :class="{ mapped: !!mappedEncoder }" @dblclick="map">
     <div class="module-prop-handle"></div>
     <div class="module-prop-name">
-      <span>{{ props.name }}</span
-      >&nbsp;=&nbsp;
-      <input
+      <span>{{ props.name }}</span>
+      <!-- <input
         type="number"
         :value="props.value"
         @change="sendProp(parseInt(($event.target as any).value))"
-      />
+      /> -->
     </div>
     <div class="module-prop-mapping" v-if="showMapping">
       <select
@@ -29,12 +28,15 @@
 import { useBridge } from '@/services/bridge'
 import { useMapping } from '@/store/mapping'
 import { ModuleInstance } from '@/types/ModuleInstance'
+import { Point } from '@/types/Point'
 import { nextTick, ref } from 'vue'
 
 const props = defineProps<{
   instanceId: ModuleInstance['id']
   name: string
   value: number
+  position: Point
+  side: 'left' | 'right'
 }>()
 
 const mappingSelect = ref<HTMLElement | null>(null)
@@ -58,13 +60,15 @@ const map = async () => {
 
 <style lang="scss" scoped>
 .module-prop {
+  position: absolute;
+  transform: translateY(-50%);
+  top: v-bind('position.y + `px`');
+  left: v-bind('position.x + `px`');
+
   display: flex;
   align-items: center;
   gap: 0.5em;
   color: var(--module-outline-color);
-  font-family: 'Vevey positive';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: antialiased;
 
   &-point,
   &-name {

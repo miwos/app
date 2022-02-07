@@ -1,8 +1,10 @@
 <svg width="131" height="143" viewBox="0 0 131 143" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Split">
 <path id="shape" d="M54.9042 120.485C57.3512 116.219 61.6348 114.088 65.917 114.092C70.1992 114.088 74.4828 116.219 76.9298 120.485L89.7217 142.782L110.319 130.814L130.917 118.847L107.661 78.31C95.9922 57.9696 89.8488 40.8431 89.8488 17.3561V4.78207H41.9852V17.3561C41.9852 40.8431 35.8418 57.9696 24.1726 78.31L0.916992 118.847L21.5146 130.814L42.1122 142.782L54.9042 120.485Z" fill="#C4C4C4"/>
-<path id="midi-in" d="M66 10V0" stroke="black"/>
-<path id="midi-out" d="M107.82 126.48L112.82 135.14" stroke="black"/>
-<path id="midi-out_2" d="M24.01 126.48L19.01 135.14" stroke="black"/>
+<path id="props" d="M95 63L105 63" stroke="#00D300"/>
+<path id="props_2" d="M27 63L37 63" stroke="#00D300"/>
+<path id="midi-in" d="M66 10V0" stroke="#0000FF"/>
+<path id="midi-out" d="M107.82 126.48L112.82 135.14" stroke="#0000FF"/>
+<path id="midi-out_2" d="M24.01 126.48L19.01 135.14" stroke="#0000FF"/>
 </g>
 </svg>

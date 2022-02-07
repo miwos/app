@@ -13,7 +13,7 @@
 
   --module-outline-color: white;
   --module-shape-color: #929292;
-  --module-handle-color: white;
+  --module-input-output-color: white;
   --module-focused-shape-color: #8f8271;
   --module-focused-outline-color: #eec590;
   /* When using the shape color in a different context, for example a small

@@ -12,10 +12,15 @@
     <ShapePath :shape="shape" @mousedown="instances.focus(id)" />
     <ShapeMask :shape="shape" :id="maskId" />
     <ShapeOutline :shape="shape" />
-    <ModuleHandles :handles="shape.handles" :instanceId="props.id" />
+    <ModuleInputsOutputs
+      :inputsOutputs="shape.inputsOutputs"
+      :instanceId="props.id"
+    />
     <ModuleProps
+      v-if="shape.props"
       :props="instance.module.props"
       :values="instance.propValues"
+      :positions="shape.props"
       :instanceId="id"
     />
   </div>
@@ -27,7 +32,7 @@ import { useDragElement } from '@/composables/useDragElement'
 import { useInstances } from '@/store/instances'
 import { Point } from '@/types/Point'
 import { computed, ref, watch } from 'vue'
-import ModuleHandles from './ModuleHandles.vue'
+import ModuleInputsOutputs from './ModuleInputsOutputs.vue'
 import ModuleProps from './ModuleProps.vue'
 import ShapeMask from './ShapeMask.vue'
 import ShapeOutline from './ShapeOutline.vue'

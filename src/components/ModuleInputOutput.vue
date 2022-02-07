@@ -1,6 +1,6 @@
 <template>
   <div
-    class="module-handle"
+    class="module-input-output"
     ref="el"
     :class="{
       hovered: isHovered || isDragging,
@@ -26,14 +26,14 @@
     <svg width="12" height="10" viewBox="0 0 12 10">
       <circle
         v-if="props.signal === 'midi'"
-        class="module-handle-path signal-midi"
+        class="module-input-output-path signal-midi"
         cx="6"
         cy="5"
         r="5"
       />
       <polygon
         v-else
-        class="module-handle-path signal-trigger"
+        class="module-input-output-path signal-trigger"
         points="0,10 12,10 6,0"
       />
     </svg>
@@ -47,15 +47,15 @@ import { Connection } from '@/types/Connection'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
 import { emptyImage, pointsAreEqual } from '@/utils'
-import { Handle } from 'shape-compiler'
+import { InputOutput } from 'shape-compiler'
 import { computed, ref } from 'vue'
 
 const props = defineProps<{
-  id: Handle['id']
+  id: InputOutput['id']
   index: number
   instanceId: ModuleInstance['id']
-  signal: Handle['signal']
-  direction: Handle['direction']
+  signal: InputOutput['signal']
+  direction: InputOutput['direction']
   position: Point
   angle: number
 }>()
@@ -65,7 +65,7 @@ const instances = useInstances()
 const instance = instances.get(props.instanceId)
 const isHovered = ref(false)
 const isDragging = ref(false)
-const isActive = computed(() => instance.activeHandleIds.has(props.id))
+const isActive = computed(() => instance.activeInputOutputIds.has(props.id))
 const canConnect = connections.canConnect(props)
 
 const existsOnConnection = (connection: Connection | null) => {
@@ -110,7 +110,7 @@ const handleDrop = () => {
 </script>
 
 <style scoped lang="scss">
-.module-handle {
+.module-input-output {
   display: block;
   position: absolute;
   transform: translate(-50%, -50%);

@@ -1,4 +1,4 @@
-import { Handle } from 'shape-compiler/src'
+import { InputOutput } from 'shape-compiler'
 import { ModuleInstance } from './ModuleInstance'
 
 export interface Connection {
@@ -8,9 +8,9 @@ export interface Connection {
 }
 
 export interface ConnectionPoint {
-  id: Handle['id']
-  signal: Handle['signal']
-  direction: Handle['direction']
+  id: InputOutput['id']
+  signal: InputOutput['signal']
+  direction: InputOutput['direction']
   index: number
   instanceId: ModuleInstance['id']
 }

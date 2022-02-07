@@ -11,7 +11,7 @@ const getPointAndAngle = ({
   instanceId,
 }: ConnectionPoint): [Vec, number] => {
   const instance = useInstances().get(instanceId)
-  const { position, angle } = instance.shape.handles[id]
+  const { position, angle } = instance.shape.inputsOutputs[id]
   const point = new Vec(instance.position).add(position)
   return [point, angle]
 }

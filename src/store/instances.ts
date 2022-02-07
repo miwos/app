@@ -7,11 +7,16 @@ import { useModules } from './modules'
 import { usePatch } from './patch'
 import { useShapes } from './shapes'
 
+type ModuleInstanceNormalized = Omit<
+  ModuleInstance,
+  'module' | 'shape' | 'isFocused'
+>
+
 export const useInstances = defineStore({
   id: 'moduleInstances',
 
   state: () => ({
-    items: {} as Record<ModuleInstance['id'], ModuleInstance>,
+    items: {} as Record<ModuleInstance['id'], ModuleInstanceNormalized>,
     sortedIds: [] as ModuleInstance['id'][],
     focusedId: null as ModuleInstance['id'] | null,
     // We use a one-based index to be consistent with lua.
@@ -20,13 +25,15 @@ export const useInstances = defineStore({
 
   getters: {
     /** Return an instance with resolved relations */
-    get: (state) => (id: ModuleInstance['id']) => {
-      const instance = state.items[id]
-      const module = useModules().get(instance.moduleId)
-      const shape = useShapes().get(module.shapeId)
-      const isFocused = id === state.focusedId
-      return { ...instance, module, shape, isFocused }
-    },
+    get:
+      (state) =>
+      (id: ModuleInstanceNormalized['id']): ModuleInstance => {
+        const instance = state.items[id]
+        const module = useModules().get(instance.moduleId)
+        const shape = useShapes().get(module.shapeId)
+        const isFocused = id === state.focusedId
+        return { ...instance, module, shape, isFocused }
+      },
 
     sorted: (state) => state.sortedIds.map((id) => state.items[id]),
 
@@ -55,7 +62,7 @@ export const useInstances = defineStore({
         moduleId,
         position,
         propValues,
-        activeHandleIds: new Set(),
+        activeInputOutputIds: new Set(),
       }
       this.sortedIds.push(id)
 
@@ -63,8 +70,6 @@ export const useInstances = defineStore({
     },
 
     remove(id: ModuleInstance['id'], shouldUpdatePatch = true) {
-      console.log('remove')
-
       // Remove all connections that are connected to the module we are about
       // to remove.
       const connections = useConnections()

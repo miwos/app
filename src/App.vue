@@ -38,6 +38,14 @@ const sideBar = ref<InstanceType<typeof AppSidebar>>()
 <style lang="scss">
 @import '@/styles/config.css';
 
+@font-face {
+  font-family: 'Vevey Positive';
+  src: url('./assets/fonts/vevey-positive-webfont.woff2') format('woff2'),
+    url('./assets/fonts/vevey-positive-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 html,
 body {
   margin: 0;
@@ -54,6 +62,8 @@ body {
   width: 100%;
   height: 100%;
   font-family: 'Vevey positive';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: antialiased;
 }
 
 .pane {

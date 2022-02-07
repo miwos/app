@@ -48,7 +48,7 @@ const isHovered = connections.isHovered(props.id)
 const isFocused = connections.isFocused(props.id)
 
 const isActive = computed(() =>
-  instances.get(props.from.instanceId).activeHandleIds.has(props.from.id)
+  instances.get(props.from.instanceId).activeInputOutputIds.has(props.from.id)
 )
 
 const instanceIsFocused = computed(
