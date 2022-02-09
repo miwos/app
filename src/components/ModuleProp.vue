@@ -3,11 +3,11 @@
     <div class="module-prop-handle"></div>
     <div class="module-prop-name">
       <span>{{ props.name }}</span>
-      <!-- <input
+      <input
         type="number"
         :value="props.value"
         @change="sendProp(parseInt(($event.target as any).value))"
-      /> -->
+      />
     </div>
     <div class="module-prop-mapping" v-if="showMapping">
       <select
@@ -29,27 +29,28 @@ import { useBridge } from '@/services/bridge'
 import { useMapping } from '@/store/mapping'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
-import { nextTick, ref } from 'vue'
+import { inject, nextTick, ref } from 'vue'
 
 const props = defineProps<{
-  instanceId: ModuleInstance['id']
   name: string
   value: number
   position: Point
   side: 'left' | 'right'
 }>()
 
+const instance = inject<ModuleInstance>('instance')!
+
 const mappingSelect = ref<HTMLElement | null>(null)
 const mapping = useMapping()
 const bridge = useBridge()
 const showMapping = ref(false)
-const mappedEncoder = mapping.getMappedEncoder(props.instanceId, props.name)
+const mappedEncoder = mapping.getMappedEncoder(instance.id, props.name)
 
 const sendProp = (value: number) =>
-  bridge.sendProp(props.instanceId, props.name, value)
+  bridge.sendProp(instance.id, props.name, value)
 
 const mapEncoder = (encoderId: number) =>
-  mapping.mapEncoder(encoderId, props.instanceId, props.name)
+  mapping.mapEncoder(encoderId, instance.id, props.name)
 
 const map = async () => {
   showMapping.value = true

@@ -10,6 +10,7 @@
     "@monaco-lua/client": "file:../../monaco-lua/client",
     "@vueuse/core": "^7.5.3",
     "async-osc": "file:../../async-osc",
+    "colord": "^2.9.2",
     "fuse.js": "^6.5.3",
     "hobby-curve": "^0.2.0",
     "lua-json": "^1.0.0",

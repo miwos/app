@@ -4,12 +4,14 @@
     <button>File</button>
     <button>Edit</button>
     <button>Clear</button>
+    {{ useBridge().usedMemory }}
   </BaseMenu>
 </template>
 
 <script setup lang="ts">
 import BaseMenu from './BaseMenu.vue'
 import DeviceIndicator from './DeviceIndicator.vue'
+import { useBridge } from '@/services/bridge'
 </script>
 
 <style scoped lang="scss">

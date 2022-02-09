@@ -8,11 +8,13 @@
 
 <script setup lang="ts">
 import type { Shape } from 'shape-compiler'
+import { inject } from 'vue'
 
 const props = defineProps<{
-  shape: Shape
+  shape?: Shape
 }>()
 
-const { width, height } = props.shape.size
+const shape = props.shape ?? inject<Shape>('shape')!
+const { width, height } = shape.size
 const viewBox = `0 0 ${width} ${height}`
 </script>
