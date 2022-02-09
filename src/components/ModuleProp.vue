@@ -6,7 +6,10 @@
       <input
         type="number"
         :value="props.value"
-        @change="sendProp(parseInt(($event.target as any).value))"
+        :min="module.props[name].min"
+        :max="module.props[name].max"
+        :step="module.props[name].step"
+        @change="sendProp(parseFloat(($event.target as any).value))"
       />
     </div>
     <div class="module-prop-mapping" v-if="showMapping">
@@ -27,6 +30,7 @@
 <script setup lang="ts">
 import { useBridge } from '@/services/bridge'
 import { useMapping } from '@/store/mapping'
+import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
 import { inject, nextTick, ref } from 'vue'
@@ -39,6 +43,7 @@ const props = defineProps<{
 }>()
 
 const instance = inject<ModuleInstance>('instance')!
+const module = inject<Module>('module')!
 
 const mappingSelect = ref<HTMLElement | null>(null)
 const mapping = useMapping()

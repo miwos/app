@@ -13,4 +13,5 @@ export interface ModuleProp {
   default: number
   min?: number
   max?: number
+  step?: number
 }
