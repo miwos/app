@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
-import { computed, defineAsyncComponent, inject } from 'vue'
+import { defineAsyncComponent, inject } from 'vue'
 
 const module = inject<Module>('module')!
 const instance = inject<ModuleInstance>('instance')

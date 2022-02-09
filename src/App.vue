@@ -27,6 +27,9 @@ import MenuParts from './components/MenuParts.vue'
 import { useInstances } from './store/instances'
 import MenuModulesSearch from './components/MenuModulesSearch.vue'
 import MenuEncoders from './components/MenuEncoders.vue'
+import { useMidi } from './store/midi'
+
+useMidi()
 
 const instances = useInstances()
 instances.add('Input', { x: 200, y: 200 })

@@ -1,6 +1,7 @@
 {
   "id": "Input",
   "shapeId": "Input",
+  "component": "Input.vue",
   "props": {
     "device": {
       "min": 1,

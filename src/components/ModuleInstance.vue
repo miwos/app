@@ -4,6 +4,7 @@
     :class.camel="{
       dragging: isDragging,
       focused: isFocused,
+      clipping: !isInputOrOutput,
     }"
     ref="el"
     tabindex="0"
@@ -14,7 +15,7 @@
     <ModuleContent />
     <ShapeOutline />
     <ModuleInputsOutputs />
-    <ModuleProps v-if="shape.props" />
+    <ModuleProps v-if="shouldShowProps" />
   </div>
 </template>
 
@@ -47,6 +48,8 @@ const isFocused = instances.isFocused(props.id)
 const shape = instance.shape
 const module = instance.module
 const maskId = `instance-${props.id}-mask`
+const isInputOrOutput = module.id === 'Input' || module.id === 'Output'
+const shouldShowProps = !isInputOrOutput && shape.props
 
 provide('instance', instance)
 provide('shape', shape)
@@ -75,7 +78,7 @@ const remove = (event: KeyboardEvent) => {
     flex-direction: column;
   }
 
-  &-content {
+  .clipping &-content {
     clip-path: v-bind('`url(#` + maskId + `)`');
   }
 }

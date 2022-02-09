@@ -68,6 +68,11 @@ class Bridge {
         activeInputOutputIds.delete(inoutId)
       }
     })
+
+    this.osc.on('/mapping/page', ({ args }) => {
+      const [pageIndex] = args
+      useMapping().currentPageIndex = pageIndex - 1
+    })
   }
 
   async connect() {

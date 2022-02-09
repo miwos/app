@@ -35,7 +35,7 @@ const isOpen = ref(false)
 const position = ref({ x: 0, y: 0 })
 const results = ref<Module[]>([])
 
-onKeyDown(' ', () => open())
+onKeyDown(' ', (e) => e.ctrlKey && open())
 onKeyDown('Escape', () => close())
 onClickOutside(el, () => close())
 

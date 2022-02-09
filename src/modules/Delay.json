@@ -1,7 +1,7 @@
 {
   "id": "Delay",
   "shapeId": "Effect",
-  "component": "ModuleDelay.vue",
+  "component": "Delay.vue",
   "props": {
     "time": {
       "type": "number",
