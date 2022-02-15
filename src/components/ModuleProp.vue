@@ -9,7 +9,7 @@
         :min="module.props[name].min"
         :max="module.props[name].max"
         :step="module.props[name].step"
-        @change="sendProp(parseFloat(($event.target as any).value))"
+        @change="setProp(parseFloat(($event.target as any).value))"
       />
     </div>
     <div class="module-prop-mapping" v-if="showMapping">
@@ -29,6 +29,7 @@
 
 <script setup lang="ts">
 import { useBridge } from '@/services/bridge'
+import { useInstances } from '@/store/instances'
 import { useMapping } from '@/store/mapping'
 import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
@@ -47,12 +48,12 @@ const module = inject<Module>('module')!
 
 const mappingSelect = ref<HTMLElement | null>(null)
 const mapping = useMapping()
-const bridge = useBridge()
+const instances = useInstances()
 const showMapping = ref(false)
 const mappedEncoder = mapping.getMappedEncoder(instance.id, props.name)
 
-const sendProp = (value: number) =>
-  bridge.sendProp(instance.id, props.name, value)
+const setProp = (value: number) =>
+  instances.setProp(instance.id, props.name, value)
 
 const mapEncoder = (encoderId: number) =>
   mapping.mapEncoder(encoderId, instance.id, props.name)

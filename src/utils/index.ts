@@ -1,6 +1,7 @@
 export * from './angles'
 export * from './constrainPosition'
 export * from './createLuaPatch'
+export * from './debounce'
 export * from './emptyImage'
 export * from './map'
 export * from './midi'

@@ -17,9 +17,7 @@ const createPage = (encodersCount: number) => ({
   encoders: createEncoders(encodersCount),
 })
 
-export const useMapping = defineStore({
-  id: 'mapping',
-
+export const useMapping = defineStore('mapping', {
   state: () => ({
     currentPageIndex: 0,
     pages: range(3).map(() => createPage(3)) as Mapping,

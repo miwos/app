@@ -1,5 +1,9 @@
 <template>
-  <ComboBox :options="devices" :value="value" @update:value="value = $event" />
+  <ComboBox
+    :options="devices"
+    :value="value"
+    @update:value="emit('update:value', $event)"
+  />
 </template>
 
 <script setup lang="ts">
@@ -10,7 +14,7 @@ defineProps<{
   value: any
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'update:value', device: any): void
 }>()
 

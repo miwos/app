@@ -1,5 +1,4 @@
-import { computed, reactive, Ref, ref, watch } from 'vue'
-import CSS from 'csstype'
+import { reactive, Ref, ref, watch } from 'vue'
 import { constrainPosition } from '../utils'
 
 export const useDragElement = (el: Ref<HTMLElement | null>) => {

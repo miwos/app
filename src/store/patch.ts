@@ -4,9 +4,7 @@ import { createLuaPatch } from '../utils'
 import { useConnections } from './connections'
 import { useInstances } from './instances'
 
-export const usePatch = defineStore({
-  id: 'patch',
-
+export const usePatch = defineStore('patch', {
   state: () => ({
     name: 'patch1',
   }),

@@ -1,9 +1,7 @@
 import { Log } from '@/types/Log'
 import { defineStore } from 'pinia'
 
-export const useLogs = defineStore({
-  id: 'logs',
-
+export const useLogs = defineStore('logs', {
   state: () => ({
     logs: [] as Log[],
   }),

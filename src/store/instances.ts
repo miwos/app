@@ -1,5 +1,7 @@
+import { useBridge } from '@/services/bridge'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
+
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
 import { useConnections } from './connections'
@@ -12,9 +14,20 @@ type ModuleInstanceNormalized = Omit<
   'module' | 'shape' | 'isFocused'
 >
 
-export const useInstances = defineStore({
-  id: 'moduleInstances',
+const debounce = (callback: Function, wait: number) => {
+  let timeout: number | undefined
+  return (...args: any[]) => {
+    const next = () => callback(...args)
+    window.clearTimeout(timeout)
+    timeout = window.setTimeout(next, wait)
+  }
+}
 
+const updatePatchDebounced = debounce(() => {
+  usePatch().update()
+}, 1000)
+
+export const useInstances = defineStore('instances', {
   state: () => ({
     items: {} as Record<ModuleInstance['id'], ModuleInstanceNormalized>,
     sortedIds: [] as ModuleInstance['id'][],
@@ -89,6 +102,14 @@ export const useInstances = defineStore({
         sortedIds.splice(sortedIds.indexOf(id), 1).push(id)
         sortedIds.push(id)
       }
+    },
+
+    setProp(id: ModuleInstance['id'], name: string, value: number) {
+      this.items[id].propValues[name] = value
+      useBridge().sendProp(id, name, value)
+      // Setting a prop can happen many times per second, so we use a debounced
+      // patch update.
+      updatePatchDebounced()
     },
 
     clear(shouldUpdatePatch = true) {

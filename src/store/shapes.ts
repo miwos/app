@@ -9,9 +9,7 @@ const shapes: Record<Shape['id'], Shape> = Object.fromEntries(
   })
 )
 
-export const useShapes = defineStore({
-  id: 'shapes',
-
+export const useShapes = defineStore('shapes', {
   state: () => ({
     items: shapes,
   }),

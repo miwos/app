@@ -1,34 +1,31 @@
 <template>
   <div class="input">
-    <MidiDeviceCombo
-      :value="instance.propValues.device"
-      @update:value="sendProp('device', $event.id)"
-    />
+    <MidiDeviceCombo :value="13" @update:value="setProp('device', $event)" />
   </div>
 </template>
 
 <script setup lang="ts">
 import MidiDeviceCombo from '../components/MidiDeviceCombo.vue'
-import { useBridge } from '../services/bridge'
 import { ModuleInstance } from '../types/ModuleInstance'
 import { inject } from 'vue'
+import { useInstances } from '@/store/instances'
 
 const instance = inject<ModuleInstance>('instance')!
-const bridge = useBridge()
+const instances = useInstances()
 
-const sendProp = (name: string, value: number) =>
-  bridge.sendProp(instance.id, name, value)
+const setProp = (name: string, value: number) =>
+  instances.setProp(instance.id, name, value)
 </script>
 
 <style scoped>
 .input {
   position: absolute;
-  top: 0;
   left: 50%;
+  bottom: 100%;
   width: unset;
   white-space: nowrap;
   color: white;
-  transform: translate(-50%, -100%);
+  transform: translateX(-50%);
   padding-bottom: 0.5rem;
 }
 </style>

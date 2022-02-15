@@ -56,6 +56,10 @@ onKeyDown('Enter', () =>
   emit('update:value', props.modules[focusedIndex.value].id)
 )
 
+onKeyDown(['PageUp', 'Home'], () => focus(0))
+
+onKeyDown(['PageDown', 'End'], () => focus(props.modules.length - 1))
+
 const focus = (index: number) => {
   const { modules } = props
   focusedIndex.value =

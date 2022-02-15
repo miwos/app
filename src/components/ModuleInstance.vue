@@ -15,7 +15,7 @@
     <ModuleContent />
     <ShapeOutline />
     <ModuleInputsOutputs />
-    <ModuleProps v-if="shouldShowProps" />
+    <ModuleProps v-if="true /*shouldShowProps*/" />
   </div>
 </template>
 

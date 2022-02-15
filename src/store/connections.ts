@@ -15,9 +15,7 @@ const sortPointsByPosition = (a: ConnectionPoint, b: ConnectionPoint) => {
   return positionA.y < positionB.y ? [a, b] : [b, a]
 }
 
-export const useConnections = defineStore({
-  id: 'connections',
-
+export const useConnections = defineStore('connections', {
   state: () => ({
     items: {} as Record<string, Connection>,
     hoveredId: null as string | null,

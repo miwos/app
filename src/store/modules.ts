@@ -14,9 +14,7 @@ const modules: Record<Module['id'], Module> = Object.fromEntries(
 
 const fuse = new Fuse(Object.keys(modules), { minMatchCharLength: 2 })
 
-export const useModules = defineStore({
-  id: 'modules',
-
+export const useModules = defineStore('modules', {
   state: () => ({
     // Once the modules are imported they won't change during runtime.
     items: markRaw(modules),
