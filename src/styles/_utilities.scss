@@ -1,0 +1,29 @@
+@mixin glass {
+  background-color: var(--glass-color);
+  backdrop-filter: blur(20px);
+}
+
+@mixin glass-darker {
+  background-color: var(--glass-color-darker);
+  backdrop-filter: blur(20px);
+}
+
+@mixin pill {
+  display: flex;
+  align-items: center;
+  --height: 2.5rem;
+  height: var(--height);
+  border-radius: calc(var(--height) / 2);
+}
+
+@mixin menu {
+  margin: 1rem;
+  z-index: var(--z-menu);
+}
+
+@mixin font-menu {
+  font-family: 'Inter';
+  font-weight: 300;
+  letter-spacing: 1px;
+  font-size: 14px;
+}

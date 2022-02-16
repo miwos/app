@@ -1,7 +1,7 @@
 <template>
   <div class="module-props">
     <ModuleProp
-      v-for="(_, name, index) in props"
+      v-for="(_, name, index) in displayProps"
       :name="name"
       :position="getPosition(index)"
       :side="index < 3 ? 'right' : 'left'"
@@ -21,11 +21,14 @@ const module = inject<Module>('module')!
 const shape = inject<Shape>('shape')!
 const instance = inject<ModuleInstance>('instance')!
 
-const props = module.props
+const displayProps = Object.fromEntries(
+  Object.entries(module.props).filter(([, prop]) => prop.show ?? true)
+) as Module['props']
+
 const values = instance.propValues
 const positions = shape.props
 
-const count = Object.values(props).length
+const count = Object.values(displayProps).length
 
 const getPosition = (index: number) => {
   const side = index < 3 ? 'right' : 'left'

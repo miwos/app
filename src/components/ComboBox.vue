@@ -1,5 +1,5 @@
 <template>
-  <div class="combo">
+  <div class="combo" ref="el">
     <button
       class="combo-input"
       role="combobox"
@@ -18,12 +18,17 @@
     >
       {{ displayOption(options[valueIndex]) }}
     </button>
-    <div v-if="isOpen" class="combo-list glass" role="listbox" tabindex="-1">
+    <div
+      v-if="isOpen"
+      ref="list"
+      class="combo-list"
+      role="listbox"
+      tabindex="-1"
+    >
       <div
         v-for="(option, index) of options"
         :key="option.id"
         class="combo-option"
-        :class="{ 'glass-darker': selectedIndex === index }"
         role="option"
         :aria-selected="selectedIndex === index"
         @mousedown="updateValue(index)"
@@ -35,16 +40,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, toRefs, watch } from 'vue'
+import { computed, ref, toRefs, watch, nextTick } from 'vue'
 
 interface Option {
   id: any
   label?: string
 }
 
+type Alignment = 'above' | 'below'
+
 const props = defineProps<{
   options: Option[]
   value: any
+  preferredAlignment?: Alignment
 }>()
 const { value, options } = toRefs(props)
 
@@ -52,7 +60,10 @@ const emit = defineEmits<{
   (e: 'update:value', value: any): void
 }>()
 
+const el = ref<HTMLDivElement | null>()
+const list = ref<HTMLDivElement | null>()
 const isOpen = ref(false)
+const listPosition = ref(0)
 const selectedIndex = ref(0)
 const valueIndex = computed(() =>
   options.value.findIndex(({ id }) => id === value.value)
@@ -61,8 +72,33 @@ const valueIndex = computed(() =>
 watch(value, () => (selectedIndex.value = valueIndex.value))
 const onBlur = () => (isOpen.value = false)
 
-const toggleOpen = () => (isOpen.value = !isOpen.value)
+const toggleOpen = () => (isOpen.value ? close() : open())
 const displayOption = (option: Option) => option.label ?? option.id
+
+const open = async () => {
+  isOpen.value = true
+  // Wait for the list to be rendered.
+  await nextTick()
+
+  if (!el.value || !list.value) return
+  const { top, bottom } = el.value.getBoundingClientRect()
+  const { height } = list.value.getBoundingClientRect()
+
+  const isPreferredAbove = props.preferredAlignment === 'above'
+  const above = top - height
+  const below = bottom
+
+  let absolutePosition
+  if (isPreferredAbove) {
+    absolutePosition = above >= 0 ? above : below
+  } else {
+    absolutePosition = below + height <= window.innerHeight ? below : above
+  }
+
+  listPosition.value = absolutePosition - top
+}
+
+const close = () => (isOpen.value = false)
 
 const select = (index: number) => {
   const { length } = options.value
@@ -79,27 +115,48 @@ const updateValue = (index: number) =>
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/utilities';
+
 .combo {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column; // column-reverse;
 
+  --input-height: 1.5em;
   --option-height: 23px;
-  --radius: 8px;
+  --radius: var(--radius-s);
 
   &-input {
     display: block;
-    padding: 0 var(--radius);
+    padding: 0.16em var(--radius) 0.3em var(--radius);
     text-align: center;
     cursor: pointer;
-    margin-top: 0.3em;
   }
 
   &-list {
-    font-family: 'Inter';
-    font-weight: 300;
-    letter-spacing: 1px;
-    font-size: 14px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: v-bind('listPosition + `px`');
     border-radius: var(--radius);
+    @include utilities.glass;
+    @include utilities.font-menu;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        180deg,
+        var(--glass-color-solid),
+        transparent 7em calc(100% - 5em),
+        var(--glass-color-solid)
+      );
+      border-radius: var(--radius);
+      z-index: -1;
+    }
   }
 
   &-option {
@@ -123,6 +180,8 @@ const updateValue = (index: number) =>
   }
 
   &-option[aria-selected='true'] {
+    @include utilities.glass-darker;
+
     &:not(:last-child, :first-child) {
       margin: -1px 0;
       padding-top: 1px;

@@ -14,4 +14,5 @@ export interface ModuleProp {
   min?: number
   max?: number
   step?: number
+  show?: boolean
 }

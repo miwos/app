@@ -13,7 +13,6 @@ import { inject } from 'vue'
 const props = defineProps<{
   shape?: Shape
 }>()
-
 const shape = props.shape ?? inject<Shape>('shape')!
 const { width, height } = shape.size
 const viewBox = `0 0 ${width} ${height}`

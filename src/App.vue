@@ -39,7 +39,12 @@ const sideBar = ref<InstanceType<typeof AppSidebar>>()
 </script>
 
 <style lang="scss">
-@import '@/styles/config.css';
+@use '@/styles/config.scss';
+
+@mixin glass {
+  background-color: var(--glass-color);
+  backdrop-filter: blur(20px);
+}
 
 @font-face {
   font-family: 'Vevey Positive';

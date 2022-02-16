@@ -10,12 +10,14 @@
     tabindex="0"
     @keydown.delete="remove"
   >
-    <ShapePath @mousedown="instances.focus(id)" />
+    <ShapePath ref="shape" />
     <ShapeMask :id="maskId" />
-    <ModuleContent />
+    <div class="module-content" ref="content">
+      <ModuleContent />
+    </div>
     <ShapeOutline />
     <ModuleInputsOutputs />
-    <ModuleProps v-if="true /*shouldShowProps*/" />
+    <ModuleProps />
   </div>
 </template>
 
@@ -41,7 +43,8 @@ const props = defineProps<{
 const emit = defineEmits(['update:position'])
 
 const el = ref<HTMLElement | null>(null)
-const { position, isDragging } = useDragElement(el)
+const content = ref<HTMLElement | null>(null)
+const { position, isDragging } = useDragElement(content)
 const instances = useInstances()
 const instance = instances.get(props.id)
 const isFocused = instances.isFocused(props.id)
@@ -76,6 +79,14 @@ const remove = (event: KeyboardEvent) => {
     gap: 0.5rem;
     display: flex;
     flex-direction: column;
+  }
+
+  &-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 
   .clipping &-content {

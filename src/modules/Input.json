@@ -6,12 +6,14 @@
     "device": {
       "min": 1,
       "max": 16,
-      "default": 1
+      "default": 1,
+      "show": false
     },
     "cable": {
       "min": 1,
       "max": 16,
-      "default": 1
+      "default": 1,
+      "show": false
     }
   }
 }

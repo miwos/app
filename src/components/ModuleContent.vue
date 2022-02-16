@@ -1,11 +1,9 @@
 <template>
-  <div class="module-content">
-    <component
-      v-if="module?.component"
-      :is="asyncComponent"
-      v-bind="instance?.propValues"
-    />
-  </div>
+  <component
+    v-if="module?.component"
+    :is="asyncComponent"
+    v-bind="instance?.propValues"
+  />
 </template>
 
 <script setup lang="ts">
@@ -20,13 +18,3 @@ const asyncComponent = defineAsyncComponent(
   () => import(`../modules/${module!.component}`)
 )
 </script>
-
-<style scoped>
-.module-content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-</style>

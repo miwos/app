@@ -1,13 +1,13 @@
 <template>
   <div
-    class="input"
+    class="output"
     ref="el"
     @click="isFocused = true"
     :class="{ focused: isFocused }"
   >
     <MidiDeviceCombo
       :value="instance.propValues.device"
-      preferredAlignment="above"
+      preferredAlignment="below"
       @update:value="setProp('device', $event)"
     />
   </div>
@@ -32,15 +32,14 @@ const setProp = (name: string, value: number) =>
 </script>
 
 <style scoped lang="scss">
-.input {
+.output {
   position: absolute;
   left: 50%;
-  bottom: 100%;
+  top: 100%;
   width: unset;
   white-space: nowrap;
   color: white;
   transform: translateX(-50%);
-  margin-bottom: 0.1rem;
 
   &.focused {
     z-index: var(--z-modal);

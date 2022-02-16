@@ -1,6 +1,8 @@
-@import './reset.css';
-@import './utilities/glass.css';
-@import './utilities/pill.css';
+@use './reset.css';
+@use './utilities/glass.css';
+@use './utilities/pill.css';
+
+@use 'sass:color';
 
 :root {
   --background-color: #616161;
@@ -10,12 +12,18 @@
   --parts-color: #6171ff;
   --glass-color: rgb(0, 0, 0, 0.16);
   --glass-color-darker: rgb(0, 0, 0, 0.45);
+  --glass-color-solid: #{color.mix(black, #616161, 16%)};
+  --glass-color-darker-solid: #{color.mix(black, #616161, 45%)};
 
   --module-outline-color: white;
   --module-shape-color: #929292;
   --module-input-output-color: white;
   --module-focused-shape-color: #8f8271;
   --module-focused-outline-color: #eec590;
+
+  --radius-xs: 6px;
+  --radius-s: 8px;
+
   /* When using the shape color in a different context, for example a small
   shape thumbnail, we have to optically adjust the color a bit so it won't be
   perceived darker than it is. */
@@ -32,4 +40,5 @@
   --z-focused-module: 2;
   --z-focused-connection: 3;
   --z-menu: 4;
+  --z-modal: 5;
 }
