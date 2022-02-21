@@ -1,6 +1,6 @@
 {
   "id": "Arp",
-  "shapeId": "Effect",
+  "shapeId": "Arp",
   "props": {
     "speed": {
       "type": "number",

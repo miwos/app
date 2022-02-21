@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import AppPatch from './components/AppPatch.vue'
 import AppSidebar from './components/AppSidebar.vue'
 // @ts-ignore
@@ -28,8 +28,16 @@ import { useInstances } from './store/instances'
 import MenuModulesSearch from './components/MenuModulesSearch.vue'
 import MenuEncoders from './components/MenuEncoders.vue'
 import { useMidi } from './store/midi'
+import { useApp } from './store/app'
+import { useMagicKeys } from '@vueuse/core'
 
 useMidi()
+const app = useApp()
+
+const keys = useMagicKeys()
+const ctrlAltLeft = keys['Ctrl+AltLeft']
+
+watch(ctrlAltLeft, (v) => v && app.toggleViewMode())
 
 const instances = useInstances()
 instances.add('Input', { x: 200, y: 200 })

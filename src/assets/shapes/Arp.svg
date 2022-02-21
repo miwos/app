@@ -1,0 +1,9 @@
+<svg width="125" height="125" viewBox="0 0 125 125" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Arp">
+<path id="shape" d="M62.5 5L103.159 21.8414L120 62.5L103.159 103.159L62.5 120L21.8414 103.159L5 62.5L21.8414 21.8414L62.5 5Z" fill="#C4C4C4"/>
+<path id="props" d="M115 62.5L125 62.5" stroke="#00D300"/>
+<path id="props_2" d="M0 62.5L10 62.5" stroke="#00D300"/>
+<path id="midi-out" d="M62.5 115V125" stroke="#0000FF"/>
+<path id="midi-in" d="M62.5 10V0" stroke="#0000FF"/>
+</g>
+</svg>

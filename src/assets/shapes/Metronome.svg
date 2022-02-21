@@ -1,0 +1,8 @@
+<svg width="62" height="62" viewBox="0 0 62 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Metronome">
+<path id="shape" d="M53 30.5C53 42.9264 42.9264 53 30.5 53C18.0736 53 8 42.9264 8 30.5C8 18.0736 18.0736 8 30.5 8C42.9264 8 53 18.0736 53 30.5Z" fill="#C4C4C4"/>
+<path id="props" d="M48 31L58 31" stroke="#00D300"/>
+<path id="props_2" d="M3 31L13 31" stroke="#00D300"/>
+<path id="trigger-out" d="M31 48L31 58" stroke="#0000FF"/>
+</g>
+</svg>

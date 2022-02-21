@@ -1,8 +1,7 @@
 <template>
   <div class="input">
     <input
-      @mousedown.prevent
-      @mouseup="test"
+      ref="input"
       :value="value"
       type="number"
       v-bind="{ min, max, step }"
@@ -12,6 +11,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 defineProps<{
   value: number
   unit: string
@@ -20,7 +21,13 @@ defineProps<{
   step?: number
 }>()
 
-const test = () => console.log('jau')
+const input = ref<HTMLInputElement | null>(null)
+
+const focus = () => {
+  window.setTimeout(() => input.value?.focus())
+}
+
+defineExpose({ focus })
 </script>
 
 <style scoped lang="scss">

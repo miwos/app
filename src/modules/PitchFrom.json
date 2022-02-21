@@ -1,0 +1,11 @@
+{
+  "id": "PitchFrom",
+  "shapeId": "PitchFrom",
+  "props": {
+    "pitchKey": {
+      "min": -24,
+      "max": 24,
+      "default": 0
+    }
+  }
+}

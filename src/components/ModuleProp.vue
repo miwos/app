@@ -1,17 +1,33 @@
 <template>
-  <div class="module-prop" :class="{ mapped: !!mappedEncoder }" @dblclick="map">
+  <div
+    class="module-prop"
+    ref="el"
+    :class="{
+      mapped: !!mappedEncoder,
+      'side-left': side === 'left',
+      'side-right': side === 'right',
+    }"
+    @dblclick="map"
+  >
     <div class="module-prop-handle"></div>
-
-    <span class="module-prop-name">{{ props.name }}</span>
-    <BaseInput
-      type="number"
-      unit="♪"
-      :value="props.value"
-      :min="module.props[name].min"
-      :max="module.props[name].max"
-      :step="module.props[name].step"
-      @change="setProp(parseFloat(($event.target as any).value))"
-    />
+    <div class="module-prop-content">
+      <button
+        class="module-prop-name"
+        v-if="isViewModeVerbose || !isFocused"
+        @mousedown="onInputMouseDown"
+      >
+        {{ props.name }}
+      </button>
+      <BaseInput
+        v-if="isViewModeVerbose || isFocused"
+        ref="input"
+        type="number"
+        unit="♯"
+        :value="props.value"
+        v-bind="module.props[name]"
+        @change="setProp(parseFloat(($event.target as any).value))"
+      />
+    </div>
 
     <div class="module-prop-mapping" v-if="showMapping">
       <select
@@ -29,12 +45,14 @@
 </template>
 
 <script setup lang="ts">
+import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
+import { useApp } from '@/store/app'
 import { useInstances } from '@/store/instances'
 import { useMapping } from '@/store/mapping'
 import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
-import { inject, nextTick, ref } from 'vue'
+import { computed, inject, nextTick, ref } from 'vue'
 import BaseInput from './BaseInput.vue'
 
 const props = defineProps<{
@@ -47,11 +65,25 @@ const props = defineProps<{
 const instance = inject<ModuleInstance>('instance')!
 const module = inject<Module>('module')!
 
+const el = ref<HTMLElement | null>(null)
+const input = ref<HTMLElement | null>(null)
 const mappingSelect = ref<HTMLElement | null>(null)
+const app = useApp()
 const mapping = useMapping()
 const instances = useInstances()
 const showMapping = ref(false)
 const mappedEncoder = mapping.getMappedEncoder(instance.id, props.name)
+const isFocused = ref(false)
+const isViewModeVerbose = computed(() => app.viewMode === 'verbose')
+
+onMouseDownOutside(el, () => (isFocused.value = false))
+
+const onInputMouseDown = async () => {
+  if (isViewModeVerbose.value) return
+  isFocused.value = true
+  await nextTick()
+  input.value?.focus()
+}
 
 const setProp = (value: number) =>
   instances.setProp(instance.id, props.name, value)
@@ -72,18 +104,31 @@ const map = async () => {
   transform: translateY(-50%);
   top: v-bind('position.y + `px`');
   left: v-bind('position.x + `px`');
+  gap: 0.5em;
+  height: 2em;
 
   display: flex;
   align-items: center;
   color: var(--module-outline-color);
 
+  &.side-left {
+    flex-direction: row-reverse;
+    transform: translate(-100%, -50%);
+  }
+
+  &-content {
+    display: flex;
+    gap: 0.25em;
+  }
+
   &-handle {
+    display: block;
     width: 1rem;
-    aspect-ratio: 1;
+    height: 1rem;
     border-radius: 50%;
+    background-color: red;
     background-color: var(--module-shape-color);
     transition: fill var(--fade-duration);
-    margin-right: 0.5em;
     .mapped & {
       background-color: var(--mapping-color);
     }
@@ -91,7 +136,8 @@ const map = async () => {
 
   &-name {
     text-transform: capitalize;
-    margin-right: 0.25em;
+    white-space: nowrap;
+    cursor: pointer;
   }
 }
 

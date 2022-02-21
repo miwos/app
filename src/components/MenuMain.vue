@@ -4,7 +4,7 @@
     <button>File</button>
     <button>Edit</button>
     <button>Clear</button>
-    {{ useBridge().usedMemory }}
+    RAM: {{ useBridge().usedMemory }}kb
   </BaseMenu>
 </template>
 

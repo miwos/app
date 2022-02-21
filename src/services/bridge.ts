@@ -44,7 +44,7 @@ class Bridge {
 
     this.osc.on('/instance/prop', ({ args }) => {
       const [instanceId, propName, value] = args
-      useInstances().get(instanceId).propValues[propName] = value
+      useInstances().items[instanceId].propValues[propName] = value
     })
 
     this.osc.on('/instance/in-out', ({ args }) => {

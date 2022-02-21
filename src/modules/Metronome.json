@@ -1,0 +1,14 @@
+{
+  "id": "Metronome",
+  "shapeId": "Metronome",
+  "component": "Metronome.vue",
+  "props": {
+    "speed": {
+      "type": "number",
+      "default": 250,
+      "min": 30,
+      "max": 1000,
+      "step": 1
+    }
+  }
+}
