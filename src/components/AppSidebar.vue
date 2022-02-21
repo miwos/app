@@ -1,5 +1,7 @@
 <template>
-  <LuaEditor ref="editor" />
+  <div class="editor-wrapper">
+    <LuaEditor ref="editor" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -16,3 +18,10 @@ const resize = () => (editor.value as any)?.resize()
 
 defineExpose({ resize })
 </script>
+
+<style scoped lang="scss">
+.editor-wrapper {
+  background-color: #1e1e1e;
+  height: 100%;
+}
+</style>

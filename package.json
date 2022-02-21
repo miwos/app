@@ -1,13 +1,16 @@
 {
   "name": "app-ts",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "lua-language-server": "node ./scripts/startLuaLanguageServer.js",
     "serve": "vite preview"
   },
   "dependencies": {
     "@monaco-lua/client": "file:../../monaco-lua/client",
+    "@monaco-lua/server": "file:../../monaco-lua/server",
     "@vueuse/core": "^7.5.3",
     "async-osc": "file:../../async-osc",
     "colord": "^2.9.2",

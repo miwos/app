@@ -13,9 +13,9 @@ import {
 } from '@monaco-lua/client'
 ;(window as any).MonacoEnvironment = { getWorker: () => new editorWorker() }
 
-registerLanguage(monaco)
-registerFormatting(monaco)
-// connectLanguageServer(monaco, 'ws://localhost:8080')
+registerLanguage(monaco as any)
+registerFormatting(monaco as any)
+connectLanguageServer(monaco, 'ws://localhost:8080')
 
 const el = ref<HTMLElement | null>(null)
 
