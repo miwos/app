@@ -5,6 +5,7 @@ import { Point } from '@/types/Point'
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
 import { useConnections } from './connections'
+import { useMapping } from './mapping'
 import { useModules } from './modules'
 import { usePatch } from './patch'
 import { useShapes } from './shapes'
@@ -48,6 +49,8 @@ export const useInstances = defineStore('instances', {
         return { ...instance, module, shape, isFocused }
       },
 
+    list: (state) => Object.values(state.items),
+
     sorted: (state) => state.sortedIds.map((id) => state.items[id]),
 
     isFocused: (state) => (id: ModuleInstance['id']) =>
@@ -88,6 +91,16 @@ export const useInstances = defineStore('instances', {
       const connections = useConnections()
       for (const connection of connections.listConnectedToInstance(id))
         connections.remove(connection.id, false)
+
+      // Remove all encoders that were mapped to the instance.
+      const mapping = useMapping()
+      for (const page of mapping.pages) {
+        for (const encoder of Object.values(page.encoders)) {
+          if (encoder.mappedTo && encoder.mappedTo.instanceId === id) {
+            mapping.clearEncoder(encoder.id)
+          }
+        }
+      }
 
       this.sortedIds.splice(this.sortedIds.indexOf(id), 1)
       delete this.items[id]
