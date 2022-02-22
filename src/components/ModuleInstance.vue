@@ -12,7 +12,7 @@
   >
     <ShapePath ref="shape" />
     <ShapeMask :id="maskId" />
-    <div class="module-content" ref="content">
+    <div class="module-content" ref="content" @contextmenu="test">
       <ModuleContent />
     </div>
     <ShapeOutline />
@@ -34,6 +34,11 @@ import ShapeOutline from './ShapeOutline.vue'
 import ShapePath from './ShapePath.vue'
 import ModuleContent from './ModuleContent.vue'
 
+const test = (e: Event) => {
+  e.preventDefault()
+  console.log('yey!', e)
+}
+
 const props = defineProps<{
   id: number
   position: Point
@@ -52,7 +57,6 @@ const shape = instance.shape
 const module = instance.module
 const maskId = `instance-${props.id}-mask`
 const isInputOrOutput = module.id === 'Input' || module.id === 'Output'
-const shouldShowProps = !isInputOrOutput && shape.props
 
 provide('instance', instance)
 provide('shape', shape)
@@ -82,6 +86,7 @@ const remove = (event: KeyboardEvent) => {
   }
 
   &-content {
+    pointer-events: all;
     position: absolute;
     top: 0;
     left: 0;

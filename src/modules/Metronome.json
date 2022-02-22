@@ -3,10 +3,10 @@
   "shapeId": "Metronome",
   "component": "Metronome.vue",
   "props": {
-    "speed": {
+    "time": {
       "type": "number",
-      "default": 250,
-      "min": 30,
+      "default": 500,
+      "min": 5,
       "max": 1000,
       "step": 1
     }

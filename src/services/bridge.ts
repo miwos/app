@@ -8,6 +8,15 @@ import { Log } from '@/types/Log'
 import { InputOutput } from 'shape-compiler'
 import { useMapping } from '@/store/mapping'
 
+enum Signal {
+  Midi,
+  Trigger,
+}
+enum Direction {
+  In,
+  Out,
+}
+
 class Bridge {
   private osc = markRaw(new AsyncOsc(new WebSerialTransport()))
   private memoryInterval: number | undefined
@@ -47,25 +56,44 @@ class Bridge {
       useInstances().items[instanceId].propValues[propName] = value
     })
 
+    this.osc.on('/bridge/active-outputs', ({ args }) => {
+      for (const instance of useInstances().list) {
+        instance.activeInputOutputIds.clear()
+      }
+
+      const pairs = args[0].split(',')
+      for (const pair of pairs) {
+        const [instanceId, index] = pair.split('-')
+        const id = `midi-out-${index}` as InputOutput['id']
+        const instance = useInstances().get(instanceId)
+        instance.activeInputOutputIds.add(id)
+      }
+    })
+
     this.osc.on('/instance/in-out', ({ args }) => {
-      // TODO: make this work for non-midi data.
+      // Todo show active trigger input/outputs
+      console.log('in out')
 
-      const [direction, instanceId, index] = args
-      const midiMessage = args.slice(3)
-      const [status] = midiMessage
-      const midiType = status & 0xf0
+      const [signal, direction, instanceId, index] = args
+      const directionName = Direction[direction].toLowerCase()
 
-      const isActive = midiType !== MidiType.NoteOff
-      const { activeInputOutputIds } = useInstances().get(instanceId)
-      const id = `midi-${direction}-${index}` as InputOutput['id']
-      const inoutId = `midi-inout-${index}` as InputOutput['id']
+      if (signal === Signal.Midi) {
+        const midiMessage = args.slice(4)
+        const [status] = midiMessage
+        const midiType = status & 0xf0
 
-      if (isActive) {
-        activeInputOutputIds.add(id)
-        activeInputOutputIds.add(inoutId)
-      } else {
-        activeInputOutputIds.delete(id)
-        activeInputOutputIds.delete(inoutId)
+        const isActive = midiType !== MidiType.NoteOff
+        const { activeInputOutputIds } = useInstances().get(instanceId)
+        const id = `midi-${directionName}-${index}` as InputOutput['id']
+        const inoutId = `midi-inout-${index}` as InputOutput['id']
+
+        if (isActive) {
+          activeInputOutputIds.add(id)
+          activeInputOutputIds.add(inoutId)
+        } else {
+          activeInputOutputIds.delete(id)
+          activeInputOutputIds.delete(inoutId)
+        }
       }
     })
 

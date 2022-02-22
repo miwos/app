@@ -30,6 +30,7 @@ import MenuEncoders from './components/MenuEncoders.vue'
 import { useMidi } from './store/midi'
 import { useApp } from './store/app'
 import { useMagicKeys } from '@vueuse/core'
+import AppMenu from './components/AppMenu.vue'
 
 useMidi()
 const app = useApp()
