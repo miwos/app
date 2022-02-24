@@ -93,6 +93,11 @@ body {
 
 .splitpanes__splitter {
   width: 7px;
-  background-color: var(--module-shape-color);
+  margin: 0 -3.5px;
+  z-index: 1;
+
+  &:hover {
+    background-color: var(--module-shape-color-lighter);
+  }
 }
 </style>
