@@ -3,6 +3,8 @@ import { defineStore } from 'pinia'
 import type LuaOnArduino from 'lua-on-arduino'
 import { useBridge } from '@/services/bridge'
 import { computed, markRaw } from 'vue'
+import { useInstances } from './instances'
+import { nameWithoutExt } from '@/utils'
 
 interface File {
   name: string
@@ -70,8 +72,11 @@ export const useEditor = defineStore('editor', {
 
     async update(name: string) {
       if (!loa) throw new Error('Loa is not ready.')
-
       loa.updateFile(name)
+      const moduleId = nameWithoutExt(name)
+      useInstances().list.forEach(
+        (v) => v.moduleId === moduleId && (v.isUpdating = true)
+      )
     },
 
     async saveAndUpdate(name: string) {

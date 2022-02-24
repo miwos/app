@@ -52,18 +52,7 @@ const shapes = useShapes()
 const modules = useModules()
 const bridge = useBridge()
 
-watch(editor.focusedFile, (v) => monacoEditor?.setModel(v?.model ?? null))
-
-const onKeyDown = (e: KeyboardEvent) => {
-  if (e.code === 'KeyS' && e.ctrlKey) {
-    e.preventDefault()
-    save()
-  }
-}
-
-const save = () => {
-  if (editor.focusedFileName) editor.saveAndUpdate(editor.focusedFileName)
-}
+watch(editor.focusedFile, (v) => setModel(v?.model))
 
 onMounted(async () => {
   monacoEditor = markRaw(
@@ -74,13 +63,36 @@ onMounted(async () => {
       minimap: { enabled: false },
     })
   )
-
+  setModel(editor.focusedFile.value?.model)
   window.addEventListener('resize', resize)
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', resize)
 })
+
+const onKeyDown = (e: KeyboardEvent) => {
+  if (e.code === 'KeyS' && e.ctrlKey) {
+    e.preventDefault()
+    save()
+  }
+}
+
+const setModel = (model: monaco.editor.ITextModel) => {
+  if (!model) return
+  monacoEditor?.setModel(model)
+
+  // Add a blank line at the beginning of the document.
+  // https://github.com/Microsoft/monaco-editor/issues/1333#issuecomment-468830253
+  monacoEditor?.changeViewZones((changeAccessor) => {
+    const domNode = document.createElement('div')
+    changeAccessor.addZone({ afterLineNumber: 0, heightInLines: 1, domNode })
+  })
+}
+
+const save = () => {
+  if (editor.focusedFileName) editor.saveAndUpdate(editor.focusedFileName)
+}
 
 const resize = () => nextTick().then(() => monacoEditor?.layout())
 
