@@ -8,7 +8,6 @@
       viewBox="0 0 10 10"
       @transitionend="onTransitionEnd"
     >
-      <circle class="encoder-shape" cx="5" cy="5" r="5" />
       <line class="encoder-dial" x1="5" y1="0" x2="5" y2="2.5" />
     </svg>
   </button>
@@ -38,9 +37,12 @@ const onTransitionEnd = () => (transitionEnabled.value = false)
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/utilities';
+
 .encoder {
   width: 40px;
   height: 40px;
+  border-radius: 50%;
 
   &-icon {
     overflow: visible;
@@ -53,13 +55,12 @@ const onTransitionEnd = () => (transitionEnabled.value = false)
     transition: transform var(--fade-duration);
   }
 
-  &-shape {
-    fill: var(--glass-color);
-    transition: fill var(--fade-duration);
+  &.mapped {
+    background-color: var(--mapping-color);
   }
 
-  &.mapped &-shape {
-    fill: var(--mapping-color);
+  &:not(.mapped) {
+    @include utilities.glass;
   }
 
   &-dial {
