@@ -12,7 +12,11 @@
   >
     <ShapePath ref="shape" />
     <ShapeMask :id="maskId" />
-    <div class="module-content" ref="content" @contextmenu="test">
+    <div
+      class="module-content"
+      ref="content"
+      @contextmenu.prevent="onContextMenu"
+    >
       <ModuleContent />
     </div>
     <ShapeOutline />
@@ -33,10 +37,11 @@ import ShapeMask from './ShapeMask.vue'
 import ShapeOutline from './ShapeOutline.vue'
 import ShapePath from './ShapePath.vue'
 import ModuleContent from './ModuleContent.vue'
+import { useEditor } from '@/store/editor'
 
-const test = (e: Event) => {
-  e.preventDefault()
-  console.log('yey!', e)
+const onContextMenu = async () => {
+  await editor.enable()
+  editor.open(`lua/modules/${module.id}.lua`)
 }
 
 const props = defineProps<{
@@ -51,6 +56,7 @@ const el = ref<HTMLElement | null>(null)
 const content = ref<HTMLElement | null>(null)
 const { position, isDragging } = useDragElement(content)
 const instances = useInstances()
+const editor = useEditor()
 const instance = instances.get(props.id)
 const isFocused = instances.isFocused(props.id)
 const shape = instance.shape

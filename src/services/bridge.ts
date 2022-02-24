@@ -18,7 +18,7 @@ enum Direction {
 }
 
 class Bridge {
-  private osc = markRaw(new AsyncOsc(new WebSerialTransport()))
+  public osc = markRaw(new AsyncOsc(new WebSerialTransport()))
   private memoryInterval: number | undefined
 
   isConnected = ref(false)

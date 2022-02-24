@@ -1,33 +1,74 @@
 <template>
-  <div class="editor" ref="el"></div>
+  <div class="editor" :class="{ 'not-connected': !bridge.isConnected.value }">
+    <div class="editor-tablist" role="tablist">
+      <button
+        v-for="[name] in editor.files"
+        :key="name"
+        role="tab"
+        class="editor-tab"
+        :class="{ focused: editor.focusedFileName === name }"
+        @mousedown="editor.open(name)"
+      >
+        <ShapePath
+          class="editor-tab-thumb"
+          :shape="shapes.get(modules.get(nameWithoutExt(name)).shapeId)"
+        />
+        {{ basename(name) }}
+      </button>
+    </div>
+    <div
+      class="editor-document"
+      ref="editorContainer"
+      @keydown.ctrl="onKeyDown"
+    ></div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, markRaw, nextTick } from 'vue'
-import * as monaco from 'monaco-editor-core'
-import editorWorker from 'monaco-editor-core/esm/vs/editor/editor.worker?worker'
+import { useBridge } from '@/services/bridge'
+import { useEditor } from '@/store/editor'
+import { useModules } from '@/store/modules'
+import { useShapes } from '@/store/shapes'
+import { basename, nameWithoutExt } from '@/utils'
 import {
   connectLanguageServer,
-  registerLanguage,
   registerFormatting,
+  registerLanguage,
 } from '@monaco-lua/client'
+import * as monaco from 'monaco-editor-core'
+import editorWorker from 'monaco-editor-core/esm/vs/editor/editor.worker?worker'
+import { markRaw, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import ShapePath from './ShapePath.vue'
 ;(window as any).MonacoEnvironment = { getWorker: () => new editorWorker() }
 
 registerLanguage(monaco as any)
 registerFormatting(monaco as any)
 connectLanguageServer(monaco, 'ws://localhost:8080')
 
-const el = ref<HTMLElement | null>(null)
+const editorContainer = ref<HTMLElement | null>(null)
+let monacoEditor: monaco.editor.IStandaloneCodeEditor | null = null
+const editor = useEditor()
+const shapes = useShapes()
+const modules = useModules()
+const bridge = useBridge()
 
-let editor: monaco.editor.IStandaloneCodeEditor | null = null
+watch(editor.focusedFile, (v) => monacoEditor?.setModel(v?.model ?? null))
 
-onMounted(() => {
-  editor = markRaw(
-    monaco.editor.create(el.value!, {
-      model: monaco.editor.createModel(
-        `function test()\nprint('hello')\nend`,
-        'lua'
-      ),
+const onKeyDown = (e: KeyboardEvent) => {
+  if (e.code === 'KeyS' && e.ctrlKey) {
+    e.preventDefault()
+    save()
+  }
+}
+
+const save = () => {
+  if (editor.focusedFileName) editor.saveAndUpdate(editor.focusedFileName)
+}
+
+onMounted(async () => {
+  monacoEditor = markRaw(
+    monaco.editor.create(editorContainer.value!, {
+      model: editor.focusedFile.value?.model,
       theme: 'vs-dark',
       tabSize: 2,
       minimap: { enabled: false },
@@ -41,13 +82,64 @@ onUnmounted(() => {
   window.removeEventListener('resize', resize)
 })
 
-const resize = () => nextTick().then(() => editor?.layout())
+const resize = () => nextTick().then(() => monacoEditor?.layout())
 
 defineExpose({ resize })
 </script>
 
-<style>
+<style scoped lang="scss">
 .editor {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &.not-connected {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  &-tablist {
+    display: flex;
+    height: 2rem;
+    gap: 0.5rem;
+    padding: 6px;
+    background-color: #373737;
+    font-weight: 300;
+    font-size: 14px;
+    font-family: Inter;
+  }
+
+  &-tab {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-right: 0.5em;
+    padding-left: 0.35em;
+    gap: 0.3em;
+    border-radius: 4px;
+
+    color: var(--module-shape-color-lighter);
+
+    &.focused,
+    &:hover {
+      background: #616161;
+      color: white;
+    }
+  }
+
+  &-tab-thumb {
+    height: 70%;
+    width: unset;
+    aspect-ratio: 1/1;
+
+    fill: var(--glass-color-solid);
+    .focused & {
+      fill: var(--module-shape-color-lighter);
+    }
+  }
+
+  &-document {
+    flex: 1;
+  }
 }
 </style>

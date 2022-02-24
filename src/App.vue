@@ -8,7 +8,7 @@
       <MenuModulesSearch />
       <MenuParts />
     </Pane>
-    <Pane v-if="false">
+    <Pane v-if="editor.enabled">
       <AppSidebar ref="sideBar" />
     </Pane>
   </Splitpanes>
@@ -31,9 +31,11 @@ import { useMidi } from './store/midi'
 import { useApp } from './store/app'
 import { useMagicKeys } from '@vueuse/core'
 import AppMenu from './components/AppMenu.vue'
+import { useEditor } from './store/editor'
 
 useMidi()
 const app = useApp()
+const editor = useEditor()
 
 const keys = useMagicKeys()
 const ctrlAltLeft = keys['Ctrl+AltLeft']

@@ -17,8 +17,9 @@
     "fuse.js": "^6.5.3",
     "hobby-curve": "^0.2.0",
     "lua-json": "^1.0.0",
+    "lua-on-arduino": "file:../../lua-on-arduino/Desktop",
     "monaco-editor-core": "^0.32.1",
-    "osc-js": "^2.1.2",
+    "osc-js": "^2.3.0",
     "pinia": "^2.0.0-beta.3",
     "shape-compiler": "file:../shape-compiler",
     "slip": "^1.0.2",
@@ -36,7 +37,7 @@
     "prettier": "^2.3.1",
     "sass": "^1.35.1",
     "typescript": "^4.3.2",
-    "vite": "^2.3.7",
+    "vite": "^2.8.4",
     "vue-tsc": "^0.31.4"
   }
 }
