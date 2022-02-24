@@ -56,6 +56,16 @@ class Bridge {
       useInstances().items[instanceId].propValues[propName] = value
     })
 
+    this.osc.on('/instance/update', async ({ args }) => {
+      const [id] = args
+      const instance = useInstances().items[id]
+      if (instance) {
+        instance.isUpdating = false
+      } else {
+        console.warn(`Instance #${id} doesn't exist`)
+      }
+    })
+
     this.osc.on('/bridge/active-outputs', ({ args }) => {
       for (const instance of useInstances().list) {
         instance.activeInputOutputIds.clear()

@@ -79,6 +79,7 @@ export const useInstances = defineStore('instances', {
         position,
         propValues,
         activeInputOutputIds: new Set(),
+        isUpdating: false,
       }
       this.sortedIds.push(id)
 

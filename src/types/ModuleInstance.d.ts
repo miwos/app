@@ -11,4 +11,5 @@ export interface ModuleInstance {
   position: Point
   propValues: Record<string, any>
   activeInputOutputIds: Set<InputOutput['id']>
+  isUpdating: boolean
 }

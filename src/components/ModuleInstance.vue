@@ -5,6 +5,7 @@
       dragging: isDragging,
       focused: isFocused,
       clipping: !isInputOrOutput,
+      updating: isUpdating,
     }"
     ref="el"
     tabindex="0"
@@ -38,6 +39,7 @@ import ShapeOutline from './ShapeOutline.vue'
 import ShapePath from './ShapePath.vue'
 import ModuleContent from './ModuleContent.vue'
 import { useEditor } from '@/store/editor'
+import { throttle } from '@/utils'
 
 const onContextMenu = async () => {
   await editor.enable()
@@ -63,6 +65,7 @@ const shape = instance.shape
 const module = instance.module
 const maskId = `instance-${props.id}-mask`
 const isInputOrOutput = module.id === 'Input' || module.id === 'Output'
+const isUpdating = ref(false)
 
 provide('instance', instance)
 provide('shape', shape)
@@ -70,6 +73,13 @@ provide('module', module)
 
 watch(position, () => emit('update:position', position))
 onMouseDownOutside(el, () => instances.focus(null))
+
+watch(
+  () => instances.items[props.id]?.isUpdating,
+  throttle((v: boolean) => {
+    isUpdating.value = v
+  }, 150)
+)
 
 const remove = (event: KeyboardEvent) => {
   if (event.target === el.value) instances.remove(props.id)
@@ -82,6 +92,11 @@ const remove = (event: KeyboardEvent) => {
     position: absolute;
     top: v-bind('props.position.y + `px`');
     left: v-bind('props.position.x + `px`');
+
+    transition: opacity 150ms ease-out;
+    &.updating {
+      opacity: 0.5;
+    }
   }
 
   &-props {
@@ -140,6 +155,18 @@ const remove = (event: KeyboardEvent) => {
     .focused & {
       stroke: var(--module-focused-outline-color);
     }
+  }
+}
+
+@keyframes fade-in-out {
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
   }
 }
 </style>
