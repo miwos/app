@@ -1,20 +1,16 @@
 <template>
   <div class="editor-wrapper">
-    <LuaEditor ref="editor" />
+    <EditorVue ref="editor" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from 'vue'
+import { ref } from 'vue'
+import EditorVue from './EditorVue.vue'
 
-const LuaEditor = defineAsyncComponent(
-  () => import('@/components/LuaEditor.vue')
-)
+const editor = ref<InstanceType<typeof EditorVue>>()
 
-const editor = ref<InstanceType<typeof LuaEditor>>()
-
-// Cast as any, because child methods are not recognized for dynamic components.
-const resize = () => (editor.value as any)?.resize()
+const resize = () => editor.value?.resize()
 
 defineExpose({ resize })
 </script>

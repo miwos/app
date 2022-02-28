@@ -1,33 +1,25 @@
-import { defineStore } from 'pinia'
+import { useBridge } from '@/services/bridge'
+import { EditorFile } from '@/types/Editor'
+import { nameWithoutExt } from '@/utils'
 // import * as monaco from 'monaco-editor-core'
 import type LuaOnArduino from 'lua-on-arduino'
-import { useBridge } from '@/services/bridge'
-import { computed, markRaw } from 'vue'
+import { defineStore } from 'pinia'
+import { computed } from 'vue'
 import { useInstances } from './instances'
-import { nameWithoutExt } from '@/utils'
-
-interface File {
-  name: string
-  model: any
-}
 
 let loa: LuaOnArduino | null = null
-let monaco: any
 let isInit = false
 const init = async () => {
   if (isInit) return
   isInit = true
   const LuaOnArduino = (await import('lua-on-arduino')).default
   loa = new LuaOnArduino(useBridge().osc)
-  monaco = await import('monaco-editor-core')
 }
-
-// const loa = new LuaOnArduino(useBridge().osc)
 
 export const useEditor = defineStore('editor', {
   state: () => ({
     enabled: false,
-    files: new Map<File['name'], File>(),
+    files: new Map<EditorFile['name'], EditorFile>(),
     focusedFileName: null as string | null,
   }),
 
@@ -56,17 +48,17 @@ export const useEditor = defineStore('editor', {
       if (!this.files.has(name)) {
         const buffer = await loa.readFile(name)
         const content = new TextDecoder().decode(buffer ?? undefined)
-        const model = markRaw(monaco.editor.createModel(content, 'lua'))
-        this.files.set(name, { name, model })
+        this.files.set(name, { name, content })
       }
       this.focusedFileName = name
     },
 
-    async save(name: string) {
+    async save(name: string, content: string) {
       if (!loa) throw new Error('Loa is not ready.')
 
-      const content = this.files.get(name)?.model.getValue()
+      this.files.get(name)!.content = content
       const buffer = new TextEncoder().encode(content)
+
       await loa.writeFile(name, buffer)
     },
 
@@ -79,8 +71,8 @@ export const useEditor = defineStore('editor', {
       )
     },
 
-    async saveAndUpdate(name: string) {
-      await this.save(name)
+    async saveAndUpdate(name: string, content: string) {
+      await this.save(name, content)
       await this.update(name)
     },
 
