@@ -1,17 +1,18 @@
 <template>
-  <BaseMenu class="menu-encoders">
+  <div class="menu-encoders">
     <BaseEncoder :id="1" style="left: 40px" />
     <BaseEncoder :id="2" style="top: 58px" />
     <BaseEncoder :id="3" style="left: 40px; top: 116px" />
-  </BaseMenu>
+  </div>
 </template>
 
 <script setup lang="ts">
 import BaseEncoder from './BaseEncoder.vue'
-import BaseMenu from './BaseMenu.vue'
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/styles/utilities';
+
 .menu-encoders {
   position: absolute;
   top: 50%;
@@ -19,6 +20,7 @@ import BaseMenu from './BaseMenu.vue'
   width: 80px;
   height: 156px;
   transform: translateY(-50%);
+  @include utilities.menu;
 }
 
 .encoder {

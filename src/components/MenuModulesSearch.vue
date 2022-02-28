@@ -1,5 +1,5 @@
 <template>
-  <BaseMenu class="menu-modules-search" v-if="isOpen" ref="el">
+  <div class="menu-modules-search" v-if="isOpen" ref="el">
     <input
       class="search-input glass pill"
       ref="input"
@@ -19,7 +19,7 @@
       :modules="results"
       @update:value="createInstance($event)"
     />
-  </BaseMenu>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -28,7 +28,6 @@ import { useModules } from '@/store/modules'
 import { Module } from '@/types/Module'
 import { onClickOutside, onKeyDown, useMouse } from '@vueuse/core'
 import { ref } from 'vue'
-import BaseMenu from './BaseMenu.vue'
 import ModulesSelect from './ModulesSelect.vue'
 import BaseComboBox from './BaseComboBox.vue'
 
@@ -72,10 +71,13 @@ const createInstance = (moduleId: Module['id']) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/utilities';
+
 .menu-modules-search {
   position: absolute;
   top: v-bind('position.y + `px`');
   left: v-bind('position.x + `px`');
+  @include utilities.menu;
 }
 
 .search-input {

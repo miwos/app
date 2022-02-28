@@ -1,9 +1,0 @@
-.glass {
-  background-color: var(--glass-color);
-  backdrop-filter: blur(20px);
-}
-
-.glass-darker {
-  background-color: var(--glass-color-darker);
-  backdrop-filter: blur(20px);
-}

@@ -1,5 +1,5 @@
 <template>
-  <BaseMenu class="menu-parts glass">
+  <div class="menu-parts">
     <BaseButtonCircleTriplet :value="0" />
     <svg
       width="75"
@@ -14,22 +14,23 @@
         />
       </clipPath>
     </svg>
-  </BaseMenu>
+  </div>
 </template>
 
 <script setup lang="ts">
-import BaseMenu from './BaseMenu.vue'
 import BaseButtonCircleTriplet from './BaseButtonCircleTriplet.vue'
 </script>
 
 <style lang="scss" scoped>
+@use '@/styles/utilities';
+
 .menu-parts {
   position: absolute;
   bottom: 3.5rem;
   right: 0;
   clip-path: url(#menu-parts-clip);
-  // Override base menu height;
-  height: auto;
+  @include utilities.menu;
+  @include utilities.glass;
 
   &:deep(.button-circle) {
     position: absolute;
