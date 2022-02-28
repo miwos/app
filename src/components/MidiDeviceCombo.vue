@@ -1,5 +1,5 @@
 <template>
-  <ComboBox
+  <BaseComboBox
     :options="devices"
     :value="value"
     @update:value="emit('update:value', $event)"
@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { useMidi } from '../store/midi'
-import ComboBox from './ComboBox.vue'
+import BaseComboBox from './BaseComboBox.vue'
 
 defineProps<{
   value: any

@@ -8,7 +8,11 @@
       value=""
       @input="search(($event.target as any).value)"
     />
-    <ComboBox v-if="results.length" :options="results" :value="results[0].id" />
+    <BaseComboBox
+      v-if="results.length"
+      :options="results"
+      :value="results[0].id"
+    />
     <ModulesSelect
       v-if="results.length"
       class="search-results"
@@ -26,7 +30,7 @@ import { onClickOutside, onKeyDown, useMouse } from '@vueuse/core'
 import { ref } from 'vue'
 import BaseMenu from './BaseMenu.vue'
 import ModulesSelect from './ModulesSelect.vue'
-import ComboBox from './ComboBox.vue'
+import BaseComboBox from './BaseComboBox.vue'
 
 const mouse = useMouse()
 const instances = useInstances()

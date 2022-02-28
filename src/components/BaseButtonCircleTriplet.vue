@@ -1,6 +1,6 @@
 <template>
   <div class="button-circle-triplet">
-    <ButtonCircle
+    <BaseButtonCircle
       v-for="(_, index) in 3"
       class="button"
       :aria-selected="isSelected(index)"
@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import ButtonCircle from './ButtonCircle.vue'
+import BaseButtonCircle from './BaseButtonCircle.vue'
 
 const props = defineProps<{
   value: number

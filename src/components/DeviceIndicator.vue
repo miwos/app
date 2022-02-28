@@ -1,5 +1,5 @@
 <template>
-  <ButtonCircle
+  <BaseButtonCircle
     class="device-indicator"
     :class="{ connected }"
     @click="toggleConnection"
@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { useBridge } from '@/services/bridge'
 import { computed } from 'vue'
-import ButtonCircle from './ButtonCircle.vue'
+import BaseButtonCircle from './BaseButtonCircle.vue'
 
 const bridge = useBridge()
 const connected = bridge.isConnected

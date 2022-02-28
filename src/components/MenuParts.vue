@@ -1,6 +1,6 @@
 <template>
   <BaseMenu class="menu-parts glass">
-    <ButtonCircleTriplet :value="0" />
+    <BaseButtonCircleTriplet :value="0" />
     <svg
       width="75"
       height="112"
@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import BaseMenu from './BaseMenu.vue'
-import ButtonCircleTriplet from './ButtonCircleTriplet.vue'
+import BaseButtonCircleTriplet from './BaseButtonCircleTriplet.vue'
 </script>
 
 <style lang="scss" scoped>

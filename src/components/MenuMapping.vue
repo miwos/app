@@ -1,6 +1,6 @@
 <template>
   <BaseMenu class="menu-mapping glass pill">
-    <ButtonCircleTriplet
+    <BaseButtonCircleTriplet
       :value="mapping.currentPageIndex"
       @update:value="mapping.selectPage($event)"
     />
@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { useMapping } from '@/store/mapping'
 import BaseMenu from './BaseMenu.vue'
-import ButtonCircleTriplet from './ButtonCircleTriplet.vue'
+import BaseButtonCircleTriplet from './BaseButtonCircleTriplet.vue'
 
 const mapping = useMapping()
 </script>
