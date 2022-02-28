@@ -42,6 +42,7 @@ import ModuleContent from './ModuleContent.vue'
 import { useEditor } from '@/store/editor'
 import { throttle } from '@/utils'
 import BaseContextMenu from './BaseContextMenu.vue'
+import { useBridge } from '@/services/bridge'
 
 const props = defineProps<{
   id: number
@@ -74,10 +75,8 @@ onMouseDownOutside(el, () => instances.focus(null))
 
 const onContextMenu = (e: MouseEvent) => contextMenu.value?.open(e)
 
-const editModule = async () => {
-  await editor.enable()
-  editor.open(`lua/modules/${module.id}.lua`)
-}
+const editModule = async () => editor.open(`lua/modules/${module.id}.lua`)
+
 const forkModule = () => {}
 
 const contextActions = [

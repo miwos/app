@@ -1,23 +1,26 @@
-import { markRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { Module } from '@/types/Module'
 import Fuse from 'fuse.js'
+import { useBridge } from '@/services/bridge'
+import { nameWithoutExt } from '@/utils'
 
-const moduleImports = import.meta.globEager('../modules/*.json')
-const modules: Record<Module['id'], Module> = Object.fromEntries(
-  Object.values(moduleImports).map((module) => {
-    const definition = module.default
-    const shapeId = definition.shapeId ?? 'Round'
-    return [definition.id, { props: {}, ...definition, shapeId }]
+const componentImports = import.meta.globEager('../modules/*.vue')
+const components: Record<Module['id'], string> = Object.fromEntries(
+  Object.entries(componentImports).map(([path]) => {
+    const id = path.match(/\/([^/]+)\.(.+)$/)![1]
+    return [id, path]
   })
 )
 
-const fuse = new Fuse(Object.keys(modules), { minMatchCharLength: 2 })
+let fuse: Fuse<string> | undefined
+const updateFuse = (keys: string[]) => {
+  fuse = new Fuse(keys, { minMatchCharLength: 2 })
+}
 
 export const useModules = defineStore('modules', {
   state: () => ({
     // Once the modules are imported they won't change during runtime.
-    items: markRaw(modules),
+    items: {} as Record<Module['id'], Module>,
   }),
 
   getters: {
@@ -27,7 +30,34 @@ export const useModules = defineStore('modules', {
       return module
     },
 
-    search: (state) => (pattern: string) =>
-      fuse.search(pattern).map(({ item }) => state.items[item]),
+    search:
+      (state) =>
+      (pattern: string): Module[] =>
+        fuse?.search(pattern).map(({ item }) => state.items[item]) ?? [],
+  },
+
+  actions: {
+    async loadFromDevice() {
+      const bridge = useBridge()
+      const dirList = await bridge.loa.readDirectory('lua/modules')
+      for (const file of dirList) {
+        const moduleId = nameWithoutExt(file)
+        const response = await bridge.osc.sendRequest('/module/info', [
+          moduleId,
+        ])
+
+        const info = JSON.parse(response)
+        const shapeId = info.shape ?? 'Round'
+        delete info.shape
+
+        this.items[moduleId] = {
+          id: moduleId,
+          shapeId,
+          component: components[moduleId],
+          ...info,
+        }
+      }
+      updateFuse(Object.keys(this.items))
+    },
   },
 })

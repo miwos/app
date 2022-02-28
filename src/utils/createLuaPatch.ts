@@ -51,7 +51,7 @@ export const createLuaPatch = () => {
   // and the quotes and the `%` characters removed afterwards.
   const patchLua = format(patch).replace(/('%|%')/g, '')
 
-  console.log(`${require}\n\n${patchLua}`)
+  // console.log(`${require}\n\n${patchLua}`)
 
   return `${require}\n\n${patchLua}`
 }

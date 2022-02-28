@@ -1,7 +1,0 @@
-{
-  "id": "ChordSplit",
-  "shapeId": "Split",
-  "props": {
-    "thresh": { "default": 3, "min": 2, "max": 5, "step": 1 }
-  }
-}

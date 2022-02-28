@@ -22,7 +22,7 @@
 import { useShapes } from '@/store/shapes'
 import { Module } from '@/types/Module'
 import { onKeyDown } from '@vueuse/core'
-import { ref, watch } from 'vue'
+import { ref, toRefs, watch } from 'vue'
 import ShapePath from './ShapePath.vue'
 
 const props = defineProps<{
@@ -36,11 +36,9 @@ const emit = defineEmits<{
 
 const shapes = useShapes()
 const focusedIndex = ref(0)
+const { modules } = toRefs(props)
 
-watch(
-  () => props.modules,
-  () => (focusedIndex.value = 0)
-)
+watch(modules, () => (focusedIndex.value = 0))
 
 onKeyDown('ArrowUp', (e) => {
   e.preventDefault()
@@ -52,13 +50,13 @@ onKeyDown('ArrowDown', (e) => {
   focus(focusedIndex.value + 1)
 })
 
-onKeyDown('Enter', () =>
-  emit('update:value', props.modules[focusedIndex.value].id)
-)
+onKeyDown('Enter', () => {
+  emit('update:value', modules.value[focusedIndex.value].id)
+})
 
 onKeyDown(['PageUp', 'Home'], () => focus(0))
 
-onKeyDown(['PageDown', 'End'], () => focus(props.modules.length - 1))
+onKeyDown(['PageDown', 'End'], () => focus(modules.value.length - 1))
 
 const focus = (index: number) => {
   const { modules } = props

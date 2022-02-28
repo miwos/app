@@ -1,20 +1,9 @@
 import { useBridge } from '@/services/bridge'
 import { EditorFile } from '@/types/Editor'
 import { nameWithoutExt } from '@/utils'
-// import * as monaco from 'monaco-editor-core'
-import type LuaOnArduino from 'lua-on-arduino'
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
 import { useInstances } from './instances'
-
-let loa: LuaOnArduino | null = null
-let isInit = false
-const init = async () => {
-  if (isInit) return
-  isInit = true
-  const LuaOnArduino = (await import('lua-on-arduino')).default
-  loa = new LuaOnArduino(useBridge().osc)
-}
 
 export const useEditor = defineStore('editor', {
   state: () => ({
@@ -33,17 +22,9 @@ export const useEditor = defineStore('editor', {
   },
 
   actions: {
-    async enable() {
-      this.enabled = true
-      await init()
-    },
-
-    disable() {
-      this.enabled = false
-    },
-
     async open(name: string) {
-      if (!loa) throw new Error('Loa is not ready.')
+      const { loa } = useBridge()
+      this.enabled = true
 
       if (!this.files.has(name)) {
         const buffer = await loa.readFile(name)
@@ -54,7 +35,7 @@ export const useEditor = defineStore('editor', {
     },
 
     async save(name: string, content: string) {
-      if (!loa) throw new Error('Loa is not ready.')
+      const { loa } = useBridge()
 
       this.files.get(name)!.content = content
       const buffer = new TextEncoder().encode(content)
@@ -63,7 +44,7 @@ export const useEditor = defineStore('editor', {
     },
 
     async update(name: string) {
-      if (!loa) throw new Error('Loa is not ready.')
+      const { loa } = useBridge()
       loa.updateFile(name)
       const moduleId = nameWithoutExt(name)
       useInstances().list.forEach(

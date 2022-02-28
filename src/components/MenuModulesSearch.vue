@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-modules-search" v-if="isOpen" ref="el">
+  <div class="menu-modules-search" v-show="isOpen" ref="el">
     <input
       class="search-input"
       ref="input"
@@ -9,10 +9,9 @@
       @input="search(($event.target as any).value)"
     />
     <ModulesSelect
-      v-if="results.length"
       class="search-results"
       :modules="results"
-      @update:value="createInstance($event)"
+      @update:value="createInstance"
     />
   </div>
 </template>
@@ -38,10 +37,11 @@ onKeyDown(' ', (e) => e.ctrlKey && open())
 onKeyDown('Escape', () => close())
 onClickOutside(el, () => close())
 
-const open = async () => {
+const open = () => {
   if (isOpen.value) return
   // Break reactivity, because we don't want the menu to move while it's open.
   position.value = { x: mouse.x.value, y: mouse.y.value }
+  input.value && (input.value.value = '')
   isOpen.value = true
 
   // Somehow focusing the input after a `nextTick()` won't display the
@@ -58,7 +58,7 @@ const search = (pattern: string) => {
   results.value = modules.search(pattern)
 }
 
-const createInstance = (moduleId: Module['id']) => {
+const createInstance = async (moduleId: Module['id']) => {
   instances.add(moduleId, position.value)
   close()
 }

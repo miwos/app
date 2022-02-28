@@ -41,9 +41,9 @@ const ctrlAltLeft = keys['Ctrl+AltLeft']
 
 watch(ctrlAltLeft, (v) => v && app.toggleViewMode())
 
-const instances = useInstances()
-instances.add('Input', { x: 200, y: 200 })
-instances.add('Output', { x: 200, y: 400 })
+// const instances = useInstances()
+// instances.add('Input', { x: 200, y: 200 })
+// instances.add('Output', { x: 200, y: 400 })
 
 const sideBar = ref<InstanceType<typeof AppSidebar>>()
 </script>

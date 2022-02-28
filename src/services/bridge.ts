@@ -3,10 +3,13 @@ import WebSerialTransport from 'async-osc/dist/WebSerialTransport'
 import { useLogs } from '@/store/logs'
 import { ref, markRaw } from 'vue'
 import { useInstances } from '@/store/instances'
-import { MidiType } from '@/utils'
+import { MidiType, nameWithoutExt } from '@/utils'
 import { Log } from '@/types/Log'
 import { InputOutput } from 'shape-compiler'
 import { useMapping } from '@/store/mapping'
+import { Module } from '@/types/Module'
+import LuaOnArduino from 'lua-on-arduino'
+import { useModules } from '@/store/modules'
 
 enum Signal {
   Midi,
@@ -19,6 +22,7 @@ enum Direction {
 
 class Bridge {
   public osc = markRaw(new AsyncOsc(new WebSerialTransport()))
+  public loa = markRaw(new LuaOnArduino(this.osc, { debug: false }))
   private memoryInterval: number | undefined
 
   isConnected = ref(false)
@@ -118,6 +122,8 @@ class Bridge {
     this.osc.sendMessage('/bridge/connect')
     this.isConnected.value = true
 
+    useModules().loadFromDevice()
+
     this.memoryInterval = window.setInterval(async () => {
       this.usedMemory.value = parseInt(
         await this.osc.sendRequest('/info/memory-usage')
@@ -133,8 +139,8 @@ class Bridge {
     }
   }
 
-  sendProp(moduleId: number, name: string, value: number) {
-    this.osc.sendMessage('patch/prop', [moduleId, name, value])
+  sendProp(instanceId: number, name: string, value: number) {
+    this.osc.sendMessage('patch/prop', [instanceId, name, value])
   }
 
   selectPage(index: number) {
@@ -153,6 +159,17 @@ class Bridge {
         `Couldn't update patch '${name}' (${(error as Error).message})`
       )
     }
+  }
+
+  async getModuleInfo(moduleId: Module['id']) {
+    const modules = await this.loa.readDirectory('lua/modules')
+    for (const module of modules) {
+      const moduleId = nameWithoutExt(module)
+      const response = await this.osc.sendRequest('/module/info', [moduleId])
+      console.log(JSON.parse(response))
+    }
+    // const response = await this.osc.sendRequest('/module/info', [moduleId])
+    // return JSON.parse(response)
   }
 
   private logError(message: string) {
