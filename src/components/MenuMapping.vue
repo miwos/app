@@ -18,15 +18,15 @@ const mapping = useMapping()
 @use '@/styles/utilities';
 
 .menu-mapping {
+  @include utilities.menu;
+  @include utilities.glass;
+  @include utilities.pill;
   position: absolute;
   bottom: 0;
   right: 0;
   margin-right: 2rem;
   gap: 0.5rem;
   display: flex;
-  @include utilities.menu;
-  @include utilities.glass;
-  @include utilities.pill;
 }
 
 .button-circle-triplet {

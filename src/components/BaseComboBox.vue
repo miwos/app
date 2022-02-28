@@ -133,13 +133,13 @@ const updateValue = (index: number) =>
   }
 
   &-list {
+    @include utilities.glass;
+    @include utilities.font-menu;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     top: v-bind('listPosition + `px`');
     border-radius: var(--radius);
-    @include utilities.glass;
-    @include utilities.font-menu;
 
     &::after {
       content: '';

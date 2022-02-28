@@ -17,13 +17,13 @@ import { useBridge } from '@/services/bridge'
 @use '@/styles/utilities';
 
 .menu-main {
+  @include utilities.menu;
+  @include utilities.glass;
+  @include utilities.pill;
   position: absolute;
   top: 0;
   left: 0;
   gap: 0.5em;
   padding-right: 1em;
-  @include utilities.menu;
-  @include utilities.glass;
-  @include utilities.pill;
 }
 </style>

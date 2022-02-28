@@ -25,12 +25,12 @@ import BaseButtonCircleTriplet from './BaseButtonCircleTriplet.vue'
 @use '@/styles/utilities';
 
 .menu-parts {
+  @include utilities.menu;
+  @include utilities.glass;
   position: absolute;
   bottom: 3.5rem;
   right: 0;
   clip-path: url(#menu-parts-clip);
-  @include utilities.menu;
-  @include utilities.glass;
 
   &:deep(.button-circle) {
     position: absolute;

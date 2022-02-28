@@ -23,6 +23,7 @@
     <ShapeOutline />
     <ModuleInputsOutputs />
     <ModuleProps />
+    <BaseContextMenu ref="contextMenu" :menu="contextActions" />
   </div>
 </template>
 
@@ -40,11 +41,7 @@ import ShapePath from './ShapePath.vue'
 import ModuleContent from './ModuleContent.vue'
 import { useEditor } from '@/store/editor'
 import { throttle } from '@/utils'
-
-const onContextMenu = async () => {
-  await editor.enable()
-  editor.open(`lua/modules/${module.id}.lua`)
-}
+import BaseContextMenu from './BaseContextMenu.vue'
 
 const props = defineProps<{
   id: number
@@ -56,6 +53,7 @@ const emit = defineEmits(['update:position'])
 
 const el = ref<HTMLElement | null>(null)
 const content = ref<HTMLElement | null>(null)
+const contextMenu = ref<InstanceType<typeof BaseContextMenu> | null>(null)
 const { position, isDragging } = useDragElement(content)
 const instances = useInstances()
 const editor = useEditor()
@@ -73,6 +71,19 @@ provide('module', module)
 
 watch(position, () => emit('update:position', position))
 onMouseDownOutside(el, () => instances.focus(null))
+
+const onContextMenu = (e: MouseEvent) => contextMenu.value?.open(e)
+
+const editModule = async () => {
+  await editor.enable()
+  editor.open(`lua/modules/${module.id}.lua`)
+}
+const forkModule = () => {}
+
+const contextActions = [
+  { name: 'Fork', action: forkModule },
+  { name: 'Edit original', action: editModule },
+]
 
 watch(
   () => instances.items[props.id]?.isUpdating,

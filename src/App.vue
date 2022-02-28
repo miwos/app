@@ -30,8 +30,10 @@ import MenuEncoders from './components/MenuEncoders.vue'
 import { useMidi } from './store/midi'
 import { useApp } from './store/app'
 import { useMagicKeys } from '@vueuse/core'
-import AppMenu from './components/AppMenu.vue'
 import { useEditor } from './store/editor'
+import BaseMenu from './components/BaseMenu.vue'
+
+const onSelect = (e) => console.log('select', e)
 
 useMidi()
 const app = useApp()

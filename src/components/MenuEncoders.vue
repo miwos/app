@@ -14,13 +14,13 @@ import BaseEncoder from './BaseEncoder.vue'
 @use '@/styles/utilities';
 
 .menu-encoders {
+  @include utilities.menu;
   position: absolute;
   top: 50%;
   right: 0;
   width: 80px;
   height: 156px;
   transform: translateY(-50%);
-  @include utilities.menu;
 }
 
 .encoder {

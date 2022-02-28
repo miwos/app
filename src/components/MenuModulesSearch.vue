@@ -1,17 +1,12 @@
 <template>
   <div class="menu-modules-search" v-if="isOpen" ref="el">
     <input
-      class="search-input glass pill"
+      class="search-input"
       ref="input"
       placeholder="Search..."
       spellcheck="false"
       value=""
       @input="search(($event.target as any).value)"
-    />
-    <BaseComboBox
-      v-if="results.length"
-      :options="results"
-      :value="results[0].id"
     />
     <ModulesSelect
       v-if="results.length"
@@ -29,7 +24,6 @@ import { Module } from '@/types/Module'
 import { onClickOutside, onKeyDown, useMouse } from '@vueuse/core'
 import { ref } from 'vue'
 import ModulesSelect from './ModulesSelect.vue'
-import BaseComboBox from './BaseComboBox.vue'
 
 const mouse = useMouse()
 const instances = useInstances()
@@ -74,14 +68,18 @@ const createInstance = (moduleId: Module['id']) => {
 @use '@/styles/utilities';
 
 .menu-modules-search {
+  @include utilities.menu;
   position: absolute;
   top: v-bind('position.y + `px`');
   left: v-bind('position.x + `px`');
-  @include utilities.menu;
+  z-index: var(--z-modal);
 }
 
 .search-input {
+  @include utilities.glass;
+  @include utilities.pill;
   padding: 0 1em;
+
   &::placeholder {
     font-weight: 400;
     // A sightly lighter color than the default placeholder.

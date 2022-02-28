@@ -3,8 +3,8 @@
     <div
       v-for="(module, index) in modules"
       :key="module.id"
-      class="modules-select-option pill"
-      :class="index === focusedIndex ? 'glass-darker' : 'glass'"
+      class="modules-select-option"
+      :class="{ focused: index === focusedIndex }"
       role="option"
       :aria-selected="props.value === module.id"
       @click="emit('update:value', module.id)"
@@ -68,11 +68,19 @@ const focus = (index: number) => {
 </script>
 
 <style scoped lang="scss">
+@use '@/styles/utilities';
+
 .modules-select {
   &-option {
+    @include utilities.pill;
+    @include utilities.glass;
     display: flex;
     align-items: center;
     gap: 0.5em;
+
+    &.focused {
+      @include utilities.glass-darker;
+    }
   }
 
   &-thumb {

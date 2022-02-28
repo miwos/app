@@ -34,13 +34,13 @@ defineExpose({ focus })
 @use '@/styles/utilities';
 
 .input {
+  @include utilities.font-menu;
+  @include utilities.glass;
   display: flex;
   border-radius: var(--radius-xs);
   width: 4.5em;
   height: 1.5em;
   padding: 0 0.3em;
-  @include utilities.font-menu;
-  @include utilities.glass;
 
   &-unit {
     display: flex;
