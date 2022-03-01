@@ -30,19 +30,18 @@
 <script setup lang="ts">
 import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useDragElement } from '@/composables/useDragElement'
+import { useEditor } from '@/store/editor'
 import { useInstances } from '@/store/instances'
 import { Point } from '@/types/Point'
+import { throttle } from '@/utils'
 import { provide, ref, watch } from 'vue'
+import BaseContextMenu from './BaseContextMenu.vue'
+import ModuleContent from './ModuleContent.vue'
 import ModuleInputsOutputs from './ModuleInputsOutputs.vue'
 import ModuleProps from './ModuleProps.vue'
 import ShapeMask from './ShapeMask.vue'
 import ShapeOutline from './ShapeOutline.vue'
 import ShapePath from './ShapePath.vue'
-import ModuleContent from './ModuleContent.vue'
-import { useEditor } from '@/store/editor'
-import { throttle } from '@/utils'
-import BaseContextMenu from './BaseContextMenu.vue'
-import { useBridge } from '@/services/bridge'
 
 const props = defineProps<{
   id: number
@@ -75,14 +74,9 @@ onMouseDownOutside(el, () => instances.focus(null))
 
 const onContextMenu = (e: MouseEvent) => contextMenu.value?.open(e)
 
-const editModule = async () => editor.open(`lua/modules/${module.id}.lua`)
+const edit = () => editor.openModule(module.id)
 
-const forkModule = () => {}
-
-const contextActions = [
-  { name: 'Fork', action: forkModule },
-  { name: 'Edit original', action: editModule },
-]
+const contextActions = [{ name: 'Edit', action: edit }]
 
 watch(
   () => instances.items[props.id]?.isUpdating,

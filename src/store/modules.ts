@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia'
+import { useLoa } from '@/services/loa'
 import { Module } from '@/types/Module'
-import Fuse from 'fuse.js'
-import { useBridge } from '@/services/bridge'
 import { nameWithoutExt } from '@/utils'
+import Fuse from 'fuse.js'
+import { defineStore } from 'pinia'
 
 const componentImports = import.meta.globEager('../modules/*.vue')
 const components: Record<Module['id'], string> = Object.fromEntries(
@@ -37,14 +37,16 @@ export const useModules = defineStore('modules', {
   },
 
   actions: {
+    add(module: Module) {
+      this.items[module.id] = module
+    },
+
     async loadFromDevice() {
-      const bridge = useBridge()
-      const dirList = await bridge.loa.readDirectory('lua/modules')
+      const loa = useLoa()
+      const dirList = await loa.readDirectory('lua/modules')
       for (const file of dirList) {
         const moduleId = nameWithoutExt(file)
-        const response = await bridge.osc.sendRequest('/module/info', [
-          moduleId,
-        ])
+        const response = await loa.sendRequest('/module/info', [moduleId])
 
         const info = JSON.parse(response)
         const shapeId = info.shape ?? 'Round'

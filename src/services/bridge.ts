@@ -1,15 +1,12 @@
-import AsyncOsc from 'async-osc'
-import WebSerialTransport from 'async-osc/dist/WebSerialTransport'
-import { useLogs } from '@/store/logs'
-import { ref, markRaw } from 'vue'
 import { useInstances } from '@/store/instances'
-import { MidiType, nameWithoutExt } from '@/utils'
-import { Log } from '@/types/Log'
-import { InputOutput } from 'shape-compiler'
+import { useLogs } from '@/store/logs'
 import { useMapping } from '@/store/mapping'
-import { Module } from '@/types/Module'
-import LuaOnArduino from 'lua-on-arduino'
 import { useModules } from '@/store/modules'
+import { Log } from '@/types/Log'
+import { MidiType } from '@/utils'
+import { InputOutput } from 'shape-compiler'
+import { ref } from 'vue'
+import { useLoa } from './loa'
 
 enum Signal {
   Midi,
@@ -21,46 +18,43 @@ enum Direction {
 }
 
 class Bridge {
-  public osc = markRaw(new AsyncOsc(new WebSerialTransport()))
-  public loa = markRaw(new LuaOnArduino(this.osc, { debug: false }))
+  private loa = useLoa()
   private memoryInterval: number | undefined
 
   isConnected = ref(false)
   usedMemory = ref(0)
 
   constructor() {
-    this.osc.on('/disconnect', () => {
+    const { loa } = this
+
+    loa.on('/disconnect', () => {
       this.isConnected.value = false
     })
 
-    // this.osc.on('/data/dev', (data) =>
-    //   console.log(new TextDecoder().decode(data))
-    // )
-
-    this.osc.on('/log/:type', ({ args }, { type }) => {
+    loa.on('/log/:type', ({ args }, { type }) => {
       const [text] = args
       ;(console as any)[type]?.(text)
       useLogs().addLog(type as Log['type'], text)
     })
 
-    this.osc.on('/raw/log/:type', async (_, { type }) => {
-      const data = await this.osc.waitForRawData()
+    loa.on('/raw/log/:type', async (_, { type }) => {
+      const data = await loa.waitForRawData()
       const text = new TextDecoder().decode(data)
       ;(console as any)[type]?.(text)
       useLogs().addLog(type as Log['type'], text)
     })
 
-    this.osc.on('/encoder/value', ({ args }) => {
+    loa.on('/encoder/value', ({ args }) => {
       const [id, value] = args
       useMapping().currentPage.encoders[id].value = value
     })
 
-    this.osc.on('/instance/prop', ({ args }) => {
+    loa.on('/instance/prop', ({ args }) => {
       const [instanceId, propName, value] = args
       useInstances().items[instanceId].propValues[propName] = value
     })
 
-    this.osc.on('/instance/update', async ({ args }) => {
+    loa.on('/instance/update', async ({ args }) => {
       const [id] = args
       const instance = useInstances().items[id]
       if (instance) {
@@ -70,12 +64,18 @@ class Bridge {
       }
     })
 
-    this.osc.on('/bridge/active-outputs', ({ args }) => {
+    loa.on('/bridge/active-outputs', ({ args }) => {
       for (const instance of useInstances().list) {
         instance.activeInputOutputIds.clear()
       }
 
-      const pairs = args[0].split(',')
+      // The active outputs were encoded as a string in the following format,
+      // where id is the module's id and index the output's index:
+      // `id-index, id-index, ...`
+      const [activeOutputsEncoded] = args
+      if (!activeOutputsEncoded) return
+
+      const pairs = activeOutputsEncoded.split(',')
       for (const pair of pairs) {
         const [instanceId, index] = pair.split('-')
         const id = `midi-out-${index}` as InputOutput['id']
@@ -84,7 +84,7 @@ class Bridge {
       }
     })
 
-    this.osc.on('/instance/in-out', ({ args }) => {
+    loa.on('/instance/in-out', ({ args }) => {
       // Todo show active trigger input/outputs
       console.log('in out')
 
@@ -111,40 +111,40 @@ class Bridge {
       }
     })
 
-    this.osc.on('/mapping/page', ({ args }) => {
+    loa.on('/mapping/page', ({ args }) => {
       const [pageIndex] = args
       useMapping().currentPageIndex = pageIndex - 1
     })
   }
 
   async connect() {
-    await this.osc.connect()
-    this.osc.sendMessage('/bridge/connect')
+    await this.loa.connect()
+    this.loa.sendMessage('/bridge/connect')
     this.isConnected.value = true
 
     useModules().loadFromDevice()
 
     this.memoryInterval = window.setInterval(async () => {
       this.usedMemory.value = parseInt(
-        await this.osc.sendRequest('/info/memory-usage')
+        await this.loa.sendRequest('/info/memory-usage')
       )
     }, 1000)
   }
 
   async init() {
     try {
-      await this.osc.sendRequest('/lua/run-file', 'lua/init.lua')
+      await this.loa.sendRequest('/lua/run-file', 'lua/init.lua')
     } catch (error) {
       this.logError(`Couldn't initialize device (${(error as Error)?.message})`)
     }
   }
 
   sendProp(instanceId: number, name: string, value: number) {
-    this.osc.sendMessage('patch/prop', [instanceId, name, value])
+    this.loa.sendMessage('patch/prop', [instanceId, name, value])
   }
 
   selectPage(index: number) {
-    this.osc.sendMessage('mapping/page', index)
+    this.loa.sendMessage('mapping/page', index)
   }
 
   async updatePatch(name: string, patch: string) {
@@ -152,24 +152,13 @@ class Bridge {
       const dirName = 'lua/patches'
       const fileName = `${name}.lua`
       const data = new TextEncoder().encode(patch)
-      await this.osc.sendRawRequest('/write-file', [dirName, fileName], data)
-      await this.osc.sendRequest('/patch/update', name)
+      await this.loa.sendRawRequest('/write-file', [dirName, fileName], data)
+      await this.loa.sendRequest('/patch/update', name)
     } catch (error) {
       this.logError(
         `Couldn't update patch '${name}' (${(error as Error).message})`
       )
     }
-  }
-
-  async getModuleInfo(moduleId: Module['id']) {
-    const modules = await this.loa.readDirectory('lua/modules')
-    for (const module of modules) {
-      const moduleId = nameWithoutExt(module)
-      const response = await this.osc.sendRequest('/module/info', [moduleId])
-      console.log(JSON.parse(response))
-    }
-    // const response = await this.osc.sendRequest('/module/info', [moduleId])
-    // return JSON.parse(response)
   }
 
   private logError(message: string) {
@@ -178,7 +167,7 @@ class Bridge {
   }
 
   async close() {
-    await this.osc.close()
+    await this.loa.close()
     clearInterval(this.memoryInterval)
     this.isConnected.value = false
   }
