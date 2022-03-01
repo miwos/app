@@ -9,6 +9,7 @@
       @input="search(($event.target as any).value)"
     />
     <ModulesSelect
+      v-if="isOpen"
       class="search-results"
       :modules="results"
       @update:value="createInstance"

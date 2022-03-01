@@ -49,11 +49,21 @@ const onKeyDown = (e: KeyboardEvent) => {
   }
 }
 
-const openFile = ({ name, content }: EditorFile) => {
-  if (!models.has(name)) {
-    models.set(name, markRaw(monaco.editor.createModel(content, 'lua')))
+const openFile = (file: EditorFile) => {
+  if (!models.has(file.name)) {
+    models.set(file.name, createModel(file))
   }
-  setModel(models.get(name)!)
+  setModel(models.get(file.name)!)
+}
+
+const createModel = (file: EditorFile) => {
+  const model = markRaw(monaco.editor.createModel(file.content, 'lua'))
+  file.lastSavedVersionId = model.getAlternativeVersionId()
+  model.onDidChangeContent(() => {
+    file.hasUnsavedChanges =
+      file.lastSavedVersionId !== model.getAlternativeVersionId()
+  })
+  return model
 }
 
 const setModel = (model: monaco.editor.ITextModel) => {
@@ -66,14 +76,16 @@ const setModel = (model: monaco.editor.ITextModel) => {
   })
 }
 
-const save = () => {
+const save = async () => {
   const name = editor.focusedFileName
   if (!name) return
 
   const model = models.get(name)
   if (!model) return
 
-  editor.saveAndUpdate(name, model.getValue())
+  await editor.saveAndUpdate(name, model.getValue())
+  editor.focusedFile.value!.lastSavedVersionId = model.getAlternativeVersionId()
+  editor.focusedFile.value!.hasUnsavedChanges = false
 }
 
 const resize = () => nextTick().then(() => monacoEditor?.layout())

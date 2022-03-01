@@ -1,4 +1,3 @@
-import { useBridge } from '@/services/bridge'
 import { useLoa } from '@/services/loa'
 import { EditorFile } from '@/types/Editor'
 import { Module } from '@/types/Module'
@@ -24,22 +23,16 @@ export const useEditor = defineStore('editor', {
   },
 
   actions: {
-    async openModule(id: Module['id']) {
+    async openModule(id: Module['id'], shouldCreateBackup = false) {
       this.enabled = true
-
       const loa = useLoa()
       const name = `lua/modules/${id}.lua`
-      const backup = `lua/modules/__${id}.lua`
+      await this.open(name)
 
-      if (!this.files.has(name)) {
-        const buffer = await loa.readFile(name)
-        const content = new TextDecoder().decode(buffer ?? undefined)
-        this.files.set(name, { name, content })
-
+      if (shouldCreateBackup) {
+        const backup = `lua/modules/__${id}.lua`
         await loa.renameFile(name, backup)
       }
-
-      this.focusedFileName = name
     },
 
     async restoreModule(id: Module['id']) {
@@ -59,12 +52,31 @@ export const useEditor = defineStore('editor', {
       this.focusedFileName = name
     },
 
+    close(name: string) {
+      const file = this.files.get(name)
+      if (!file) return
+
+      const index = Array.from(this.files.values()).indexOf(file)
+      this.files.delete(name)
+
+      const files = Array.from(this.files.values())
+      const nextFile = files[index - 1] ?? files[files.length - 1]
+
+      if (nextFile) {
+        this.focusedFileName = nextFile.name
+      } else {
+        this.enabled = false
+      }
+    },
+
     async save(name: string, content: string) {
       const loa = useLoa()
 
-      this.files.get(name)!.content = content
-      const buffer = new TextEncoder().encode(content)
+      const file = this.files.get(name)
+      if (!file) throw new Error(`File '${name}' doesn't exist.`)
 
+      file.content = content
+      const buffer = new TextEncoder().encode(content)
       await loa.writeFile(name, buffer)
     },
 
@@ -80,10 +92,6 @@ export const useEditor = defineStore('editor', {
     async saveAndUpdate(name: string, content: string) {
       await this.save(name, content)
       await this.update(name)
-    },
-
-    close(name: string) {
-      this.files.delete(name)
     },
   },
 })

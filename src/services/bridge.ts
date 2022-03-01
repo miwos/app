@@ -2,7 +2,6 @@ import { useInstances } from '@/store/instances'
 import { useLogs } from '@/store/logs'
 import { useMapping } from '@/store/mapping'
 import { useModules } from '@/store/modules'
-import { Log } from '@/types/Log'
 import { MidiType } from '@/utils'
 import { InputOutput } from 'shape-compiler'
 import { ref } from 'vue'
@@ -29,19 +28,6 @@ class Bridge {
 
     loa.on('/disconnect', () => {
       this.isConnected.value = false
-    })
-
-    loa.on('/log/:type', ({ args }, { type }) => {
-      const [text] = args
-      ;(console as any)[type]?.(text)
-      useLogs().addLog(type as Log['type'], text)
-    })
-
-    loa.on('/raw/log/:type', async (_, { type }) => {
-      const data = await loa.waitForRawData()
-      const text = new TextDecoder().decode(data)
-      ;(console as any)[type]?.(text)
-      useLogs().addLog(type as Log['type'], text)
     })
 
     loa.on('/encoder/value', ({ args }) => {

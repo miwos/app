@@ -21,8 +21,7 @@
 <script setup lang="ts">
 import { useShapes } from '@/store/shapes'
 import { Module } from '@/types/Module'
-import { onKeyDown } from '@vueuse/core'
-import { ref, toRefs, watch } from 'vue'
+import { onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
 import ShapePath from './ShapePath.vue'
 
 const props = defineProps<{
@@ -40,23 +39,32 @@ const { modules } = toRefs(props)
 
 watch(modules, () => (focusedIndex.value = 0))
 
-onKeyDown('ArrowUp', (e) => {
-  e.preventDefault()
-  focus(focusedIndex.value - 1)
+const onKeyDown = (e: KeyboardEvent) => {
+  const { key } = e
+  if (key === 'ArrowUp') {
+    e.preventDefault()
+    focus(focusedIndex.value - 1)
+  } else if (key === 'ArrowDown') {
+    e.preventDefault()
+    focus(focusedIndex.value + 1)
+  } else if (key === 'Enter') {
+    emit('update:value', modules.value[focusedIndex.value].id)
+  } else if (key === 'PageUp' || key === 'Home') {
+    e.preventDefault()
+    focus(0)
+  } else if (key === 'PageDown' || key === 'End') {
+    e.preventDefault()
+    focus(modules.value.length - 1)
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', onKeyDown)
 })
 
-onKeyDown('ArrowDown', (e) => {
-  e.preventDefault()
-  focus(focusedIndex.value + 1)
+onUnmounted(() => {
+  window.removeEventListener('keydown', onKeyDown)
 })
-
-onKeyDown('Enter', () => {
-  emit('update:value', modules.value[focusedIndex.value].id)
-})
-
-onKeyDown(['PageUp', 'Home'], () => focus(0))
-
-onKeyDown(['PageDown', 'End'], () => focus(modules.value.length - 1))
 
 const focus = (index: number) => {
   const { modules } = props
