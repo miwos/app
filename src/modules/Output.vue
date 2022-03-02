@@ -6,7 +6,7 @@
     :class="{ focused: isFocused }"
   >
     <MidiDeviceCombo
-      :value="instance.propValues.device"
+      :value="instance.props.device"
       preferredAlignment="below"
       @update:value="setProp('device', $event)"
     />

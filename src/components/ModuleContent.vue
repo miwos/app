@@ -2,7 +2,7 @@
   <component
     v-if="module?.component"
     :is="asyncComponent"
-    v-bind="instance?.propValues"
+    v-bind="instance?.props"
   />
 </template>
 

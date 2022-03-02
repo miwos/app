@@ -32,8 +32,11 @@ import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useDragElement } from '@/composables/useDragElement'
 import { useEditor } from '@/store/editor'
 import { useInstances } from '@/store/instances'
+import { useModules } from '@/store/modules'
+import { useShapes } from '@/store/shapes'
 import { Point } from '@/types/Point'
 import { throttle } from '@/utils'
+import { useShare } from '@vueuse/core'
 import { provide, ref, watch } from 'vue'
 import BaseContextMenu from './BaseContextMenu.vue'
 import ModuleContent from './ModuleContent.vue'
@@ -46,7 +49,7 @@ import ShapePath from './ShapePath.vue'
 const props = defineProps<{
   id: number
   position: Point
-  propValues: Record<string, any>
+  props: Record<string, any>
 }>()
 
 const emit = defineEmits(['update:position'])
@@ -54,13 +57,17 @@ const emit = defineEmits(['update:position'])
 const el = ref<HTMLElement | null>(null)
 const content = ref<HTMLElement | null>(null)
 const contextMenu = ref<InstanceType<typeof BaseContextMenu> | null>(null)
+
 const { position, isDragging } = useDragElement(content)
 const instances = useInstances()
+const modules = useModules()
+const shapes = useShapes()
 const editor = useEditor()
+
 const instance = instances.get(props.id)
 const isFocused = instances.isFocused(props.id)
-const shape = instance.shape
-const module = instance.module
+const module = modules.get(instance.moduleId)
+const shape = shapes.get(module.shapeId)
 const maskId = `instance-${props.id}-mask`
 const isInputOrOutput = module.id === 'Input' || module.id === 'Output'
 const isUpdating = ref(false)

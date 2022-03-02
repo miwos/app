@@ -1,19 +1,12 @@
 import { useBridge } from '@/services/bridge'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
-
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
 import { useConnections } from './connections'
 import { useMapping } from './mapping'
 import { useModules } from './modules'
 import { usePatch } from './patch'
-import { useShapes } from './shapes'
-
-type ModuleInstanceNormalized = Omit<
-  ModuleInstance,
-  'module' | 'shape' | 'isFocused'
->
 
 const debounce = (callback: Function, wait: number) => {
   let timeout: number | undefined
@@ -30,7 +23,7 @@ const updatePatchDebounced = debounce(() => {
 
 export const useInstances = defineStore('instances', {
   state: () => ({
-    items: {} as Record<ModuleInstance['id'], ModuleInstanceNormalized>,
+    items: {} as Record<ModuleInstance['id'], ModuleInstance>,
     sortedIds: [] as ModuleInstance['id'][],
     focusedId: null as ModuleInstance['id'] | null,
     // We use a one-based index to be consistent with lua.
@@ -41,12 +34,10 @@ export const useInstances = defineStore('instances', {
     /** Return an instance with resolved relations */
     get:
       (state) =>
-      (id: ModuleInstanceNormalized['id']): ModuleInstance => {
+      (id: ModuleInstance['id']): ModuleInstance => {
         const instance = state.items[id]
-        const module = useModules().get(instance.moduleId)
-        const shape = useShapes().get(module.shapeId)
-        const isFocused = id === state.focusedId
-        return { ...instance, module, shape, isFocused }
+        if (!instance) throw new Error(`Can't find instance with id '${id}'`)
+        return instance
       },
 
     list: (state) => Object.values(state.items),
@@ -64,9 +55,9 @@ export const useInstances = defineStore('instances', {
       shouldUpdatePatch = true
     ) {
       const module = useModules().get(moduleId)
-
       const id = this.nextId++
-      const propValues = Object.fromEntries(
+
+      const props = Object.fromEntries(
         Object.entries(module.props).map(([name, prop]) => [
           name,
           prop.default ?? prop.min ?? 0,
@@ -77,13 +68,35 @@ export const useInstances = defineStore('instances', {
         id,
         moduleId,
         position,
-        propValues,
+        props,
         activeInputOutputIds: new Set(),
         isUpdating: false,
       }
       this.sortedIds.push(id)
 
       if (shouldUpdatePatch) usePatch().update()
+    },
+
+    restore(
+      id: ModuleInstance['id'],
+      moduleId: ModuleInstance['moduleId'],
+      position: Point,
+      props: ModuleInstance['props']
+    ) {
+      if (this.items[id])
+        throw new Error(`Instance with id '${id}' already exists.`)
+
+      this.items[id] = {
+        id,
+        moduleId,
+        position,
+        props,
+        activeInputOutputIds: new Set(),
+        isUpdating: false,
+      }
+
+      this.sortedIds.push(id)
+      this.nextId = Math.max(this.nextId, id + 1)
     },
 
     remove(id: ModuleInstance['id'], shouldUpdatePatch = true) {
@@ -119,7 +132,7 @@ export const useInstances = defineStore('instances', {
     },
 
     setProp(id: ModuleInstance['id'], name: string, value: number) {
-      this.items[id].propValues[name] = value
+      this.items[id].props[name] = value
       useBridge().sendProp(id, name, value)
       // Setting a prop can happen many times per second, so we use a debounced
       // patch update.

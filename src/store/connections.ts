@@ -44,12 +44,11 @@ export const useConnections = defineStore('connections', {
     canConnect: (state) => (point: ConnectionPoint) =>
       computed(() => {
         if (!state.startPoint) return false
-        const { instanceId, signal, direction } = state.startPoint
+        const { instanceId, signal, direction, isInOut } = state.startPoint
 
         const haveDifferentInstance = instanceId !== point.instanceId
         const haveSameSignals = signal === point.signal
-        const haveCompatibleDirections =
-          direction != point.direction || direction === 'inout'
+        const haveCompatibleDirections = direction != point.direction || isInOut
 
         return (
           haveDifferentInstance && haveSameSignals && haveCompatibleDirections
@@ -66,6 +65,12 @@ export const useConnections = defineStore('connections', {
       this.focusedId = id
     },
 
+    add(from: ConnectionPoint, to: ConnectionPoint, shouldUpdatePatch = true) {
+      const id = getConnectionId(from, to)
+      this.items[id] = { id, from, to }
+      if (shouldUpdatePatch) usePatch().update()
+    },
+
     connectFrom(point: ConnectionPoint) {
       this.startPoint = point
     },
@@ -74,8 +79,7 @@ export const useConnections = defineStore('connections', {
       const { startPoint } = this
       if (!startPoint) return
 
-      const bothAreInout =
-        point.direction === 'inout' && startPoint.direction === 'inout'
+      const bothAreInout = point.isInOut && startPoint.isInOut
 
       // Sort the points so our connection will always flow from `out` to
       // `in`. If both points have the special direction `inout` we have to make
@@ -88,24 +92,22 @@ export const useConnections = defineStore('connections', {
         : [point, startPoint]
 
       const [from, to] = connectionPoints
-      const id = getConnectionId(from, to)
-      this.items[id] = { id, from, to }
+      this.add(from, to)
 
       this.startPoint = null
-      usePatch().update()
     },
 
-    remove(id: Connection['id'], update = true) {
+    remove(id: Connection['id'], shouldUpdatePatch = true) {
       delete this.items[id]
       this.hover(null)
       this.focus(null)
-      if (update) usePatch().update()
+      if (shouldUpdatePatch) usePatch().update()
     },
 
-    clear(update = true) {
+    clear(shouldUpdatePatch = true) {
       this.items = {}
       this.startPoint = null
-      if (update) usePatch().update()
+      if (shouldUpdatePatch) usePatch().update()
     },
   },
 })

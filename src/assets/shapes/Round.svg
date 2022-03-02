@@ -3,7 +3,7 @@
 <path id="shape" d="M5 62.5C5 30.7436 30.7436 5 62.5 5H67.5C99.2564 5 125 30.7436 125 62.5C125 94.2564 99.2564 120 67.5 120H62.5C30.7436 120 5 94.2564 5 62.5Z" fill="#C4C4C4"/>
 <path id="props" d="M120 63L130 63" stroke="#00D300"/>
 <path id="props_2" d="M0 63L10 63" stroke="#00D300"/>
-<path id="midi-in" d="M65 10V0" stroke="#0000FF"/>
-<path id="midi-out" d="M65 115V125" stroke="#0000FF"/>
+<path id="out" d="M65 115V125" stroke="#0000FF"/>
+<path id="in" d="M65 10V0" stroke="#0000FF"/>
 </g>
 </svg>

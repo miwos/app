@@ -25,7 +25,7 @@
   >
     <svg width="12" height="10" viewBox="0 0 12 10">
       <circle
-        v-if="props.signal === 'midi'"
+        v-if="isMidi"
         class="module-input-output-path signal-midi"
         cx="6"
         cy="5"
@@ -44,34 +44,45 @@
 import { useConnections } from '@/store/connections'
 import { useInstances } from '@/store/instances'
 import { Connection } from '@/types/Connection'
+import { ModuleInputOutput } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
-import { Point } from '@/types/Point'
 import { emptyImage, pointsAreEqual } from '@/utils'
-import { InputOutput } from 'shape-compiler'
-import { computed, ref } from 'vue'
+import { Shape, ShapeInputOutput } from 'shape-compiler'
+import { computed, inject, ref } from 'vue'
 
 const props = defineProps<{
-  id: InputOutput['id']
-  index: number
-  instanceId: ModuleInstance['id']
-  signal: InputOutput['signal']
-  direction: InputOutput['direction']
-  position: Point
-  angle: number
+  id: ModuleInputOutput['id']
+  index: ModuleInputOutput['index']
+  direction: ModuleInputOutput['direction']
+  signal: ModuleInputOutput['signal']
+  isInOut: boolean
 }>()
 
 const connections = useConnections()
 const instances = useInstances()
-const instance = instances.get(props.instanceId)
+const instance = inject<ModuleInstance>('instance')!
+const shape = inject<Shape>('shape')!
+
+const connectionPoint = { ...props, instanceId: instance.id }
+const canConnect = connections.canConnect(connectionPoint)
 const isHovered = ref(false)
 const isDragging = ref(false)
 const isActive = computed(() => instance.activeInputOutputIds.has(props.id))
-const canConnect = connections.canConnect(props)
+const isMidi = props.signal === 'midi'
+
+const inOutId = `inout-${props.index}` as ShapeInputOutput['id']
+const {
+  angle,
+  position: { inset, touching },
+} = shape.inputsOutputs[props.isInOut ? inOutId : props.id]
+const position = isMidi ? inset : touching
 
 const existsOnConnection = (connection: Connection | null) => {
   if (!connection) return false
   const { from, to } = connection
-  return pointsAreEqual(props, from) || pointsAreEqual(props, to)
+  return (
+    pointsAreEqual(connectionPoint, from) || pointsAreEqual(connectionPoint, to)
+  )
 }
 
 const isConnectionHovered = computed(() =>
@@ -85,7 +96,7 @@ const isConnectionFocused = computed(() =>
 const isInstanceFocused = computed(
   () =>
     instances.focusedId !== null &&
-    (instances.focusedId === props.instanceId ||
+    (instances.focusedId === instance.id ||
       !!connections
         .listConnectedToInstance(instances.focusedId)
         .find((el) => existsOnConnection(el)))
@@ -95,15 +106,13 @@ const handleDragStart = (event: DragEvent) => {
   if (!event.dataTransfer) return
   event.dataTransfer.setDragImage(emptyImage(), 0, 0)
   event.dataTransfer.dropEffect = 'link'
-  const { id, signal, direction, index, instanceId } = props
-  connections.connectFrom({ id, signal, direction, index, instanceId })
+  connections.connectFrom(connectionPoint)
   isDragging.value = true
 }
 
 const handleDrop = () => {
   if (canConnect.value) {
-    const { id, signal, direction, index, instanceId } = props
-    connections.connectTo({ id, signal, direction, index, instanceId })
+    connections.connectTo(connectionPoint)
   }
   isHovered.value = false
 }
@@ -123,7 +132,7 @@ const handleDrop = () => {
     overflow: visible;
 
     .signal-trigger {
-      --angle: v-bind('props.angle - 90 + `deg`');
+      --angle: v-bind('angle - 90 + `deg`');
       transform: translateY(-50%) rotate(var(--angle));
       transform-origin: bottom center;
     }

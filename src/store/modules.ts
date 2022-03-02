@@ -1,8 +1,13 @@
 import { useLoa } from '@/services/loa'
-import { Module } from '@/types/Module'
+import { Module, ModuleInputOutput } from '@/types/Module'
 import { nameWithoutExt } from '@/utils'
 import Fuse from 'fuse.js'
 import { defineStore } from 'pinia'
+
+const parseSignal = (index: number): ModuleInputOutput['signal'] =>
+  index === 1 ? 'midi' : 'trigger'
+const parseDirection = (index: number): ModuleInputOutput['direction'] =>
+  index === 1 ? 'in' : 'out'
 
 const componentImports = import.meta.globEager('../modules/*.vue')
 const components: Record<Module['id'], string> = Object.fromEntries(
@@ -50,13 +55,24 @@ export const useModules = defineStore('modules', {
 
         const info = JSON.parse(response)
         const shapeId = info.shape ?? 'Round'
-        delete info.shape
+        const { props } = info
+
+        const inputsOutputs = Object.fromEntries(
+          Object.values(info.inputsOutputs ?? {}).map((v: any) => {
+            const direction = parseDirection(v.direction)
+            const signal = parseSignal(v.signal)
+            const { index } = v
+            const id = `${direction}-${index}` as ModuleInputOutput['id']
+            return [id, { id, index, direction, signal }]
+          })
+        )
 
         this.items[moduleId] = {
           id: moduleId,
           shapeId,
           component: components[moduleId],
-          ...info,
+          props,
+          inputsOutputs,
         }
       }
       updateFuse(Object.keys(this.items))

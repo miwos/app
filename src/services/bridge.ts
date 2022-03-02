@@ -2,19 +2,11 @@ import { useInstances } from '@/store/instances'
 import { useLogs } from '@/store/logs'
 import { useMapping } from '@/store/mapping'
 import { useModules } from '@/store/modules'
+import { usePatch } from '@/store/patch'
 import { MidiType } from '@/utils'
 import { InputOutput } from 'shape-compiler'
 import { ref } from 'vue'
 import { useLoa } from './loa'
-
-enum Signal {
-  Midi,
-  Trigger,
-}
-enum Direction {
-  In,
-  Out,
-}
 
 class Bridge {
   private loa = useLoa()
@@ -37,7 +29,7 @@ class Bridge {
 
     loa.on('/instance/prop', ({ args }) => {
       const [instanceId, propName, value] = args
-      useInstances().items[instanceId].propValues[propName] = value
+      useInstances().items[instanceId].props[propName] = value
     })
 
     loa.on('/instance/update', async ({ args }) => {
@@ -108,7 +100,8 @@ class Bridge {
     this.loa.sendMessage('/bridge/connect')
     this.isConnected.value = true
 
-    useModules().loadFromDevice()
+    await useModules().loadFromDevice()
+    usePatch().load()
 
     this.memoryInterval = window.setInterval(async () => {
       this.usedMemory.value = parseInt(

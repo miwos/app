@@ -6,7 +6,7 @@
         :key="instance.id"
         :id="instance.id"
         :moduleId="instance.moduleId"
-        :propValues="instance.propValues"
+        :props="instance.props"
         v-model:position="instance.position"
       />
     </div>

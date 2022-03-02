@@ -25,7 +25,7 @@ const displayProps = Object.fromEntries(
   Object.entries(module.props).filter(([, prop]) => prop.show ?? true)
 ) as Module['props']
 
-const values = instance.propValues
+const values = instance.props
 const positions = shape.props
 
 const count = Object.values(displayProps).length
