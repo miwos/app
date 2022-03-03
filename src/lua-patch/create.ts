@@ -4,16 +4,15 @@ import { format } from 'lua-json'
 import { useConnections } from '../store/connections'
 import { useMapping } from '../store/mapping'
 
-export const createLuaPatch = () => {
+export const create = () => {
   const requiredModules = new Set()
-  const instances = {} as Record<string, string | object>
+  const instances: Record<string, object> = {}
 
   for (const instance of Object.values(useInstances().items)) {
-    const { id, moduleId, props } = instance
+    const { id, moduleId, props, position } = instance
+    const xy = `%{ ${position.x}, ${position.y} }%`
     requiredModules.add(moduleId)
-    instances[`%${id}%`] = Object.entries(props).length
-      ? { Module: `%${moduleId}%`, props }
-      : `%{ Module = ${moduleId} }%`
+    instances[`%${id}%`] = { Module: `%${moduleId}%`, xy, props }
   }
 
   const require = Array.from(requiredModules)
@@ -50,7 +49,7 @@ export const createLuaPatch = () => {
   // and the quotes and the `%` characters removed afterwards.
   const patchLua = format(patch).replace(/('%|%')/g, '')
 
-  // console.log(`${require}\n\n${patchLua}`)
+  console.log(`${require}\n\n${patchLua}`)
 
   return `${require}\n\n${patchLua}`
 }

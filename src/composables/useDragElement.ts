@@ -21,13 +21,12 @@ export const useDragElement = (el: Ref<HTMLElement | null>) => {
 
     window.addEventListener('mouseup', handleMouseUp)
     window.addEventListener('mousemove', handleMouseMove)
-
-    isDragging.value = true
   }
 
   const handleMouseMove = (event: MouseEvent) => {
-    const { clientX, clientY } = event
+    isDragging.value = true
 
+    const { clientX, clientY } = event
     const newPosition = {
       x: clientX - delta.x,
       y: clientY - delta.y,

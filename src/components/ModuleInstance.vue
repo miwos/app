@@ -33,9 +33,10 @@ import { useDragElement } from '@/composables/useDragElement'
 import { useEditor } from '@/store/editor'
 import { useInstances } from '@/store/instances'
 import { useModules } from '@/store/modules'
+import { usePatch } from '@/store/patch'
 import { useShapes } from '@/store/shapes'
 import { Point } from '@/types/Point'
-import { throttle } from '@/utils'
+import { debounce, throttle } from '@/utils'
 import { useShare } from '@vueuse/core'
 import { provide, ref, watch } from 'vue'
 import BaseContextMenu from './BaseContextMenu.vue'
@@ -63,6 +64,7 @@ const instances = useInstances()
 const modules = useModules()
 const shapes = useShapes()
 const editor = useEditor()
+const patch = usePatch()
 
 const instance = instances.get(props.id)
 const isFocused = instances.isFocused(props.id)
@@ -77,6 +79,8 @@ provide('shape', shape)
 provide('module', module)
 
 watch(position, () => emit('update:position', position))
+watch(isDragging, (v) => !v && patch.save())
+
 onMouseDownOutside(el, () => instances.focus(null))
 
 const onContextMenu = (e: MouseEvent) => contextMenu.value?.open(e)

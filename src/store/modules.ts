@@ -1,8 +1,10 @@
 import { useLoa } from '@/services/loa'
 import { Module, ModuleInputOutput } from '@/types/Module'
+import { ModuleInstance } from '@/types/ModuleInstance'
 import { nameWithoutExt } from '@/utils'
 import Fuse from 'fuse.js'
 import { defineStore } from 'pinia'
+import { useInstances } from './instances'
 
 const parseSignal = (index: number): ModuleInputOutput['signal'] =>
   index === 1 ? 'midi' : 'trigger'
@@ -33,6 +35,11 @@ export const useModules = defineStore('modules', {
       const module = state.items[id]
       if (!module) throw new Error(`Can't find module with id '${id}'`)
       return module
+    },
+
+    getByInstanceId: (state) => (id: ModuleInstance['id']) => {
+      const instance = useInstances().get(id)
+      return state.items[instance.moduleId]
     },
 
     search:

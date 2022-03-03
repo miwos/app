@@ -126,20 +126,6 @@ class Bridge {
     this.loa.sendMessage('mapping/page', index)
   }
 
-  async updatePatch(name: string, patch: string) {
-    try {
-      const dirName = 'lua/patches'
-      const fileName = `${name}.lua`
-      const data = new TextEncoder().encode(patch)
-      await this.loa.sendRawRequest('/write-file', [dirName, fileName], data)
-      await this.loa.sendRequest('/patch/update', name)
-    } catch (error) {
-      this.logError(
-        `Couldn't update patch '${name}' (${(error as Error).message})`
-      )
-    }
-  }
-
   private logError(message: string) {
     console.error(message)
     useLogs().addLog('error', message)
