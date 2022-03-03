@@ -11,10 +11,10 @@ export interface Module {
 export interface ModuleProp {
   type: string
   default: number
+  show: boolean
   min?: number
   max?: number
   step?: number
-  show?: boolean
 }
 
 export interface ModuleInputOutput {
