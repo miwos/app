@@ -5,6 +5,7 @@ import { nameWithoutExt } from '@/utils'
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
 import { useInstances } from './instances'
+import { useModules } from './modules'
 
 export const useEditor = defineStore('editor', {
   state: () => ({
@@ -92,6 +93,7 @@ export const useEditor = defineStore('editor', {
     async saveAndUpdate(name: string, content: string) {
       await this.save(name, content)
       await this.update(name)
+      await useModules().updateInfo(nameWithoutExt(name))
     },
   },
 })

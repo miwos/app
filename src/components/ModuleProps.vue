@@ -5,7 +5,7 @@
       :name="name"
       :position="getPosition(index)"
       :side="index < 3 ? 'right' : 'left'"
-      :value="values[name]"
+      :value="instance.props[name]"
     />
   </div>
 </template>
@@ -14,24 +14,24 @@
 import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Shape } from 'shape-compiler'
-import { inject } from 'vue'
+import { computed, ComputedRef, inject } from 'vue'
 import ModuleProp from './ModuleProp.vue'
 
-const module = inject<Module>('module')!
-const shape = inject<Shape>('shape')!
-const instance = inject<ModuleInstance>('instance')!
+const module = inject<ComputedRef<Module>>('module')!
+const shape = inject<ComputedRef<Shape>>('shape')!
+const instance = inject<ComputedRef<ModuleInstance>>('instance')!
 
-const displayProps = Object.fromEntries(
-  Object.entries(module.props).filter(([, prop]) => prop.show ?? true)
-) as Module['props']
-
-const values = instance.props
-const positions = shape.props
-
-const count = Object.values(displayProps).length
+const displayProps = computed(
+  () =>
+    Object.fromEntries(
+      Object.entries(module.value.props).filter(([, prop]) => prop.show ?? true)
+    ) as Module['props']
+)
 
 const getPosition = (index: number) => {
   const side = index < 3 ? 'right' : 'left'
+  const count = Object.values(displayProps.value).length
+  const positions = shape.value.props
 
   const position =
     side === 'right'

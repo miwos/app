@@ -1,18 +1,23 @@
 <template>
-  <svg class="shape-mask" v-bind="{ width, height, viewBox }">
+  <svg
+    class="shape-mask"
+    :viewBox="viewBox"
+    :width="size.width"
+    :height="size.height"
+  >
     <clipPath :id="props.id" v-html="shape.path" />
   </svg>
 </template>
 
 <script setup lang="ts">
 import type { Shape } from 'shape-compiler'
-import { inject } from 'vue'
+import { computed, ComputedRef, inject } from 'vue'
 
 const props = defineProps<{
   id: string
 }>()
 
-const shape = inject<Shape>('shape')!
-const { width, height } = shape.size
-const viewBox = `0 0 ${width} ${height}`
+const shape = inject<ComputedRef<Shape>>('shape')!
+const size = computed(() => shape.value.size)
+const viewBox = computed(() => `0 0 ${size.value.width} ${size.value.height}`)
 </script>

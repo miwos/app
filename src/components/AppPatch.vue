@@ -2,7 +2,7 @@
   <div class="patch">
     <div class="modules">
       <ModuleInstance
-        v-for="(instance, index) in useInstances().sorted"
+        v-for="instance in useInstances().sorted"
         :key="instance.id"
         :id="instance.id"
         :moduleId="instance.moduleId"

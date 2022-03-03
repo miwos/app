@@ -16,19 +16,19 @@
 <script setup lang="ts">
 import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useInstances } from '@/store/instances'
-import { inject, ref } from 'vue'
+import { ComputedRef, inject, ref } from 'vue'
 import MidiDeviceCombo from '../components/MidiDeviceCombo.vue'
 import { ModuleInstance } from '../types/ModuleInstance'
 
 const el = ref<HTMLDivElement | null>(null)
 const isFocused = ref(false)
-const instance = inject<ModuleInstance>('instance')!
+const instance = inject<ComputedRef<ModuleInstance>>('instance')!
 const instances = useInstances()
 
 onMouseDownOutside(el, () => (isFocused.value = false))
 
 const setProp = (name: string, value: number) =>
-  instances.setProp(instance.id, name, value)
+  instances.setProp(instance.value.id, name, value)
 </script>
 
 <style scoped lang="scss">

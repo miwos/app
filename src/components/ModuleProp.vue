@@ -52,7 +52,7 @@ import { useMapping } from '@/store/mapping'
 import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
-import { computed, inject, nextTick, ref } from 'vue'
+import { computed, ComputedRef, inject, nextTick, ref } from 'vue'
 import BaseInput from './BaseInput.vue'
 
 const props = defineProps<{
@@ -62,8 +62,8 @@ const props = defineProps<{
   side: 'left' | 'right'
 }>()
 
-const instance = inject<ModuleInstance>('instance')!
-const module = inject<Module>('module')!
+const instance = inject<ComputedRef<ModuleInstance>>('instance')!
+const module = inject<ComputedRef<Module>>('module')!
 
 const el = ref<HTMLElement | null>(null)
 const input = ref<HTMLElement | null>(null)
@@ -72,7 +72,7 @@ const app = useApp()
 const mapping = useMapping()
 const instances = useInstances()
 const showMapping = ref(false)
-const mappedEncoder = mapping.getMappedEncoder(instance.id, props.name)
+const mappedEncoder = mapping.getMappedEncoder(instance.value.id, props.name)
 const isFocused = ref(false)
 const isViewModeVerbose = computed(() => app.viewMode === 'verbose')
 
@@ -86,10 +86,10 @@ const onInputMouseDown = async () => {
 }
 
 const setProp = (value: number) =>
-  instances.setProp(instance.id, props.name, value)
+  instances.setProp(instance.value.id, props.name, value)
 
 const mapEncoder = (encoderId: number) =>
-  mapping.mapEncoder(encoderId, instance.id, props.name)
+  mapping.mapEncoder(encoderId, instance.value.id, props.name)
 
 const map = async () => {
   showMapping.value = true

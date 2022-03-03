@@ -1,7 +1,7 @@
 <template>
   <div
     class="module-instance"
-    :class.camel="{
+    :class="{
       dragging: isDragging,
       focused: isFocused,
       clipping: !isInputOrOutput,
@@ -11,7 +11,7 @@
     tabindex="0"
     @keydown.delete="remove"
   >
-    <ShapePath ref="shape" />
+    <ShapePath />
     <ShapeMask :id="maskId" />
     <div
       class="module-content"
@@ -36,9 +36,8 @@ import { useModules } from '@/store/modules'
 import { usePatch } from '@/store/patch'
 import { useShapes } from '@/store/shapes'
 import { Point } from '@/types/Point'
-import { debounce, throttle } from '@/utils'
-import { useShare } from '@vueuse/core'
-import { provide, ref, watch } from 'vue'
+import { throttle } from '@/utils'
+import { computed, provide, ref, watch } from 'vue'
 import BaseContextMenu from './BaseContextMenu.vue'
 import ModuleContent from './ModuleContent.vue'
 import ModuleInputsOutputs from './ModuleInputsOutputs.vue'
@@ -66,13 +65,16 @@ const shapes = useShapes()
 const editor = useEditor()
 const patch = usePatch()
 
-const instance = instances.get(props.id)
-const isFocused = instances.isFocused(props.id)
-const module = modules.get(instance.moduleId)
-const shape = shapes.get(module.shapeId)
+const instance = computed(() => instances.get(props.id))
+const module = computed(() => modules.items[instance.value.moduleId])
+const shape = computed(() => shapes.get(module.value.shapeId))
+
 const maskId = `instance-${props.id}-mask`
-const isInputOrOutput = module.id === 'Input' || module.id === 'Output'
+const isFocused = instances.isFocused(props.id)
 const isUpdating = ref(false)
+const isInputOrOutput = computed(
+  () => module.value.id === 'Input' || module.value.id === 'Output'
+)
 
 provide('instance', instance)
 provide('shape', shape)
@@ -85,7 +87,7 @@ onMouseDownOutside(el, () => instances.focus(null))
 
 const onContextMenu = (e: MouseEvent) => contextMenu.value?.open(e)
 
-const edit = () => editor.openModule(module.id)
+const edit = () => editor.openModule(module.value.id)
 
 const contextActions = [{ name: 'Edit', action: edit }]
 
