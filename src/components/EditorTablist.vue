@@ -64,7 +64,7 @@ const modules = useModules()
     display: flex;
     align-items: center;
     height: 100%;
-    padding-right: 0.5em;
+    padding-right: 0.6em;
     padding-left: 0.5em;
     gap: 0.5em;
     border-radius: var(--tab-radius);
