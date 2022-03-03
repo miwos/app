@@ -9,12 +9,12 @@
 <script setup lang="ts">
 import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
-import { defineAsyncComponent, inject } from 'vue'
+import { ComputedRef, defineAsyncComponent, inject } from 'vue'
 
-const module = inject<Module>('module')!
-const instance = inject<ModuleInstance>('instance')
+const module = inject<ComputedRef<Module>>('module')!
+const instance = inject<ComputedRef<ModuleInstance>>('instance')!
 
 const asyncComponent = defineAsyncComponent(
-  () => import(`../modules/${module!.component}`)
+  () => import(`../modules/${module.value.component}`)
 )
 </script>
