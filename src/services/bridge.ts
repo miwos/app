@@ -3,6 +3,7 @@ import { useLogs } from '@/store/logs'
 import { useMapping } from '@/store/mapping'
 import { useModules } from '@/store/modules'
 import { usePatch } from '@/store/patch'
+import { Log } from '@/types/Log'
 import { MidiType } from '@/utils'
 import { InputOutput } from 'shape-compiler'
 import { ref } from 'vue'
@@ -17,6 +18,10 @@ class Bridge {
 
   constructor() {
     const { loa } = this
+
+    loa.on('/log/:type', ({ args }, params) => {
+      useLogs().add(params.type as Log['type'], args[0])
+    })
 
     loa.on('/disconnect', () => {
       this.isConnected.value = false

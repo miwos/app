@@ -3,12 +3,12 @@ import { defineStore } from 'pinia'
 
 export const useLogs = defineStore('logs', {
   state: () => ({
-    logs: [] as Log[],
+    items: [] as Log[],
   }),
 
   actions: {
-    addLog(type: Log['type'], text: Log['text']) {
-      this.logs.push({ type, text })
+    add(type: Log['type'], text: Log['text']) {
+      this.items.push({ type, text })
     },
   },
 })

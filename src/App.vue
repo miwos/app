@@ -91,9 +91,17 @@ body {
 }
 
 .splitpanes__splitter {
-  width: 7px;
-  margin: 0 -3.5px;
   z-index: 1;
+
+  .splitpanes--horizontal > & {
+    height: 7px;
+    margin: -3.5px 0;
+  }
+
+  .splitpanes--vertical > & {
+    width: 7px;
+    margin: 0 -3.5px;
+  }
 
   &:hover {
     background-color: var(--module-shape-color-lighter);

@@ -1,13 +1,23 @@
 <template>
   <div class="editor">
-    <EditorTablist />
-    <EditorDocument ref="editorDocument" />
+    <Splitpanes horizontal @resize="resize()">
+      <Pane class="editor-top-pane">
+        <EditorTablist />
+        <EditorDocument ref="editorDocument" />
+      </Pane>
+      <Pane>
+        <EditorLogs />
+      </Pane>
+    </Splitpanes>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineAsyncComponent, ref } from 'vue'
 import EditorTablist from './EditorTablist.vue'
+// @ts-ignore
+import { Splitpanes, Pane } from 'splitpanes'
+import EditorLogs from './EditorLogs.vue'
 
 const EditorDocument = defineAsyncComponent(
   () => import('./EditorDocument.vue')
@@ -23,12 +33,16 @@ defineExpose({ resize })
 <style lang="scss">
 .editor {
   height: 100%;
-  display: flex;
-  flex-direction: column;
 
   &.not-connected {
     pointer-events: none;
     opacity: 0.5;
+  }
+
+  &-top-pane {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   &-document {
