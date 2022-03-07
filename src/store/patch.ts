@@ -27,6 +27,7 @@ export const usePatch = defineStore('patch', {
       if (!match) return
 
       const patch = parse(match[0]) as LuaPatch
+      this.clear()
       restore(patch)
     },
 

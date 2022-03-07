@@ -33,8 +33,13 @@ class Bridge {
     })
 
     loa.on('/instance/prop', ({ args }) => {
-      const [instanceId, propName, value] = args
-      useInstances().items[instanceId].props[propName] = value
+      const [id, propName, value] = args
+      const instance = useInstances().items[id]
+      if (instance) {
+        instance.props[propName] = value
+      } else {
+        console.warn(`Instance #${id} doesn't exist`)
+      }
     })
 
     loa.on('/instance/update', async ({ args }) => {
