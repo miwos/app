@@ -9,29 +9,20 @@
 </template>
 
 <script setup lang="ts">
-import {
-  Module,
-  ModuleInputOutput as ModuleInputOutputType,
-} from '@/types/Module'
+import { Module } from '@/types/Module'
 import { Shape } from 'shape-compiler'
 import { computed, ComputedRef, inject } from 'vue'
 import ModuleInputOutput from './ModuleInputOutput.vue'
 
-const shape = inject<ComputedRef<Shape>>('shape')!
 const module = inject<ComputedRef<Module>>('module')!
+const shape = inject<ComputedRef<Shape>>('shape')!
 
-// Technically we only have two 'real' directions ('in' and 'out'). But we also
-// use a pseudo direction 'inout' in the shape, which is used to combine an
-// input and an output visually. So each time we encounter an `inout` we assign
-// the corresponding input with the same index to it and add a flag.
 const inputsOutputs = computed(() =>
-  Object.values(shape.value.inputsOutputs)
-    .map(({ id, index, direction }) => {
-      const isInOut = direction === 'inout'
-      const inputId = `in-${index}` as ModuleInputOutputType['id']
-      const inputOutput = module.value.inputsOutputs[isInOut ? inputId : id]
-      return inputOutput && { ...inputOutput, isInOut }
-    })
-    .filter((v) => !!v)
+  // An `inout` is an input and an output that are visually combined. So we only
+  // render the input that belongs to an `inout` and omit the output. The input
+  // still has the `isInOut` flag so we treat it specifically.
+  Object.values(module.value.inputsOutputs).filter(
+    (v) => !(v.direction === 'out' && shape.value.inputsOutputs[v.id]?.isInOut)
+  )
 )
 </script>

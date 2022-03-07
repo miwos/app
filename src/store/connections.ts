@@ -15,6 +15,21 @@ const sortPointsByPosition = (a: ConnectionPoint, b: ConnectionPoint) => {
   return positionA.y < positionB.y ? [a, b] : [b, a]
 }
 
+const asDirection = (
+  point: ConnectionPoint,
+  direction: ConnectionPoint['direction']
+): ConnectionPoint => ({
+  ...point,
+  direction,
+  id: `${direction}-${point.index}`,
+})
+
+const asInput = (point: ConnectionPoint): ConnectionPoint =>
+  point.isInOut ? asDirection(point, 'in') : point
+
+const asOutput = (point: ConnectionPoint): ConnectionPoint =>
+  point.isInOut ? asDirection(point, 'out') : point
+
 export const useConnections = defineStore('connections', {
   state: () => ({
     items: {} as Record<string, Connection>,
@@ -48,7 +63,8 @@ export const useConnections = defineStore('connections', {
 
         const haveDifferentInstance = instanceId !== point.instanceId
         const haveSameSignals = signal === point.signal
-        const haveCompatibleDirections = direction != point.direction || isInOut
+        const haveCompatibleDirections =
+          direction != point.direction || isInOut || point.isInOut
 
         return (
           haveDifferentInstance && haveSameSignals && haveCompatibleDirections
@@ -92,7 +108,11 @@ export const useConnections = defineStore('connections', {
         : [point, startPoint]
 
       const [from, to] = connectionPoints
-      this.add(from, to)
+      // To keep things simple, we only render the input of an `inout`.
+      // Depending on the connection we make, this input could also represent
+      // the output, so we make sure to 'cast' the connection point to the
+      // correct type.
+      this.add(asOutput(from), asInput(to))
 
       this.startPoint = null
     },

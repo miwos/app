@@ -9,5 +9,5 @@ export interface Connection {
 
 export interface ConnectionPoint extends ModuleInputOutput {
   instanceId: ModuleInstance['id']
-  isInOut: boolean
+  isInOut?: boolean
 }

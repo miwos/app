@@ -7,22 +7,18 @@ import { useInstances } from '@/store/instances'
 import { ConnectionPoint } from '@/types/Connection'
 import { useModules } from '@/store/modules'
 import { useShapes } from '@/store/shapes'
-import { ShapeInputOutput } from 'shape-compiler'
 
 const getPointAndAngle = ({
   id,
-  index,
   instanceId,
-  isInOut,
 }: ConnectionPoint): [Vec, number] => {
   const instance = useInstances().get(instanceId)
-  const module = useModules().get(instance.moduleId)
+  const module = useModules().getByInstanceId(instanceId)
   const shape = useShapes().get(module.shapeId)
 
-  const inOutId = `inout-${index}` as ShapeInputOutput['id']
-  const { position, angle } = shape.inputsOutputs[isInOut ? inOutId : id]
-
+  const { position, angle } = shape.inputsOutputs[id]
   const point = new Vec(instance.position).add(position.inset)
+
   return [point, angle]
 }
 
@@ -33,10 +29,6 @@ export const useConnectionCurve = (
   computed(() => {
     let [fromPoint, fromAngle] = getPointAndAngle(from)
     let [toPoint, toAngle] = getPointAndAngle(to)
-
-    // A `inout` angle refers to the input, so we have to flip it to use it as
-    // on output.
-    if (from.isInOut) fromAngle += 180
 
     // The normalized distance.
     const distance = toPoint

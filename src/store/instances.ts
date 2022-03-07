@@ -31,7 +31,6 @@ export const useInstances = defineStore('instances', {
   }),
 
   getters: {
-    /** Return an instance with resolved relations */
     get:
       (state) =>
       (id: ModuleInstance['id']): ModuleInstance => {

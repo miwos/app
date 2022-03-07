@@ -55,7 +55,7 @@ const props = defineProps<{
   index: ModuleInputOutput['index']
   direction: ModuleInputOutput['direction']
   signal: ModuleInputOutput['signal']
-  isInOut: boolean
+  isInOut?: boolean
 }>()
 
 const connections = useConnections()
@@ -65,6 +65,7 @@ const shape = inject<ComputedRef<Shape>>('shape')!
 
 const connectionPoint = computed(() => ({
   ...props,
+  isInOut: shapeInputOutput.value.isInOut,
   instanceId: instance.value.id,
 }))
 const canConnect = computed(
@@ -76,14 +77,7 @@ const isActive = computed(() =>
   instance.value.activeInputOutputIds.has(props.id)
 )
 const isMidi = computed(() => props.signal === 'midi')
-const shapeInputOutput = computed(
-  () =>
-    shape.value.inputsOutputs[
-      props.isInOut
-        ? (`inout-${props.index}` as ShapeInputOutput['id'])
-        : props.id
-    ]
-)
+const shapeInputOutput = computed(() => shape.value.inputsOutputs[props.id])
 
 const position = computed(() => {
   const { position } = shapeInputOutput.value
