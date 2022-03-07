@@ -6,7 +6,7 @@
         <EditorDocument ref="editorDocument" />
       </Pane>
       <Pane>
-        <EditorLogs />
+        <EditorLogs ref="editorLogs" />
       </Pane>
     </Splitpanes>
   </div>
@@ -24,8 +24,12 @@ const EditorDocument = defineAsyncComponent(
 )
 
 const editorDocument = ref<InstanceType<typeof EditorDocument>>()
+const editorLogs = ref<InstanceType<typeof EditorLogs>>()
 
-const resize = () => editorDocument.value?.resize()
+const resize = () => {
+  editorDocument.value?.resize()
+  editorLogs.value?.resize()
+}
 
 defineExpose({ resize })
 </script>

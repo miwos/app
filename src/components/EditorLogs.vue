@@ -1,18 +1,17 @@
 <template>
-  <div ref="el" class="editor-logs">
+  <div class="editor-logs">
     <div class="editor-logs-header">
       <button>error</button>
       <button>warn</button>
       <button>log</button>
     </div>
-    <div class="editor-logs-container">
+    <div class="editor-logs-container" ref="container">
       <div
         class="editor-log"
         v-for="log of logs.items"
         :class="`log-${log.type}`"
-      >
-        {{ log.text }}
-      </div>
+        v-html="getLogHtml(log)"
+      ></div>
     </div>
   </div>
 </template>
@@ -20,15 +19,23 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import { useLogs } from '@/store/logs'
+import { Log } from '@/types/Log'
+import { tokenizeLuaDump } from '@/utils'
 
-const el = ref<HTMLElement | null>(null)
+const container = ref<HTMLElement | null>(null)
 const logs = useLogs()
 
-logs.$subscribe(() => {
-  nextTick(() => {
-    if (el.value) el.value.scrollTop = el.value.scrollHeight
-  })
-})
+const getLogHtml = (log: Log) =>
+  log.type === 'dump' ? tokenizeLuaDump(JSON.parse(log.text)) : log.text
+
+logs.$subscribe(() => nextTick(() => scrollToBottom()))
+
+const scrollToBottom = () =>
+  container.value && (container.value.scrollTop = container.value.scrollHeight)
+
+const resize = scrollToBottom
+
+defineExpose({ resize })
 </script>
 
 <style scoped lang="scss">
@@ -72,6 +79,8 @@ logs.$subscribe(() => {
 }
 
 .editor-log {
+  white-space: pre-wrap;
+
   &.log-warn {
     color: yellow;
   }
@@ -79,5 +88,24 @@ logs.$subscribe(() => {
   &.log-error {
     color: red;
   }
+}
+</style>
+
+<style>
+.token-specialKey {
+  color: cyan;
+}
+.token-key {
+  color: #00ff80;
+}
+.token-complexType {
+  color: magenta;
+}
+.token-number,
+.token-boolean {
+  color: #4168ff;
+}
+.token-string {
+  color: yellow;
 }
 </style>
