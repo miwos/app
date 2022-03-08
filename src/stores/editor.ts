@@ -3,97 +3,97 @@ import { EditorFile } from '@/types/Editor'
 import { Module } from '@/types/Module'
 import { nameWithoutExt } from '@/utils'
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
+import { computed, reactive, toRefs } from 'vue'
 import { useInstances } from './instances'
 import { useModules } from './modules'
 
-export const useEditor = defineStore('editor', {
-  state: () => ({
+export const useEditor = defineStore('editor', () => {
+  const loa = useLoa()
+  const modules = useModules()
+  const instances = useInstances()
+
+  const state = reactive({
     enabled: false,
     files: new Map<EditorFile['name'], EditorFile>(),
-    focusedFileName: null as string | null,
-  }),
+    focusedFileName: undefined as string | undefined,
+  })
 
-  getters: {
-    focusedFile: (state) =>
-      computed(() =>
-        state.focusedFileName
-          ? state.files.get(state.focusedFileName) ?? null
-          : null
-      ),
-  },
+  // Getters
+  const focusedFile = computed(() =>
+    state.focusedFileName ? state.files.get(state.focusedFileName) : undefined
+  )
 
-  actions: {
-    async openModule(id: Module['id'], shouldCreateBackup = false) {
-      this.enabled = true
-      const loa = useLoa()
-      const name = `lua/modules/${id}.lua`
-      await this.open(name)
+  // Actions
+  const open = async (name: string) => {
+    state.enabled = true
 
-      if (shouldCreateBackup) {
-        const backup = `lua/modules/__${id}.lua`
-        await loa.renameFile(name, backup)
-      }
-    },
+    if (!state.files.has(name)) {
+      const buffer = await loa.readFile(name)
+      const content = new TextDecoder().decode(buffer ?? undefined)
+      state.files.set(name, { name, content })
+    }
+    state.focusedFileName = name
+  }
 
-    async restoreModule(id: Module['id']) {
-      const loa = useLoa()
-      console.log(await loa.readDirectory('lua/modules'))
-    },
+  const openModule = async (id: Module['id'], createBackup = false) => {
+    state.enabled = true
+    const name = `lua/modules/${id}.lua`
+    await open(name)
 
-    async open(name: string) {
-      this.enabled = true
-      const loa = useLoa()
+    if (createBackup) {
+      const backup = `lua/modules/__${id}.lua`
+      await loa.renameFile(name, backup)
+    }
+  }
 
-      if (!this.files.has(name)) {
-        const buffer = await loa.readFile(name)
-        const content = new TextDecoder().decode(buffer ?? undefined)
-        this.files.set(name, { name, content })
-      }
-      this.focusedFileName = name
-    },
+  const close = (name: string) => {
+    const file = state.files.get(name)
+    if (!file) return
 
-    close(name: string) {
-      const file = this.files.get(name)
-      if (!file) return
+    const index = Array.from(state.files.values()).indexOf(file)
+    state.files.delete(name)
 
-      const index = Array.from(this.files.values()).indexOf(file)
-      this.files.delete(name)
+    const files = Array.from(state.files.values())
+    const nextFile = files[index - 1] ?? files[files.length - 1]
 
-      const files = Array.from(this.files.values())
-      const nextFile = files[index - 1] ?? files[files.length - 1]
+    if (nextFile) {
+      state.focusedFileName = nextFile.name
+    } else {
+      state.enabled = false
+    }
+  }
 
-      if (nextFile) {
-        this.focusedFileName = nextFile.name
-      } else {
-        this.enabled = false
-      }
-    },
+  const save = async (name: string, content: string) => {
+    const file = state.files.get(name)
+    if (!file) throw new Error(`File '${name}' doesn't exist.`)
 
-    async save(name: string, content: string) {
-      const loa = useLoa()
+    file.content = content
+    const buffer = new TextEncoder().encode(content)
+    await loa.writeFile(name, buffer)
+  }
 
-      const file = this.files.get(name)
-      if (!file) throw new Error(`File '${name}' doesn't exist.`)
+  const update = (name: string) => {
+    const moduleId = nameWithoutExt(name)
+    instances.list.forEach(
+      (v) => v.moduleId === moduleId && (v.isUpdating = true)
+    )
+    return loa.updateFile(name)
+  }
 
-      file.content = content
-      const buffer = new TextEncoder().encode(content)
-      await loa.writeFile(name, buffer)
-    },
+  const saveAndUpdate = async (name: string, content: string) => {
+    await save(name, content)
+    await update(name)
+    await modules.updateInfo(nameWithoutExt(name))
+  }
 
-    async update(name: string) {
-      const loa = useLoa()
-      loa.updateFile(name)
-      const moduleId = nameWithoutExt(name)
-      useInstances().list.forEach(
-        (v) => v.moduleId === moduleId && (v.isUpdating = true)
-      )
-    },
-
-    async saveAndUpdate(name: string, content: string) {
-      await this.save(name, content)
-      await this.update(name)
-      await useModules().updateInfo(nameWithoutExt(name))
-    },
-  },
+  return {
+    ...toRefs(state),
+    focusedFile,
+    open,
+    openModule,
+    close,
+    save,
+    update,
+    saveAndUpdate,
+  }
 })

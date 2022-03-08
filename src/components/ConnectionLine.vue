@@ -11,7 +11,7 @@
     tabindex="0"
     @mousedown="connections.focus(id)"
     @mouseenter="connections.hover(id)"
-    @mouseleave="connections.hover(null)"
+    @mouseleave="connections.hover(undefined)"
     @keydown.delete="remove"
   >
     <path class="line-hit-area" :d="curve.data" />
@@ -60,7 +60,7 @@ const instanceIsFocused = computed(
 )
 
 watchEffect(() => (isFocused.value ? el.value?.focus() : el.value?.blur()))
-onMouseDownOutside(el, () => connections.focus(null))
+onMouseDownOutside(el, () => connections.focus(undefined))
 const remove = () => connections.remove(props.id)
 </script>
 

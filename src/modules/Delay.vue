@@ -29,8 +29,6 @@ onMounted(() => {
   canvas.value!.height = bounds.height
 })
 
-// watchEffect(() => console.log(repeats.value))
-
 watchEffect(() => {
   const { time, feed } = props
   const thresh = (feed / 100) * 0.01
@@ -54,27 +52,6 @@ watchEffect(() => {
     ctx.fill()
   }
 })
-
-// watch(
-//   () => [repeats, props.time],
-//   () => {
-//     if (!ctx) return
-//     const { width, height } = bounds
-//     ctx.clearRect(0, 0, width, height)
-
-//     const x = map(props.time, 0, 1000, 100, 10)
-//     console.log(x)
-
-//     for (let i = repeats.value; i > 0; i--) {
-//       const mix = i / repeats.value
-//       const color = colord('#9800ff').mix('#929292', mix).toRgbString()
-//       ctx.beginPath()
-//       ctx.arc(width / 2, height / 2, (width / x) * i, 0, 2 * Math.PI)
-//       ctx.fillStyle = color
-//       ctx.fill()
-//     }
-//   }
-// )
 </script>
 
 <style lang="scss" scoped>

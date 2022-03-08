@@ -16,7 +16,10 @@ const getPointAndAngle = ({
   const module = useModules().getByInstanceId(instanceId)
   const shape = useShapes().get(module.shapeId)
 
-  const { position, angle } = shape.inputsOutputs[id]
+  const inputOutput = shape.inputsOutputs.get(id)
+  if (!inputOutput) throw new Error(`Can't find input/output '${id}'`)
+
+  const { position, angle } = inputOutput
   const point = new Vec(instance.position).add(position.inset)
 
   return [point, angle]

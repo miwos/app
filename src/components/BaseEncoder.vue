@@ -23,7 +23,8 @@ const props = defineProps<{
   id: number
 }>()
 
-const encoder = computed(() => useMapping().currentPage.encoders[props.id])
+const mapping = useMapping()
+const encoder = computed(() => mapping.getEncoder(props.id))
 const isMapped = computed(() => !!encoder.value.mappedTo)
 const rotation = computed(() =>
   encoder.value.mappedTo ? map(encoder.value.value, 0, 127, 0, 270) - 135 : 0

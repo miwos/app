@@ -24,8 +24,8 @@
         type="number"
         unit="♯"
         :value="props.value"
-        v-bind="module.props[name]"
-        @change="setProp(parseFloat(($event.target as any).value))"
+        v-bind="module.props.get(name)"
+        @change="updateProp(parseFloat(($event.target as any).value))"
       />
     </div>
 
@@ -85,8 +85,8 @@ const onInputMouseDown = async () => {
   input.value?.focus()
 }
 
-const setProp = (value: number) =>
-  instances.setProp(instance.value.id, props.name, value)
+const updateProp = (value: number) =>
+  instances.updateProp(instance.value.id, props.name, value)
 
 const mapEncoder = (encoderId: number) =>
   mapping.mapEncoder(encoderId, instance.value.id, props.name)

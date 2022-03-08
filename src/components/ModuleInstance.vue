@@ -35,9 +35,11 @@ import { useInstances } from '@/stores/instances'
 import { useModules } from '@/stores/modules'
 import { usePatch } from '@/stores/patch'
 import { useShapes } from '@/stores/shapes'
+import { ModuleInfo } from '@/types/Module'
+import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
 import { throttle } from '@/utils'
-import { computed, provide, ref, watch } from 'vue'
+import { computed, provide, ref, toRefs, watch } from 'vue'
 import BaseContextMenu from './BaseContextMenu.vue'
 import ModuleContent from './ModuleContent.vue'
 import ModuleInputsOutputs from './ModuleInputsOutputs.vue'
@@ -47,10 +49,10 @@ import ShapeOutline from './ShapeOutline.vue'
 import ShapePath from './ShapePath.vue'
 
 const props = defineProps<{
-  id: number
   position: Point
-  props: Record<string, any>
+  instance: ModuleInstance
 }>()
+const { instance } = toRefs(props)
 
 const emit = defineEmits(['update:position'])
 
@@ -65,12 +67,11 @@ const shapes = useShapes()
 const editor = useEditor()
 const patch = usePatch()
 
-const instance = computed(() => instances.get(props.id))
-const module = computed(() => modules.items[instance.value.moduleId])
+const module = computed(() => modules.get(instance.value.moduleId))
 const shape = computed(() => shapes.get(module.value.shapeId))
 
-const maskId = `instance-${props.id}-mask`
-const isFocused = instances.isFocused(props.id)
+const maskId = `instance-${instance.value.id}-mask`
+const isFocused = instances.isFocused(instance.value.id)
 const isUpdating = ref(false)
 const isInputOrOutput = computed(
   () => module.value.id === 'Input' || module.value.id === 'Output'
@@ -92,14 +93,14 @@ const edit = () => editor.openModule(module.value.id)
 const contextActions = [{ name: 'Edit', action: edit }]
 
 watch(
-  () => instances.items[props.id]?.isUpdating,
+  () => instance.value.isUpdating,
   throttle((v: boolean) => {
     isUpdating.value = v
   }, 150)
 )
 
 const remove = (event: KeyboardEvent) => {
-  if (event.target === el.value) instances.remove(props.id)
+  if (event.target === el.value) instances.remove(instance.value.id)
 }
 </script>
 

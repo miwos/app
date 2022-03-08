@@ -1,4 +1,4 @@
-import { Module, ModuleInputOutput } from './Module'
+import { Module, ModuleInputOutput, ModuleProp } from './Module'
 import { ModuleInstance } from './ModuleInstance'
 
 export type LuaPatchConnection = [
@@ -11,7 +11,7 @@ export type LuaPatchConnection = [
 export interface LuaPatchInstance {
   Module: Module['id']
   xy: [x: number, y: number]
-  props: ModuleInstance['props']
+  props: Record<string, any>
 }
 
 export interface LuaPatchMappingPage {

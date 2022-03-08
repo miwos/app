@@ -19,9 +19,11 @@ const size = computed(() => shape.value.size)
 const viewBox = computed(() => `0 0 ${size.value.width} ${size.value.height}`)
 
 const dash = computed(() => {
-  const holes = (
-    Object.keys(module.value.inputsOutputs) as ModuleInputOutput['id'][]
-  ).map((v) => shape.value.inputsOutputs[v]?.offset)
+  const holes = []
+  for (const id of module.value.inputsOutputs.keys()) {
+    const offset = shape.value.inputsOutputs.get(id)?.offset
+    if (offset !== undefined) holes.push(offset)
+  }
   return perforatePath(shape.value.length, holes)
 })
 </script>

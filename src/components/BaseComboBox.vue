@@ -73,7 +73,7 @@ watch(value, () => (selectedIndex.value = valueIndex.value))
 const onBlur = () => (isOpen.value = false)
 
 const toggleOpen = () => (isOpen.value ? close() : open())
-const displayOption = (option: Option) => option.label ?? option.id
+const displayOption = (option: Option) => option && (option.label ?? option.id)
 
 const open = async () => {
   isOpen.value = true

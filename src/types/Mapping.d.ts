@@ -5,9 +5,9 @@ export type Mapping = MappingPage[]
 export type Encoder = {
   id: number
   value: number
-  mappedTo: { instanceId: ModuleInstance['id']; propName: string } | null
+  mappedTo?: { instanceId: ModuleInstance['id']; propName: string }
 }
 
 export interface MappingPage {
-  encoders: Record<Encoder['id'], Encoder>
+  encoders: Map<Encoder['id'], Encoder>
 }

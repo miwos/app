@@ -1,18 +1,9 @@
+import { MidiDevice, MidiDeviceType } from '@/types/Midi'
 import { defineStore } from 'pinia'
+import { reactive, toRefs } from 'vue'
 
-export enum MidiDeviceType {
-  Din,
-  Usb,
-}
-
-export interface MidiDevice {
-  id: number
-  type: MidiDeviceType
-  label: string
-}
-
-export const useMidi = defineStore('midi', {
-  state: () => ({
+export const useMidi = defineStore('midi', () => {
+  const state = reactive({
     devices: [
       { id: 1, label: 'Midi 1', type: MidiDeviceType.Din },
       { id: 2, label: 'Nord Drum 3', type: MidiDeviceType.Din },
@@ -28,5 +19,7 @@ export const useMidi = defineStore('midi', {
       { id: 12, label: 'Midi 12', type: MidiDeviceType.Usb },
       { id: 13, label: 'Midi 13', type: MidiDeviceType.Usb },
     ] as MidiDevice[],
-  }),
+  })
+
+  return { ...toRefs(state) }
 })

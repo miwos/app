@@ -15,35 +15,29 @@
 </template>
 
 <script setup lang="ts">
+import { useMagicKeys } from '@vueuse/core'
+// @ts-ignore
+import { Pane, Splitpanes } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
 import { ref, watch } from 'vue'
 import AppPatch from './components/AppPatch.vue'
 import AppSidebar from './components/AppSidebar.vue'
-// @ts-ignore
-import { Splitpanes, Pane } from 'splitpanes'
-import 'splitpanes/dist/splitpanes.css'
+import MenuEncoders from './components/MenuEncoders.vue'
 import MenuMain from './components/MenuMain.vue'
 import MenuMapping from './components/MenuMapping.vue'
-import MenuParts from './components/MenuParts.vue'
-import { useInstances } from './stores/instances'
 import MenuModulesSearch from './components/MenuModulesSearch.vue'
-import MenuEncoders from './components/MenuEncoders.vue'
-import { useMidi } from './stores/midi'
+import MenuParts from './components/MenuParts.vue'
 import { useApp } from './stores/app'
-import { useMagicKeys } from '@vueuse/core'
 import { useEditor } from './stores/editor'
+import { useMidi } from './stores/midi'
 
 useMidi()
 const app = useApp()
 const editor = useEditor()
-
 const keys = useMagicKeys()
+
 const ctrlAltLeft = keys['Ctrl+AltLeft']
-
 watch(ctrlAltLeft, (v) => v && app.toggleViewMode())
-
-// const instances = useInstances()
-// instances.add('Input', { x: 200, y: 200 })
-// instances.add('Output', { x: 200, y: 400 })
 
 const sideBar = ref<InstanceType<typeof AppSidebar>>()
 </script>

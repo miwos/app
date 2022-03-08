@@ -1,11 +1,11 @@
 <template>
   <div class="module-props">
     <ModuleProp
-      v-for="(_, name, index) in displayProps"
-      :name="name"
+      v-for="(name, index) in displayPropNames"
+      :name="(name as string)"
       :position="getPosition(index)"
       :side="index < 3 ? 'right' : 'left'"
-      :value="instance.props[name]"
+      :value="instance.props.get(name)"
     />
   </div>
 </template>
@@ -14,23 +14,24 @@
 import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Shape } from 'shape-compiler'
-import { computed, ComputedRef, inject } from 'vue'
+import { computed, ComputedRef, inject, ref } from 'vue'
 import ModuleProp from './ModuleProp.vue'
 
 const module = inject<ComputedRef<Module>>('module')!
 const shape = inject<ComputedRef<Shape>>('shape')!
 const instance = inject<ComputedRef<ModuleInstance>>('instance')!
 
-const displayProps = computed(
-  () =>
-    Object.fromEntries(
-      Object.entries(module.value.props).filter(([, prop]) => prop.show ?? true)
-    ) as Module['props']
-)
+const displayPropNames = computed(() => {
+  const names = []
+  for (const [name, prop] of module.value.props.entries()) {
+    if (prop.show) names.push(name)
+  }
+  return names
+})
 
 const getPosition = (index: number) => {
   const side = index < 3 ? 'right' : 'left'
-  const count = Object.values(displayProps.value).length
+  const count = Object.values(displayPropNames.value).length
   const positions = shape.value.props
 
   const position =

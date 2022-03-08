@@ -4,13 +4,13 @@
     <button>File</button>
     <button>Edit</button>
     <button>Clear</button>
-    RAM: {{ useBridge().usedMemory }}kb
+    RAM: {{ useDevice().usedMemory }}kb
   </div>
 </template>
 
 <script setup lang="ts">
 import DeviceIndicator from './DeviceIndicator.vue'
-import { useBridge } from '@/services/bridge'
+import { useDevice } from '@/stores/device'
 </script>
 
 <style scoped lang="scss">

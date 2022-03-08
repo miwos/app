@@ -8,8 +8,9 @@ export const create = () => {
   const requiredModules = new Set()
   const instances: Record<string, object> = {}
 
-  for (const instance of Object.values(useInstances().items)) {
-    const { id, moduleId, props, position } = instance
+  for (const instance of useInstances().items.values()) {
+    const { id, moduleId, position } = instance
+    const props = Object.fromEntries(instance.props.entries())
     const xy = `%{ ${position.x}, ${position.y} }%`
     requiredModules.add(moduleId)
     instances[`%${id}%`] = { Module: `%${moduleId}%`, xy, props }
@@ -22,7 +23,7 @@ export const create = () => {
   const patch = {
     instances,
 
-    connections: Object.values(useConnections().items).map(
+    connections: Array.from(useConnections().items.values()).map(
       ({ from, to }) =>
         `%{ ${from.instanceId}, ${from.index}, ${to.instanceId}, ${to.index} }%`
     ),
@@ -32,7 +33,7 @@ export const create = () => {
         Object.entries(page).map(([name, entries]) => [
           name,
           Object.fromEntries(
-            Object.values(entries)
+            Array.from(entries.values())
               .filter((v) => v.mappedTo)
               .map((v) => [
                 `%${v.id}%`,

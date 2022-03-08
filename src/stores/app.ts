@@ -1,15 +1,16 @@
 import { defineStore } from 'pinia'
+import { reactive, toRefs } from 'vue'
 
 export type ViewMode = 'minimal' | 'verbose'
 
-export const useApp = defineStore('app', {
-  state: () => ({
+export const useApp = defineStore('app', () => {
+  const state = reactive({
     viewMode: 'minimal' as ViewMode,
-  }),
+  })
 
-  actions: {
-    toggleViewMode() {
-      this.viewMode = this.viewMode === 'minimal' ? 'verbose' : 'minimal'
-    },
-  },
+  // Actions
+  const toggleViewMode = () =>
+    (state.viewMode = state.viewMode === 'minimal' ? 'verbose' : 'minimal')
+
+  return { ...toRefs(state), toggleViewMode }
 })

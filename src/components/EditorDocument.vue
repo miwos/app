@@ -24,7 +24,10 @@ const el = ref<HTMLElement | null>(null)
 let monacoEditor: monaco.editor.IStandaloneCodeEditor | null = null
 const models = new Map<string, monaco.editor.ITextModel>()
 
-watch(editor.focusedFile, (v) => v && openFile(v))
+watch(
+  () => editor.focusedFile,
+  (v) => v && openFile(v)
+)
 
 onMounted(async () => {
   monacoEditor = markRaw(
@@ -34,7 +37,7 @@ onMounted(async () => {
       minimap: { enabled: false },
     })
   )
-  if (editor.focusedFile.value) openFile(editor.focusedFile.value)
+  if (editor.focusedFile) openFile(editor.focusedFile)
   window.addEventListener('resize', resize)
 })
 
@@ -80,12 +83,15 @@ const save = async () => {
   const name = editor.focusedFileName
   if (!name) return
 
+  const file = editor.focusedFile
+  if (!file) return
+
   const model = models.get(name)
   if (!model) return
 
   await editor.saveAndUpdate(name, model.getValue())
-  editor.focusedFile.value!.lastSavedVersionId = model.getAlternativeVersionId()
-  editor.focusedFile.value!.hasUnsavedChanges = false
+  editor.focusedFile.lastSavedVersionId = model.getAlternativeVersionId()
+  editor.focusedFile.hasUnsavedChanges = false
 }
 
 const resize = () => nextTick().then(() => monacoEditor?.layout())

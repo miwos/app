@@ -21,8 +21,9 @@ const inputsOutputs = computed(() =>
   // An `inout` is an input and an output that are visually combined. So we only
   // render the input that belongs to an `inout` and omit the output. The input
   // still has the `isInOut` flag so we treat it specifically.
-  Object.values(module.value.inputsOutputs).filter(
-    (v) => !(v.direction === 'out' && shape.value.inputsOutputs[v.id]?.isInOut)
+  Array.from(module.value.inputsOutputs.values()).filter(
+    (v) =>
+      !(v.direction === 'out' && shape.value.inputsOutputs.get(v.id)?.isInOut)
   )
 )
 </script>

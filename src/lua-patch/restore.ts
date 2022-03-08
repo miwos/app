@@ -13,7 +13,10 @@ const deserializeConnectionPoint = (
 ): ConnectionPoint => {
   const id = `${direction}-${index}` as ModuleInputOutput['id']
   const module = useModules().getByInstanceId(instanceId)
-  const signal = module.inputsOutputs[id].signal
+  const inputOutput = module.inputsOutputs.get(id)
+  if (!inputOutput)
+    throw new Error(`Cant't find input/output '${id}' on module '${module.id}'`)
+  const signal = inputOutput.signal
   return { id, index, instanceId, direction, signal, isInOut: false }
 }
 
@@ -24,7 +27,12 @@ export const restore = (patch: LuaPatch) => {
   const instances = useInstances()
   for (const [id, instance] of Object.entries(patch.instances)) {
     const [x, y] = instance.xy
-    instances.restore(+id, instance.Module, { x, y }, instance.props)
+    instances.restore({
+      id: +id,
+      moduleId: instance.Module,
+      position: { x, y },
+      props: new Map(Object.entries(instance.props)),
+    })
   }
 
   const connections = useConnections()

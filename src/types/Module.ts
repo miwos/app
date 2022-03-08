@@ -1,11 +1,11 @@
-import type { ShapeInputOutput } from 'shape-compiler'
+import type { Shape, ShapeInputOutput } from 'shape-compiler'
 
 export interface Module {
   id: string
   shapeId: string
   component?: string
-  props: Record<ModuleProp['type'], ModuleProp>
-  inputsOutputs: Record<ModuleInputOutput['id'], ModuleInputOutput>
+  props: Map<string, ModuleProp>
+  inputsOutputs: Map<ModuleInputOutput['id'], ModuleInputOutput>
 }
 
 export interface ModuleProp {
@@ -23,3 +23,11 @@ export interface ModuleInputOutput {
   direction: 'in' | 'out'
   signal: 'midi' | 'trigger'
 }
+
+export interface ModuleInfoJson {
+  shape: Module['shapeId']
+  props: Record<string, ModuleProp>
+  inputsOutputs: Record<ModuleInputOutput['id'], ModuleInputOutput>
+}
+
+export type ModuleInfo = Pick<Module, 'shapeId' | 'props' | 'inputsOutputs'>

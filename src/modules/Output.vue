@@ -6,9 +6,9 @@
     :class="{ focused: isFocused }"
   >
     <MidiDeviceCombo
-      :value="instance.props.device"
+      :value="instance.props.get('device')"
       preferredAlignment="below"
-      @update:value="setProp('device', $event)"
+      @update:value="updateProp('device', $event)"
     />
   </div>
 </template>
@@ -27,8 +27,8 @@ const instances = useInstances()
 
 onMouseDownOutside(el, () => (isFocused.value = false))
 
-const setProp = (name: string, value: number) =>
-  instances.setProp(instance.value.id, name, value)
+const updateProp = (name: string, value: number) =>
+  instances.updateProp(instance.value.id, name, value)
 </script>
 
 <style scoped lang="scss">

@@ -65,7 +65,7 @@ const shape = inject<ComputedRef<Shape>>('shape')!
 
 const connectionPoint = computed(() => ({
   ...props,
-  isInOut: shapeInputOutput.value.isInOut,
+  isInOut: shapeInputOutput.value?.isInOut,
   instanceId: instance.value.id,
 }))
 const canConnect = computed(
@@ -77,14 +77,17 @@ const isActive = computed(() =>
   instance.value.activeInputOutputIds.has(props.id)
 )
 const isMidi = computed(() => props.signal === 'midi')
-const shapeInputOutput = computed(() => shape.value.inputsOutputs[props.id])
+const shapeInputOutput = computed(() => shape.value.inputsOutputs.get(props.id))
 
 const position = computed(() => {
+  if (!shapeInputOutput.value) return
   const { position } = shapeInputOutput.value
   return isMidi.value ? position.inset : position.touching
 })
 
-const existsOnConnection = (connection: Connection | null) => {
+const angle = computed(() => shapeInputOutput.value?.angle ?? 0)
+
+const existsOnConnection = (connection?: Connection) => {
   if (!connection) return false
   const { from, to } = connection
   return (
@@ -140,7 +143,7 @@ const handleDrop = () => {
     overflow: visible;
 
     .signal-trigger {
-      --angle: v-bind('shapeInputOutput.angle - 90 + `deg`');
+      --angle: v-bind('angle - 90 + `deg`');
       transform: translateY(-50%) rotate(var(--angle));
       transform-origin: bottom center;
     }
