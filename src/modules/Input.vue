@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
-import { useInstances } from '@/store/instances'
+import { useInstances } from '@/stores/instances'
 import { ComputedRef, inject, ref } from 'vue'
 import MidiDeviceCombo from '../components/MidiDeviceCombo.vue'
 import { ModuleInstance } from '../types/ModuleInstance'

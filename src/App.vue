@@ -24,13 +24,13 @@ import 'splitpanes/dist/splitpanes.css'
 import MenuMain from './components/MenuMain.vue'
 import MenuMapping from './components/MenuMapping.vue'
 import MenuParts from './components/MenuParts.vue'
-import { useInstances } from './store/instances'
+import { useInstances } from './stores/instances'
 import MenuModulesSearch from './components/MenuModulesSearch.vue'
 import MenuEncoders from './components/MenuEncoders.vue'
-import { useMidi } from './store/midi'
-import { useApp } from './store/app'
+import { useMidi } from './stores/midi'
+import { useApp } from './stores/app'
 import { useMagicKeys } from '@vueuse/core'
-import { useEditor } from './store/editor'
+import { useEditor } from './stores/editor'
 
 useMidi()
 const app = useApp()

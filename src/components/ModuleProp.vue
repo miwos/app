@@ -46,9 +46,9 @@
 
 <script setup lang="ts">
 import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
-import { useApp } from '@/store/app'
-import { useInstances } from '@/store/instances'
-import { useMapping } from '@/store/mapping'
+import { useApp } from '@/stores/app'
+import { useInstances } from '@/stores/instances'
+import { useMapping } from '@/stores/mapping'
 import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'

@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { useMidi } from '../store/midi'
+import { useMidi } from '../stores/midi'
 import BaseComboBox from './BaseComboBox.vue'
 
 defineProps<{

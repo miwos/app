@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import { useInstances } from '@/store/instances'
-import { useModules } from '@/store/modules'
+import { useInstances } from '@/stores/instances'
+import { useModules } from '@/stores/modules'
 import { Module } from '@/types/Module'
 import { onClickOutside, onKeyDown, useMouse } from '@vueuse/core'
 import { ref } from 'vue'

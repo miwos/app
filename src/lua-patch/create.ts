@@ -1,8 +1,8 @@
-import { useInstances } from '@/store/instances'
+import { useInstances } from '@/stores/instances'
 // @ts-ignore
 import { format } from 'lua-json'
-import { useConnections } from '../store/connections'
-import { useMapping } from '../store/mapping'
+import { useConnections } from '../stores/connections'
+import { useMapping } from '../stores/mapping'
 
 export const create = () => {
   const requiredModules = new Set()

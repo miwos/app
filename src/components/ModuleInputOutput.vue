@@ -41,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { useConnections } from '@/store/connections'
-import { useInstances } from '@/store/instances'
+import { useConnections } from '@/stores/connections'
+import { useInstances } from '@/stores/instances'
 import { Connection } from '@/types/Connection'
 import { ModuleInputOutput } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'

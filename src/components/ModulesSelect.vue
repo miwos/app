@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { useShapes } from '@/store/shapes'
+import { useShapes } from '@/stores/shapes'
 import { Module } from '@/types/Module'
 import { onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
 import ShapePath from './ShapePath.vue'

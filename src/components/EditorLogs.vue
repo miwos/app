@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
-import { useLogs } from '@/store/logs'
+import { useLogs } from '@/stores/logs'
 import { Log } from '@/types/Log'
 import { tokenizeLuaDump } from '@/utils'
 

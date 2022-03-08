@@ -29,8 +29,8 @@
 <script setup lang="ts">
 import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useConnectionCurve } from '@/composables/useConnectionCurve'
-import { useConnections } from '@/store/connections'
-import { useInstances } from '@/store/instances'
+import { useConnections } from '@/stores/connections'
+import { useInstances } from '@/stores/instances'
 import { ConnectionPoint } from '@/types/Connection'
 import { computed, ref, watchEffect } from 'vue'
 

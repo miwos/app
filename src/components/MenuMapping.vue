@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { useMapping } from '@/store/mapping'
+import { useMapping } from '@/stores/mapping'
 import BaseButtonCircleTriplet from './BaseButtonCircleTriplet.vue'
 
 const mapping = useMapping()

@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { useEditor } from '@/store/editor'
+import { useEditor } from '@/stores/editor'
 import { EditorFile } from '@/types/Editor'
 import {
   connectLanguageServer,

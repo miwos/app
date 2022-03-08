@@ -25,8 +25,8 @@
 <script setup lang="ts">
 import ConnectionLine from '@/components/ConnectionLine.vue'
 import ModuleInstance from '@/components/ModuleInstance.vue'
-import { useConnections } from '@/store/connections'
-import { useInstances } from '@/store/instances'
+import { useConnections } from '@/stores/connections'
+import { useInstances } from '@/stores/instances'
 </script>
 
 <style scoped>

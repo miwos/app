@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import svg from '@/assets/knob.svg'
-import { useMapping } from '@/store/mapping'
+import { useMapping } from '@/stores/mapping'
 import { map } from '@/utils'
 import { ref, computed, watch } from 'vue'
 

@@ -31,9 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import { useEditor } from '@/store/editor'
-import { useModules } from '@/store/modules'
-import { useShapes } from '@/store/shapes'
+import { useEditor } from '@/stores/editor'
+import { useModules } from '@/stores/modules'
+import { useShapes } from '@/stores/shapes'
 import { basename, nameWithoutExt } from '@/utils'
 import ShapePath from './ShapePath.vue'
 

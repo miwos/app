@@ -3,10 +3,10 @@ import { computed } from 'vue'
 
 import Vec from 'tiny-vec'
 import { toRadians } from '../utils'
-import { useInstances } from '@/store/instances'
+import { useInstances } from '@/stores/instances'
 import { ConnectionPoint } from '@/types/Connection'
-import { useModules } from '@/store/modules'
-import { useShapes } from '@/store/shapes'
+import { useModules } from '@/stores/modules'
+import { useShapes } from '@/stores/shapes'
 
 const getPointAndAngle = ({
   id,
