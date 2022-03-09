@@ -1,17 +1,16 @@
 <template>
   <div class="menu-mapping">
     <BaseButtonCircleTriplet
-      :value="mapping.currentPageIndex"
-      @update:value="mapping.selectPage($event)"
+      :value="encoders.currentPageIndex"
+      @update:value="encoders.selectPage($event)"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useMapping } from '@/stores/mapping'
+import { useEncoders } from '@/stores/encoders'
 import BaseButtonCircleTriplet from './BaseButtonCircleTriplet.vue'
-
-const mapping = useMapping()
+const encoders = useEncoders()
 </script>
 
 <style lang="scss" scoped>

@@ -1,6 +1,9 @@
 import { usePatch } from '@/stores/patch'
 import { Module } from '@/types/Module'
-import { ModuleInstance } from '@/types/ModuleInstance'
+import {
+  ModuleInstance,
+  ModuleInstanceSerialized,
+} from '@/types/ModuleInstance'
 import { debounce } from '@/utils'
 
 export const updatePatchDebounced = debounce(() => {
@@ -14,6 +17,28 @@ export const createInstance = (
   activeInputOutputIds: new Set(),
   isUpdating: false,
 })
+
+export const serializeInstance = (
+  instance: ModuleInstance
+): ModuleInstanceSerialized => {
+  const {
+    moduleId,
+    position: { x, y },
+  } = instance
+  const props = Object.fromEntries(instance.props.entries())
+  return { Module: moduleId, xy: [x, y], props }
+}
+
+export const deserializeInstance = (
+  serialized: ModuleInstanceSerialized
+): Pick<ModuleInstance, 'moduleId' | 'position' | 'props'> => {
+  const {
+    Module,
+    xy: [x, y],
+  } = serialized
+  const props = new Map(Object.entries(serialized.props))
+  return { moduleId: Module, position: { x, y }, props }
+}
 
 export const getPropsDefaults = (props: Module['props']) =>
   new Map(

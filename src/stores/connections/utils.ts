@@ -1,8 +1,45 @@
-import { ConnectionPoint } from '@/types/Connection'
+import {
+  Connection,
+  ConnectionPoint,
+  ConnectionSerialized,
+} from '@/types/Connection'
 import { useInstances } from '../instances'
 
-export const getConnectionId = (from: ConnectionPoint, to: ConnectionPoint) =>
+export const getConnectionId = (
+  from: ConnectionPoint,
+  to: ConnectionPoint
+): Connection['id'] =>
   `(${from.instanceId},${from.index})-(${to.instanceId},${to.index})`
+
+export const serializeConnection = ({
+  from,
+  to,
+}: Connection): ConnectionSerialized => [
+  from.instanceId,
+  from.index,
+  to.instanceId,
+  to.index,
+]
+
+export const deserializeConnection = ([
+  fromId,
+  fromIndex,
+  toId,
+  toIndex,
+]: ConnectionSerialized): Pick<Connection, 'from' | 'to'> => {
+  const from = deserializeConnectionPoint('out', fromId, fromIndex)
+  const to = deserializeConnectionPoint('in', toId, toIndex)
+  return { from, to }
+}
+
+export const deserializeConnectionPoint = (
+  direction: ConnectionPoint['direction'],
+  instanceId: ConnectionPoint['instanceId'],
+  index: ConnectionPoint['index']
+): ConnectionPoint => {
+  const id = `${direction}-${index}` as ConnectionPoint['id']
+  return { id, index, instanceId, direction }
+}
 
 export const sortPointsByPosition = (
   a: ConnectionPoint,

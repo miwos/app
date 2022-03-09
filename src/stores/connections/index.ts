@@ -1,4 +1,8 @@
-import { Connection, ConnectionPoint } from '@/types/Connection'
+import {
+  Connection,
+  ConnectionPoint,
+  ConnectionSerialized,
+} from '@/types/Connection'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { defineStore } from 'pinia'
 import { computed, reactive, toRefs } from 'vue'
@@ -6,8 +10,10 @@ import { usePatch } from '@/stores/patch'
 import {
   asInput,
   asOutput,
+  deserializeConnection,
   getConnectionId,
   pointsCanConnect,
+  serializeConnection,
   sortPointsByPosition,
 } from './utils'
 
@@ -19,8 +25,8 @@ export const useConnections = defineStore('connections', () => {
 
   const state = reactive({
     items: new Map<Id, Connection>(),
-    hoveredId: undefined as string | undefined,
-    focusedId: undefined as string | undefined,
+    hoveredId: undefined as Connection['id'] | undefined,
+    focusedId: undefined as Connection['id'] | undefined,
     startPoint: undefined as ConnectionPoint | undefined,
   })
 
@@ -66,6 +72,15 @@ export const useConnections = defineStore('connections', () => {
     const id = getConnectionId(from, to)
     state.items.set(id, { id, from, to })
     if (updateDevice) patch.update()
+  }
+
+  const serialize = () => list.value.map(serializeConnection)
+
+  const restore = (serializedConnections: ConnectionSerialized[]) => {
+    for (const serialized of serializedConnections) {
+      const { from, to } = deserializeConnection(serialized)
+      add(from, to, false)
+    }
   }
 
   const connectFrom = (point: ConnectionPoint) => (state.startPoint = point)
@@ -122,6 +137,8 @@ export const useConnections = defineStore('connections', () => {
     hover,
     focus,
     add,
+    serialize,
+    restore,
     connectFrom,
     connectTo,
     remove,

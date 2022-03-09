@@ -47,8 +47,8 @@
 <script setup lang="ts">
 import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useApp } from '@/stores/app'
+import { useEncoders } from '@/stores/encoders'
 import { useInstances } from '@/stores/instances'
-import { useMapping } from '@/stores/mapping'
 import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
@@ -65,14 +65,15 @@ const props = defineProps<{
 const instance = inject<ComputedRef<ModuleInstance>>('instance')!
 const module = inject<ComputedRef<Module>>('module')!
 
+const app = useApp()
+const encoders = useEncoders()
+const instances = useInstances()
+
 const el = ref<HTMLElement | null>(null)
 const input = ref<HTMLElement | null>(null)
 const mappingSelect = ref<HTMLElement | null>(null)
-const app = useApp()
-const mapping = useMapping()
-const instances = useInstances()
 const showMapping = ref(false)
-const mappedEncoder = mapping.getMappedEncoder(instance.value.id, props.name)
+const mappedEncoder = encoders.getMapped(instance.value.id, props.name)
 const isFocused = ref(false)
 const isViewModeVerbose = computed(() => app.viewMode === 'verbose')
 
@@ -88,8 +89,8 @@ const onInputMouseDown = async () => {
 const updateProp = (value: number) =>
   instances.updateProp(instance.value.id, props.name, value)
 
-const mapEncoder = (encoderId: number) =>
-  mapping.mapEncoder(encoderId, instance.value.id, props.name)
+const mapEncoder = (id: number) =>
+  encoders.map(id, instance.value.id, props.name)
 
 const map = async () => {
   showMapping.value = true

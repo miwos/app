@@ -1,13 +1,22 @@
 import { useLoa } from '@/services/loa'
 import { useConnections } from '@/stores/connections'
-import { useMapping } from '@/stores/mapping'
+import { useEncoders } from '@/stores/encoders'
 import { useModules } from '@/stores/modules'
 import { usePatch } from '@/stores/patch'
-import { ModuleInstance } from '@/types/ModuleInstance'
+import {
+  ModuleInstance,
+  ModuleInstanceSerialized,
+} from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
 import { defineStore } from 'pinia'
 import { computed, reactive, toRefs } from 'vue'
-import { createInstance, getPropsDefaults, updatePatchDebounced } from './utils'
+import {
+  createInstance,
+  deserializeInstance,
+  getPropsDefaults,
+  serializeInstance,
+  updatePatchDebounced,
+} from './utils'
 
 type Id = ModuleInstance['id']
 type ModuleId = ModuleInstance['moduleId']
@@ -17,7 +26,7 @@ export const useInstances = defineStore('instances', () => {
   const modules = useModules()
   const patch = usePatch()
   const connections = useConnections()
-  const mapping = useMapping()
+  const encoders = useEncoders()
 
   const state = reactive({
     items: new Map<Id, ModuleInstance>(),
@@ -58,30 +67,36 @@ export const useInstances = defineStore('instances', () => {
     if (updateDevice) patch.update()
   }
 
-  const restore = (
-    data: Omit<ModuleInstance, 'activeInputOutputIds' | 'isUpdating'>
-  ) => {
-    const { id } = data
-    if (state.items.has(id))
-      throw new Error(`Instance with id '${id}' already exists.`)
+  const serialize = () =>
+    Object.fromEntries(list.value.map((v) => [v.id, serializeInstance(v)]))
 
-    state.items.set(id, createInstance(data))
-    state.sortedIds.push(id)
-    state.nextId = Math.max(state.nextId, id + 1)
+  const restore = (
+    serializedInstances: Record<Id, ModuleInstanceSerialized>
+  ) => {
+    for (const [idStr, serialized] of Object.entries(serializedInstances)) {
+      const id = parseInt(idStr)
+
+      if (state.items.has(id))
+        throw new Error(`Instance with id '${id}' already exists.`)
+
+      const data = deserializeInstance(serialized)
+      state.items.set(id, createInstance({ id, ...data }))
+      state.sortedIds.push(id)
+      state.nextId = Math.max(state.nextId, id + 1)
+    }
   }
 
   const remove = (id: Id, updateDevice = true) => {
-    // Remove all connections that are connected to the module we are about
-    // to remove.
-    for (const connection of connections.listConnectedToInstance(id))
-      connections.remove(connection.id, false)
+    // Remove all encoders and connections that rely on the instance we are
+    // about to remove.
 
-    // Remove all encoders that were mapped to the instance.
-    for (const page of mapping.pages) {
-      for (const encoder of Object.values(page.encoders)) {
-        if (encoder.mappedTo && encoder.mappedTo.instanceId === id) {
-          mapping.clearEncoder(encoder.id)
-        }
+    for (const connection of connections.listConnectedToInstance(id)) {
+      connections.remove(connection.id, false)
+    }
+
+    for (const page of encoders.pages) {
+      for (const encoder of page.values()) {
+        if (encoder.instanceId === id) encoders.unmap(encoder.id)
       }
     }
 
@@ -129,6 +144,7 @@ export const useInstances = defineStore('instances', () => {
     sorted,
     isFocused,
     add,
+    serialize,
     restore,
     remove,
     focus,

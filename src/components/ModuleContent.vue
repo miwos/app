@@ -1,18 +1,18 @@
 <template>
-  <component
-    v-if="module?.component"
-    :is="asyncComponent"
-    v-bind="instance?.props"
-  />
+  <component v-if="module?.component" :is="asyncComponent" v-bind="props" />
 </template>
 
 <script setup lang="ts">
 import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
-import { ComputedRef, defineAsyncComponent, inject } from 'vue'
+import { computed, ComputedRef, defineAsyncComponent, inject } from 'vue'
 
 const module = inject<ComputedRef<Module>>('module')!
 const instance = inject<ComputedRef<ModuleInstance>>('instance')!
+
+const props = computed(() =>
+  Object.fromEntries(instance.value?.props.entries())
+)
 
 const asyncComponent = defineAsyncComponent(
   () => import(`../modules/${module.value.component}`)

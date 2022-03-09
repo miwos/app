@@ -1,7 +1,7 @@
 <template>
   <button
     class="encoder"
-    :class="{ mapped: isMapped, transition: transitionEnabled }"
+    :class="{ mapped: !!encoder, transition: transitionEnabled }"
   >
     <svg
       class="encoder-icon"
@@ -15,7 +15,9 @@
 
 <script setup lang="ts">
 import svg from '@/assets/knob.svg'
-import { useMapping } from '@/stores/mapping'
+import { useEncoders } from '@/stores/encoders'
+import { useInstances } from '@/stores/instances'
+import { useModules } from '@/stores/modules'
 import { map } from '@/utils'
 import { ref, computed, watch } from 'vue'
 
@@ -23,16 +25,29 @@ const props = defineProps<{
   id: number
 }>()
 
-const mapping = useMapping()
-const encoder = computed(() => mapping.getEncoder(props.id))
-const isMapped = computed(() => !!encoder.value.mappedTo)
-const rotation = computed(() =>
-  encoder.value.mappedTo ? map(encoder.value.value, 0, 127, 0, 270) - 135 : 0
-)
+const encoders = useEncoders()
+const instances = useInstances()
+const modules = useModules()
+const encoder = computed(() => encoders.get(props.id))
 
+const rotation = computed(() => {
+  if (!encoder.value) return 0
+
+  const { instanceId, propName } = encoder.value
+  const value = instances.get(instanceId).props.get(propName)
+  const module = modules.getByInstanceId(instanceId)
+
+  const prop = module.props.get(propName)
+  if (!prop) return
+
+  const { min, max } = prop
+  return map(value, min ?? 0, max ?? 127, 0, 270) - 135
+})
+
+// ? What exactly does this
 // Only transition when we are changing the pages.
 const transitionEnabled = ref(false)
-const currentPageIndex = computed(() => useMapping().currentPageIndex)
+const currentPageIndex = computed(() => encoders.currentPageIndex)
 watch(currentPageIndex, () => (transitionEnabled.value = true))
 const onTransitionEnd = () => (transitionEnabled.value = false)
 </script>
