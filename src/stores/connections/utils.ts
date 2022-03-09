@@ -16,9 +16,9 @@ export const serializeConnection = ({
   to,
 }: Connection): ConnectionSerialized => [
   from.instanceId,
-  from.index,
+  from.index + 1, // one-based index
   to.instanceId,
-  to.index,
+  to.index + 1, // one-based index
 ]
 
 export const deserializeConnection = ([
@@ -27,8 +27,8 @@ export const deserializeConnection = ([
   toId,
   toIndex,
 ]: ConnectionSerialized): Pick<Connection, 'from' | 'to'> => {
-  const from = deserializeConnectionPoint('out', fromId, fromIndex)
-  const to = deserializeConnectionPoint('in', toId, toIndex)
+  const from = deserializeConnectionPoint('out', fromId, fromIndex - 1) // zero-based index
+  const to = deserializeConnectionPoint('in', toId, toIndex - 1) // zero-based index
   return { from, to }
 }
 
@@ -37,8 +37,7 @@ export const deserializeConnectionPoint = (
   instanceId: ConnectionPoint['instanceId'],
   index: ConnectionPoint['index']
 ): ConnectionPoint => {
-  const id = `${direction}-${index}` as ConnectionPoint['id']
-  return { id, index, instanceId, direction }
+  return { index, instanceId, direction }
 }
 
 export const sortPointsByPosition = (
@@ -57,7 +56,6 @@ export const asDirection = (
 ): ConnectionPoint => ({
   ...point,
   direction,
-  id: `${direction}-${point.index}`,
 })
 
 export const asInput = (point: ConnectionPoint): ConnectionPoint =>

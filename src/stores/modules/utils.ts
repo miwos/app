@@ -2,32 +2,30 @@ import { useLoa } from '@/services/loa'
 import {
   Module,
   ModuleInfo,
-  ModuleInfoJson,
+  ModuleInfoSerialized,
   ModuleInputOutput,
+  ModuleInputOutputSerialized,
 } from '@/types/Module'
 
-export const parseSignal = (index: number): ModuleInputOutput['signal'] =>
+const parseSignal = (index: number): ModuleInputOutput['signal'] =>
   index === 1 ? 'midi' : 'trigger'
 
-export const parseDirection = (index: number): ModuleInputOutput['direction'] =>
-  index === 1 ? 'in' : 'out'
+const parseInputsOutputs = (
+  value: Record<number, ModuleInputOutputSerialized>
+): ModuleInputOutput[] =>
+  Object.values(value).map((v) => ({
+    signal: parseSignal(v.signal),
+  }))
 
 export const getInfo = async (moduleId: Module['id']): Promise<ModuleInfo> => {
   const response = await useLoa().sendRequest('/module/info', [moduleId])
 
-  const info = JSON.parse(response) as ModuleInfoJson
+  const info = JSON.parse(response) as ModuleInfoSerialized
   const shapeId = (info.shape ?? 'Round') as Module['shapeId']
   const props = new Map(Object.entries(info.props))
 
-  const inputsOutputs = new Map(
-    Object.values(info.inputsOutputs ?? {}).map((v: any) => {
-      const direction = parseDirection(v.direction)
-      const signal = parseSignal(v.signal)
-      const { index } = v
-      const id = `${direction}-${index}` as ModuleInputOutput['id']
-      return [id, { id, index, direction, signal }]
-    })
-  )
+  const inputs = info.inputs ? parseInputsOutputs(info.inputs) : []
+  const outputs = info.outputs ? parseInputsOutputs(info.outputs) : []
 
-  return { shapeId, props, inputsOutputs }
+  return { shapeId, props, inputs, outputs }
 }

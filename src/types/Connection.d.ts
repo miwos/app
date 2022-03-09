@@ -3,16 +3,16 @@ import { ModuleInputOutput } from './Module'
 import { ModuleInstance } from './ModuleInstance'
 
 type InstanceId = ModuleInstance['id']
-type index = ConnectionPoint['index']
 
 export interface Connection {
-  id: `(${InstanceId},${index})-(${InstanceId},${index})`
+  id: `(${InstanceId},${number})-(${InstanceId},${number})`
   from: ConnectionPoint
   to: ConnectionPoint
 }
 
-export interface ConnectionPoint
-  extends Pick<ModuleInputOutput, 'id' | 'index' | 'direction'> {
+export interface ConnectionPoint {
+  direction: 'in' | 'out'
+  index: number
   instanceId: ModuleInstance['id']
   isInOut?: ShapeInputOutput['isInOut']
   signal?: ModuleInputOutput['signal']

@@ -31,11 +31,11 @@ import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useConnectionCurve } from '@/composables/useConnectionCurve'
 import { useConnections } from '@/stores/connections'
 import { useInstances } from '@/stores/instances'
-import { ConnectionPoint } from '@/types/Connection'
+import { Connection, ConnectionPoint } from '@/types/Connection'
 import { computed, ref, watchEffect } from 'vue'
 
 const props = defineProps<{
-  id: string
+  id: Connection['id']
   from: ConnectionPoint
   to: ConnectionPoint
 }>()
@@ -47,9 +47,8 @@ const el = ref<HTMLElement | null>(null)
 const isHovered = connections.isHovered(props.id)
 const isFocused = connections.isFocused(props.id)
 
-const isActive = computed(() =>
-  instances.get(props.from.instanceId).activeInputOutputIds.has(props.from.id)
-)
+// TODO: fix
+const isActive = computed(() => false)
 
 const instanceIsFocused = computed(
   () =>

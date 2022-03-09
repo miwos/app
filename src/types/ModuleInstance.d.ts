@@ -6,7 +6,6 @@ export interface ModuleInstance {
   moduleId: Module['id']
   position: Point
   props: Map<string, any>
-  activeInputOutputIds: Set<ModuleInputOutput['id']>
   isUpdating: boolean
 }
 

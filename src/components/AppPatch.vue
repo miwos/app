@@ -10,11 +10,11 @@
     </div>
     <div class="connections">
       <ConnectionLine
-        v-for="(connection, index) in connections.list"
-        :key="index"
+        v-for="connection in connections.list"
+        :key="connection.id"
+        :id="connection.id"
         :from="connection.from"
         :to="connection.to"
-        :id="connection.id"
       />
     </div>
   </div>

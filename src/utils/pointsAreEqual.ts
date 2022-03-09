@@ -1,4 +1,9 @@
 import { ConnectionPoint } from '@/types/Connection'
 
-export const pointsAreEqual = (a: ConnectionPoint, b: ConnectionPoint) =>
-  a.instanceId === b.instanceId && a.id === b.id
+export const connectionPointsAreEqual = (
+  a: ConnectionPoint,
+  b: ConnectionPoint
+) =>
+  a.instanceId === b.instanceId &&
+  a.index === b.index &&
+  a.direction === b.direction

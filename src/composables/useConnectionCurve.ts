@@ -9,15 +9,20 @@ import { useModules } from '@/stores/modules'
 import { useShapes } from '@/stores/shapes'
 
 const getPointAndAngle = ({
-  id,
+  index,
+  direction,
   instanceId,
 }: ConnectionPoint): [Vec, number] => {
   const instance = useInstances().get(instanceId)
   const module = useModules().getByInstanceId(instanceId)
   const shape = useShapes().get(module.shapeId)
 
-  const inputOutput = shape.inputsOutputs.get(id)
-  if (!inputOutput) throw new Error(`Can't find input/output '${id}'`)
+  const { inputs, outputs } = shape
+
+  const isInput = direction === 'in'
+  const inputOutput = isInput ? inputs[index] : outputs[index]
+  if (!inputOutput)
+    throw new Error(`Can't find ${isInput ? 'input' : 'output'}#${index}.`)
 
   const { position, angle } = inputOutput
   const point = new Vec(instance.position).add(position.inset)

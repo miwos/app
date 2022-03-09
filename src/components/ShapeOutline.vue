@@ -20,10 +20,16 @@ const viewBox = computed(() => `0 0 ${size.value.width} ${size.value.height}`)
 
 const dash = computed(() => {
   const holes = []
-  for (const id of module.value.inputsOutputs.keys()) {
-    const offset = shape.value.inputsOutputs.get(id)?.offset
+
+  for (let i = 0; i < module.value.inputs.length; i++) {
+    const offset = shape.value.inputs[i].offset
     if (offset !== undefined) holes.push(offset)
   }
+  for (let i = 0; i < module.value.outputs.length; i++) {
+    const offset = shape.value.outputs[i].offset
+    if (offset !== undefined) holes.push(offset)
+  }
+
   return perforatePath(shape.value.length, holes)
 })
 </script>

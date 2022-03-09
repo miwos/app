@@ -1,11 +1,10 @@
-import type { Shape, ShapeInputOutput } from 'shape-compiler'
-
 export interface Module {
   id: string
   shapeId: string
   component?: string
   props: Map<string, ModuleProp>
-  inputsOutputs: Map<ModuleInputOutput['id'], ModuleInputOutput>
+  inputs: ModuleInputOutput[]
+  outputs: ModuleInputOutput[]
 }
 
 export interface ModuleProp {
@@ -18,16 +17,23 @@ export interface ModuleProp {
 }
 
 export interface ModuleInputOutput {
-  id: ShapeInputOutput['id']
-  index: number
-  direction: 'in' | 'out'
   signal: 'midi' | 'trigger'
 }
 
-export interface ModuleInfoJson {
-  shape: Module['shapeId']
-  props: Record<string, ModuleProp>
-  inputsOutputs: Record<ModuleInputOutput['id'], ModuleInputOutput>
+export type ModuleInfo = Pick<
+  Module,
+  'shapeId' | 'props' | 'inputs' | 'outputs'
+>
+
+export interface ModuleInputOutputSerialized {
+  signal: number
 }
 
-export type ModuleInfo = Pick<Module, 'shapeId' | 'props' | 'inputsOutputs'>
+export interface ModuleInfoSerialized {
+  shape: Module['shapeId']
+  // An array for inputs and outputs would be better but `utils#tableToJson()`
+  // lua helper can't handle arrays right now.
+  inputs?: Record<number, ModuleInputOutputSerialized>
+  outputs?: Record<number, ModuleInputOutputSerialized>
+  props: Record<string, ModuleProp>
+}

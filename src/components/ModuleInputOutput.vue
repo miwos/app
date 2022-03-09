@@ -43,17 +43,16 @@
 <script setup lang="ts">
 import { useConnections } from '@/stores/connections'
 import { useInstances } from '@/stores/instances'
-import { Connection } from '@/types/Connection'
+import { Connection, ConnectionPoint } from '@/types/Connection'
 import { ModuleInputOutput } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
-import { emptyImage, pointsAreEqual } from '@/utils'
+import { connectionPointsAreEqual, emptyImage } from '@/utils'
 import { Shape, ShapeInputOutput } from 'shape-compiler'
 import { computed, ComputedRef, inject, ref, toRefs } from 'vue'
 
 const props = defineProps<{
-  id: ModuleInputOutput['id']
-  index: ModuleInputOutput['index']
-  direction: ModuleInputOutput['direction']
+  index: number
+  direction: ConnectionPoint['direction']
   signal: ModuleInputOutput['signal']
   isInOut?: boolean
 }>()
@@ -73,11 +72,13 @@ const canConnect = computed(
 )
 const isHovered = ref(false)
 const isDragging = ref(false)
-const isActive = computed(() =>
-  instance.value.activeInputOutputIds.has(props.id)
-)
+// TODO: fix
+const isActive = computed(() => false)
 const isMidi = computed(() => props.signal === 'midi')
-const shapeInputOutput = computed(() => shape.value.inputsOutputs.get(props.id))
+const shapeInputOutput = computed(() => {
+  const { inputs, outputs } = shape.value
+  return props.direction === 'in' ? inputs[props.index] : outputs[props.index]
+})
 
 const position = computed(() => {
   if (!shapeInputOutput.value) return
@@ -91,8 +92,8 @@ const existsOnConnection = (connection?: Connection) => {
   if (!connection) return false
   const { from, to } = connection
   return (
-    pointsAreEqual(connectionPoint.value, from) ||
-    pointsAreEqual(connectionPoint.value, to)
+    connectionPointsAreEqual(connectionPoint.value, from) ||
+    connectionPointsAreEqual(connectionPoint.value, to)
   )
 }
 
