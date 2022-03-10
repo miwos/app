@@ -8,8 +8,7 @@ import { useInstances } from '../instances'
 export const getConnectionId = (
   from: ConnectionPoint,
   to: ConnectionPoint
-): Connection['id'] =>
-  `(${from.instanceId},${from.index})-(${to.instanceId},${to.index})`
+): Connection['id'] => `(${from.id})-(${to.id})`
 
 export const serializeConnection = ({
   from,
@@ -37,7 +36,8 @@ export const deserializeConnectionPoint = (
   instanceId: ConnectionPoint['instanceId'],
   index: ConnectionPoint['index']
 ): ConnectionPoint => {
-  return { index, instanceId, direction }
+  const id = `${instanceId}-${index}` as ConnectionPoint['id']
+  return { id, index, instanceId, direction }
 }
 
 export const sortPointsByPosition = (

@@ -5,6 +5,7 @@ import { ModuleInstance } from '@/types/ModuleInstance'
 import { range } from '@/utils'
 import { defineStore } from 'pinia'
 import { computed, reactive, toRefs } from 'vue'
+import { useInstances } from '../instances'
 import {
   deserializeEncoderPage,
   isMappedTo,
@@ -17,6 +18,7 @@ type InstanceId = ModuleInstance['id']
 export const useEncoders = defineStore('encoders', () => {
   const loa = useLoa()
   const patch = usePatch()
+  const instances = useInstances()
 
   const state = reactive({
     currentPageIndex: 0,
@@ -39,7 +41,20 @@ export const useEncoders = defineStore('encoders', () => {
   const serialize = () => state.pages.map(serializeEncoderPage)
 
   const restore = (serializedPages: EncoderPageSerialized[]) => {
-    state.pages = serializedPages.map(deserializeEncoderPage)
+    const filterMissingInstances = ([id, encoder]: [number, Encoder]) => {
+      if (!instances.items.has(encoder.instanceId)) {
+        console.warn(
+          `Discard mapping for encoder#${id} because mapped Instance@${encoder.instanceId} doesn't exist.`
+        )
+        return false
+      }
+    }
+
+    state.pages = serializedPages
+      .map(deserializeEncoderPage)
+      .map(
+        (v) => new Map(Array.from(v.entries()).filter(filterMissingInstances))
+      )
   }
 
   const map = (

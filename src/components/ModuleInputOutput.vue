@@ -47,8 +47,8 @@ import { Connection, ConnectionPoint } from '@/types/Connection'
 import { ModuleInputOutput } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { connectionPointsAreEqual, emptyImage } from '@/utils'
-import { Shape, ShapeInputOutput } from 'shape-compiler'
-import { computed, ComputedRef, inject, ref, toRefs } from 'vue'
+import { Shape } from 'shape-compiler'
+import { computed, ComputedRef, inject, ref } from 'vue'
 
 const props = defineProps<{
   index: number
@@ -64,6 +64,7 @@ const shape = inject<ComputedRef<Shape>>('shape')!
 
 const connectionPoint = computed(() => ({
   ...props,
+  id: `${instance.value.id}-${props.index}` as ConnectionPoint['id'],
   isInOut: shapeInputOutput.value?.isInOut,
   instanceId: instance.value.id,
 }))
@@ -72,8 +73,13 @@ const canConnect = computed(
 )
 const isHovered = ref(false)
 const isDragging = ref(false)
-// TODO: fix
-const isActive = computed(() => false)
+const isActive = computed(() => {
+  const id = `${instance.value.id}-${props.index}` as ConnectionPoint['id']
+  return props.direction === 'in'
+    ? instances.activeInputs.has(id)
+    : instances.activeOutputs.has(id)
+})
+
 const isMidi = computed(() => props.signal === 'midi')
 const shapeInputOutput = computed(() => {
   const { inputs, outputs } = shape.value

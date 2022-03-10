@@ -33,12 +33,18 @@ export const usePatch = defineStore('patch', () => {
     const content = new TextDecoder().decode(buffer)
     const patch = luaJson.parse(content) as PatchSerialized
 
+    console.log('load', patch)
+
     clear(false)
     restore(patch)
   }
 
   const save = () => {
-    let patch = luaJson.format(serializePatch())
+    const serializedPatch = serializePatch()
+    console.log('save', serializedPatch)
+
+    let patch = luaJson.format(serializedPatch)
+
     // `lua-json` converts all numerical ids to strings so we convert them back
     // manually.
     patch = patch.replace(/\['(\d)']/g, (_: string, id: string) => `[${id}]`)

@@ -46,10 +46,7 @@ const curve = useConnectionCurve(props.from, props.to)
 const el = ref<HTMLElement | null>(null)
 const isHovered = connections.isHovered(props.id)
 const isFocused = connections.isFocused(props.id)
-
-// TODO: fix
-const isActive = computed(() => false)
-
+const isActive = computed(() => connections.activeIds.has(props.id))
 const instanceIsFocused = computed(
   () =>
     instances.focusedId !== null &&

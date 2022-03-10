@@ -5,12 +5,13 @@ import { ModuleInstance } from './ModuleInstance'
 type InstanceId = ModuleInstance['id']
 
 export interface Connection {
-  id: `(${InstanceId},${number})-(${InstanceId},${number})`
+  id: `(${ConnectionPoint['id']})-(${ConnectionPoint['id']})`
   from: ConnectionPoint
   to: ConnectionPoint
 }
 
 export interface ConnectionPoint {
+  id: `${InstanceId}-${number}`
   direction: 'in' | 'out'
   index: number
   instanceId: ModuleInstance['id']

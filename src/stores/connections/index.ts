@@ -28,6 +28,7 @@ export const useConnections = defineStore('connections', () => {
     hoveredId: undefined as Connection['id'] | undefined,
     focusedId: undefined as Connection['id'] | undefined,
     startPoint: undefined as ConnectionPoint | undefined,
+    activeIds: new Set<Connection['id']>(),
   })
 
   // Getters

@@ -11,10 +11,9 @@ export const updatePatchDebounced = debounce(() => {
 }, 1000)
 
 export const createInstance = (
-  data: Omit<ModuleInstance, 'activeInputOutputIds' | 'isUpdating'>
+  data: Omit<ModuleInstance, 'isUpdating'>
 ): ModuleInstance => ({
   ...data,
-  activeInputOutputIds: new Set(),
   isUpdating: false,
 })
 

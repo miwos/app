@@ -32,23 +32,41 @@ export const useInstances = defineStore('instances', () => {
     items: new Map<Id, ModuleInstance>(),
     sortedIds: [] as Id[],
     focusedId: null as Id | null,
+    activeInputs: new Set<`${Id}-${number}`>(),
+    activeOutputs: new Set<`${Id}-${number}`>(),
     // We use a one-based index to be consistent with lua.
     nextId: 1,
   })
 
-  loa.on('/instance/prop', ({ args: [id, name, value] }) =>
+  loa.on('/instances/prop', ({ args: [id, name, value] }) =>
     get(id).props.set(name, value)
   )
 
   loa.on(
-    '/instance/update',
+    '/instances/update',
     async ({ args: [id] }) => (get(id).isUpdating = false)
   )
+
+  loa.on('/instances/outputs', ({ args: [serializedOutputs] }) => {
+    state.activeInputs.clear()
+    state.activeOutputs.clear()
+    connections.activeIds.clear()
+
+    if (serializedOutputs !== '') {
+      state.activeOutputs = new Set(serializedOutputs.split(','))
+      for (const { id, from, to } of connections.list) {
+        if (state.activeOutputs.has(from.id)) {
+          state.activeInputs.add(to.id)
+          connections.activeIds.add(id)
+        }
+      }
+    }
+  })
 
   // Getters
   const get = (id: Id): ModuleInstance => {
     const instance = state.items.get(id)
-    if (!instance) throw new Error(`Can't find instance with id '${id}'`)
+    if (!instance) throw new Error(`Can't find Instance@${id}.`)
     return instance
   }
 
