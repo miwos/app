@@ -1,0 +1,9 @@
+<svg width="70" height="65" viewBox="0 0 70 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Convert">
+<path id="shape" fill-rule="evenodd" clip-rule="evenodd" d="M41 24H5V0H53C59.6274 0 65 5.37258 65 12V60H41V24Z" fill="#C4C4C4"/>
+<path id="props" d="M36 30L46 30" stroke="#00D300"/>
+<path id="props_2" d="M60 30L70 30" stroke="#00D300"/>
+<path id="out" d="M53 55V65" stroke="#0000FF"/>
+<path id="in" d="M10 12L0 12" stroke="#0000FF"/>
+</g>
+</svg>
