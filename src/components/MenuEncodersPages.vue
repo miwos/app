@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-mapping">
+  <div class="menu-encoders-pages">
     <BaseButtonCircleTriplet
       :value="encoders.currentPageIndex"
       @update:value="encoders.selectPage($event)"
@@ -16,7 +16,7 @@ const encoders = useEncoders()
 <style lang="scss" scoped>
 @use '@/styles/utilities';
 
-.menu-mapping {
+.menu-encoders-pages {
   @include utilities.menu;
   @include utilities.glass;
   @include utilities.pill;

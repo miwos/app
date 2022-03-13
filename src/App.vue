@@ -3,7 +3,7 @@
     <Pane class="pane-patch">
       <AppPatch />
       <MenuMain />
-      <MenuMapping />
+      <MenuEncodersPages />
       <MenuEncoders />
       <MenuModulesSearch />
       <MenuParts />
@@ -24,7 +24,7 @@ import AppPatch from './components/AppPatch.vue'
 import AppSidebar from './components/AppSidebar.vue'
 import MenuEncoders from './components/MenuEncoders.vue'
 import MenuMain from './components/MenuMain.vue'
-import MenuMapping from './components/MenuMapping.vue'
+import MenuEncodersPages from './components/MenuEncodersPages.vue'
 import MenuModulesSearch from './components/MenuModulesSearch.vue'
 import MenuParts from './components/MenuParts.vue'
 import { useApp } from './stores/app'
