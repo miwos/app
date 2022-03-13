@@ -47,9 +47,10 @@ export const useEncoders = defineStore('encoders', () => {
           `Discard mapping for encoder#${id} because mapped Instance@${encoder.instanceId} doesn't exist.`
         )
         return false
+      } else {
+        return true
       }
     }
-
     state.pages = serializedPages
       .map(deserializeEncoderPage)
       .map(
