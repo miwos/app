@@ -8,6 +8,7 @@ import {
   ModuleInstanceSerialized,
 } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
+import { errorMessage } from '@/utils'
 import { defineStore } from 'pinia'
 import { computed, reactive, toRefs } from 'vue'
 import {
@@ -38,9 +39,13 @@ export const useInstances = defineStore('instances', () => {
     nextId: 1,
   })
 
-  loa.on('/instances/prop', ({ args: [id, name, value] }) =>
-    get(id).props.set(name, value)
-  )
+  loa.on('/instances/prop', ({ args: [id, name, value] }) => {
+    try {
+      get(id).props.set(name, value)
+    } catch (e) {
+      console.warn(`Can't set value for prop '${name}': ${errorMessage(e)}`)
+    }
+  })
 
   loa.on(
     '/instances/update',
@@ -151,6 +156,7 @@ export const useInstances = defineStore('instances', () => {
 
   const clear = (updateDevice = true) => {
     state.nextId = 1
+    state.sortedIds = []
     state.items.clear()
     if (updateDevice) patch.update()
   }

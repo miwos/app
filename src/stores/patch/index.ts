@@ -26,10 +26,11 @@ export const usePatch = defineStore('patch', () => {
     encoders.restore(serialized.encoders)
   }
 
-  const load = async () => {
-    const buffer = await loa.readFile(`lua/patches/${state.name}.lua`)
+  const load = async (name: string, updateDevice = true) => {
+    const buffer = await loa.readFile(`lua/patches/${name}.lua`)
     if (!buffer) return
 
+    state.name = name
     const content = new TextDecoder().decode(buffer)
     const patch = luaJson.parse(content) as PatchSerialized
 
@@ -37,6 +38,7 @@ export const usePatch = defineStore('patch', () => {
 
     clear(false)
     restore(patch)
+    if (updateDevice) loa.sendRequest('/patch/load', name)
   }
 
   const save = () => {
@@ -47,7 +49,7 @@ export const usePatch = defineStore('patch', () => {
 
     // `lua-json` converts all numerical ids to strings so we convert them back
     // manually.
-    patch = patch.replace(/\['(\d)']/g, (_: string, id: string) => `[${id}]`)
+    patch = patch.replace(/\['(\d+)']/g, (_: string, id: string) => `[${id}]`)
 
     const buffer = new TextEncoder().encode(patch)
     return loa.writeFile(`lua/patches/${state.name}.lua`, buffer)
@@ -59,8 +61,9 @@ export const usePatch = defineStore('patch', () => {
   }
 
   const clear = (updateDevice = true) => {
-    instances.clear(false)
+    encoders.clear(false)
     connections.clear(false)
+    instances.clear(false)
     if (updateDevice) update()
   }
 

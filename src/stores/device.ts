@@ -1,13 +1,13 @@
 import { useLoa } from '@/services/loa'
+import { useModules } from '@/stores/modules'
+import { useParts } from '@/stores/parts'
 import { defineStore } from 'pinia'
 import { reactive, toRefs } from 'vue'
-import { useModules } from './modules'
-import { usePatch } from './patch'
 
 export const useDevice = defineStore('device', () => {
   const loa = useLoa()
   const modules = useModules()
-  const patch = usePatch()
+  const parts = useParts()
 
   let memoryInterval: number
   const state = reactive({
@@ -24,7 +24,7 @@ export const useDevice = defineStore('device', () => {
     loa.sendMessage('/bridge/connect')
 
     await modules.loadFromDevice()
-    patch.load()
+    parts.select(1)
 
     memoryInterval = window.setInterval(async () => {
       state.usedMemory = parseInt(await loa.sendRequest('/info/memory-usage'))

@@ -3,7 +3,7 @@
     <div class="modules">
       <ModuleInstance
         v-for="instance in instances.sorted"
-        :key="instance.id"
+        :key="`${instance.moduleId}@${instance.id}`"
         :instance="instance"
         v-model:position="instance.position"
       />

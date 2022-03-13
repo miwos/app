@@ -79,7 +79,12 @@ export const useEncoders = defineStore('encoders', () => {
 
   const selectPage = (index: number, updateDevice = true) => {
     state.currentPageIndex = index
-    if (updateDevice) loa.sendMessage('/mapping/page', index)
+    if (updateDevice) loa.sendMessage('/encoders/page', index)
+  }
+
+  const clear = (updateDevice = true) => {
+    state.pages.forEach((v) => v.clear())
+    if (updateDevice) patch.update()
   }
 
   return {
@@ -90,6 +95,7 @@ export const useEncoders = defineStore('encoders', () => {
     restore,
     map,
     unmap,
+    clear,
     selectPage,
   }
 })

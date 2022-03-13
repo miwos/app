@@ -1,6 +1,9 @@
 <template>
   <div class="menu-parts">
-    <BaseButtonCircleTriplet :value="0" />
+    <BaseButtonCircleTriplet
+      :value="parts.currentIndex"
+      @update:value="parts.select($event)"
+    />
     <svg
       width="75"
       height="112"
@@ -18,7 +21,9 @@
 </template>
 
 <script setup lang="ts">
+import { useParts } from '@/stores/parts'
 import BaseButtonCircleTriplet from './BaseButtonCircleTriplet.vue'
+const parts = useParts()
 </script>
 
 <style lang="scss" scoped>
