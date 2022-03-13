@@ -95,10 +95,12 @@ export const useConnections = defineStore('connections', () => {
     // Sort the points so our connection will always flow from `out` to
     // `in`. If both points have the special direction `inout` we have to make
     // a guess based on the points positions, treating the higher point as
-    // `out` and the lower as the `in`.
+    // `out` and the lower as the `in`. Otherwise we look for a point with a
+    // distinct direction (not `inout`) and sort them based an that point.
     const connectionPoints = bothAreInout
       ? sortPointsByPosition(startPoint, point)
-      : startPoint.direction === 'out' || point.direction === 'in'
+      : (!startPoint.isInOut && startPoint.direction === 'out') ||
+        (!point.isInOut && point.direction === 'in')
       ? [startPoint, point]
       : [point, startPoint]
 
