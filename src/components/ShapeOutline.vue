@@ -22,12 +22,14 @@ const dash = computed(() => {
   const holes = []
 
   for (let i = 0; i < module.value.inputs.length; i++) {
+    const isMidi = module.value.inputs[i].signal === 'midi'
     const offset = shape.value.inputs[i].offset
-    if (offset !== undefined) holes.push(offset)
+    if (offset !== undefined && isMidi) holes.push(offset)
   }
   for (let i = 0; i < module.value.outputs.length; i++) {
+    const isMidi = module.value.outputs[i].signal === 'midi'
     const offset = shape.value.outputs[i].offset
-    if (offset !== undefined) holes.push(offset)
+    if (offset !== undefined && isMidi) holes.push(offset)
   }
 
   return perforatePath(shape.value.length, holes)

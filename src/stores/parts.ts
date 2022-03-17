@@ -15,7 +15,8 @@ export const useParts = defineStore('parts', () => {
 
   const select = (index: number, updateDevice = true) => {
     state.currentIndex = index
-    patch.load(`patch${index + 1}`, updateDevice) // patch numbers are one-based
+    patch.load(`patch${index + 1}`, false) // patch names are one-based
+    if (updateDevice) loa.sendMessage('/parts/select', index)
   }
 
   return { ...toRefs(state), select }

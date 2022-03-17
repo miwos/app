@@ -1,3 +1,4 @@
+import { eventEmitter } from '@/eventEmitter'
 import { useLoa } from '@/services/loa'
 import { useConnections } from '@/stores/connections'
 import { useEncoders } from '@/stores/encoders'
@@ -47,10 +48,13 @@ export const useInstances = defineStore('instances', () => {
     }
   })
 
-  loa.on(
-    '/instances/update',
-    async ({ args: [id] }) => (get(id).isUpdating = false)
-  )
+  loa.on('/instance/message', ({ args: [id, name, ...payload] }) => {
+    eventEmitter.emit('instance-message', { name, id, payload })
+  })
+
+  loa.on('/instances/update', async ({ args: [id] }) => {
+    get(id).isUpdating = false
+  })
 
   loa.on('/instances/outputs', ({ args: [serializedOutputs] }) => {
     state.activeInputs.clear()

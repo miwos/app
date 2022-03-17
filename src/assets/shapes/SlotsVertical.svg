@@ -1,0 +1,9 @@
+<svg width="147" height="39" viewBox="0 0 147 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="SlotsVertical">
+<path id="shape" d="M5 0H142V36H5V0Z" fill="#C4C4C4"/>
+<path id="props" d="M137 18L147 18" stroke="#00D300"/>
+<path id="props_2" d="M0 31L10 31" stroke="#00D300"/>
+<path id="in" d="M10 18L0 18" stroke="#0000FF"/>
+<path id="out" d="M122 29L122 39" stroke="#0000FF"/>
+</g>
+</svg>

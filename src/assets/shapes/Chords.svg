@@ -5,5 +5,6 @@
 <path id="props_2" d="M0 28L10 28" stroke="#00D300"/>
 <path id="out" d="M81 46V56" stroke="#0000FF"/>
 <path id="in" d="M36 10V0" stroke="#0000FF"/>
+<path id="in_2" d="M79 10V0" stroke="#0000FF"/>
 </g>
 </svg>

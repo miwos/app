@@ -22,3 +22,9 @@ const shape = computed(
 const size = computed(() => shape.value.size)
 const viewBox = computed(() => `0 0 ${size.value.width} ${size.value.height}`)
 </script>
+
+<style scoped lang="scss">
+.shape-path {
+  display: block;
+}
+</style>

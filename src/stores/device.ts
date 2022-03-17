@@ -24,7 +24,7 @@ export const useDevice = defineStore('device', () => {
     loa.sendMessage('/bridge/connect')
 
     await modules.loadFromDevice()
-    parts.select(1)
+    parts.select(0)
 
     memoryInterval = window.setInterval(async () => {
       state.usedMemory = parseInt(await loa.sendRequest('/info/memory-usage'))

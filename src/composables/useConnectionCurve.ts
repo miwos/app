@@ -24,8 +24,14 @@ const getPointAndAngle = ({
   if (!inputOutput)
     throw new Error(`Can't find ${isInput ? 'input' : 'output'}#${index}.`)
 
+  const signal = isInput
+    ? module.inputs[index]?.signal
+    : module.outputs[index]?.signal
+
   const { position, angle } = inputOutput
-  const point = new Vec(instance.position).add(position.inset)
+  const point = new Vec(instance.position).add(
+    signal === 'midi' ? position.inset : position.touching
+  )
 
   return [point, angle]
 }

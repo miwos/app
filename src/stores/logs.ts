@@ -17,7 +17,7 @@ export const useLogs = defineStore('logs', () => {
   // Actions
   const add = (type: Log['type'], text: Log['text']) => {
     state.items.push({ type, text })
-    state.items.splice(-state.maxItems)
+    // TODO: implement max items
   }
 
   return { ...toRefs(state), add }
