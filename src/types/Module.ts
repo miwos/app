@@ -8,7 +8,9 @@ export interface Module {
 }
 
 export interface ModuleProp {
+  name: string
   type: string
+  index: number
   default: number
   show: boolean
   min?: number
@@ -35,5 +37,5 @@ export interface ModuleInfoSerialized {
   // lua helper can't handle arrays right now.
   inputs?: Record<number, ModuleInputOutputSerialized>
   outputs?: Record<number, ModuleInputOutputSerialized>
-  props: Record<string, ModuleProp>
+  props: ModuleProp[]
 }

@@ -22,7 +22,11 @@ export const getInfo = async (moduleId: Module['id']): Promise<ModuleInfo> => {
 
   const info = JSON.parse(response) as ModuleInfoSerialized
   const shapeId = (info.shape ?? 'Round') as Module['shapeId']
-  const props = new Map(Object.entries(info.props))
+  const props = new Map(
+    Object.values(info.props)
+      .sort((a, b) => a.index - b.index)
+      .map((v) => [v.name, v])
+  )
 
   const inputs = info.inputs ? parseInputsOutputs(info.inputs) : []
   const outputs = info.outputs ? parseInputsOutputs(info.outputs) : []
