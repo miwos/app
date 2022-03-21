@@ -121,11 +121,11 @@ export const useInstances = defineStore('instances', () => {
       connections.remove(connection.id, false)
     }
 
-    for (const page of encoders.pages) {
+    encoders.pages.forEach((page, index) => {
       for (const encoder of page.values()) {
-        if (encoder.instanceId === id) encoders.unmap(encoder.id)
+        if (encoder.instanceId === id) encoders.unmap(encoder.id, index)
       }
-    }
+    })
 
     state.sortedIds.splice(state.sortedIds.indexOf(id), 1)
     state.items.delete(id)

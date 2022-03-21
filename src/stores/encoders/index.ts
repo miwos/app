@@ -66,16 +66,18 @@ export const useEncoders = defineStore('encoders', () => {
   ) => {
     // Remove any previous mapping as an instance prop should only be mapped to
     // on encoder at a time.
-    const prevEncoder = list.value.find((encoder) =>
-      isMappedTo(encoder, instanceId, propName)
-    )
-    if (prevEncoder) unmap(prevEncoder.id)
+    state.pages.forEach((page, index) => {
+      for (const encoder of page.values()) {
+        if (isMappedTo(encoder, instanceId, propName)) unmap(encoder.id, index)
+      }
+    })
 
     currentPage.value.set(id, { id, instanceId, propName })
     if (updateDevice) patch.update()
   }
 
-  const unmap = (id: Encoder['id']) => currentPage.value.delete(id)
+  const unmap = (id: Encoder['id'], pageIndex: number) =>
+    state.pages[pageIndex].delete(id)
 
   const selectPage = (index: number, updateDevice = true) => {
     state.currentPageIndex = index
