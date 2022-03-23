@@ -22,10 +22,9 @@
         v-if="isViewModeVerbose || isFocused"
         ref="input"
         type="number"
-        unit="♯"
-        :value="props.value"
-        v-bind="module.props.get(name)"
-        @change="updateProp(parseFloat(($event.target as any).value))"
+        :value="toDisplayValue(value)"
+        v-bind="data"
+        @change="updateProp(fromDisplayValue(($event.target as any).value))"
       />
     </div>
 
@@ -49,7 +48,7 @@ import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useApp } from '@/stores/app'
 import { useEncoders } from '@/stores/encoders'
 import { useInstances } from '@/stores/instances'
-import { Module } from '@/types/Module'
+import { Module, ModuleProp } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
 import { computed, ComputedRef, inject, nextTick, ref } from 'vue'
@@ -58,6 +57,8 @@ import BaseInput from './BaseInput.vue'
 const props = defineProps<{
   name: string
   value: number
+  type?: string
+  data: ModuleProp
   position: Point
   side: 'left' | 'right'
 }>()
@@ -85,6 +86,14 @@ const onInputMouseDown = async () => {
   await nextTick()
   input.value?.focus()
 }
+
+const toDisplayValue = (value: number) =>
+  props.type === 'percent' ? value * 100 : value
+
+const fromDisplayValue = (displayValue: string) =>
+  props.type === 'percent'
+    ? parseFloat(displayValue) / 100
+    : parseFloat(displayValue)
 
 const updateProp = (value: number) =>
   instances.updateProp(instance.value.id, props.name, value)

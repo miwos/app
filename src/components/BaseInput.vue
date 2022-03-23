@@ -1,12 +1,13 @@
 <template>
   <div class="input">
+    <span class="input-before">{{ before }}</span>
     <input
       ref="input"
       :value="value"
       type="number"
       v-bind="{ min, max, step }"
     />
-    <span class="input-unit">{{ unit }}</span>
+    <span class="input-after">{{ after }}</span>
   </div>
 </template>
 
@@ -15,7 +16,8 @@ import { ref } from 'vue'
 
 defineProps<{
   value: number
-  unit: string
+  before?: string
+  after?: string
   min?: number
   max?: number
   step?: number
@@ -42,7 +44,8 @@ defineExpose({ focus })
   height: 1.5em;
   padding: 0 0.3em;
 
-  &-unit {
+  &-before,
+  &-after {
     display: flex;
     align-items: center;
     color: hsl(0deg 0% 85%);

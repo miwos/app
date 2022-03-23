@@ -1,11 +1,13 @@
 <template>
   <div class="module-props">
     <ModuleProp
-      v-for="(name, index) in displayPropNames"
-      :name="(name as string)"
+      v-for="(prop, index) in visibleProps"
+      :name="prop.name"
+      :type="prop.type"
       :position="getPosition(index)"
       :side="index < 3 ? 'right' : 'left'"
-      :value="instance.props.get(name)"
+      :value="instance.props.get(prop.name)"
+      :data="prop"
     />
   </div>
 </template>
@@ -21,17 +23,12 @@ const module = inject<ComputedRef<Module>>('module')!
 const shape = inject<ComputedRef<Shape>>('shape')!
 const instance = inject<ComputedRef<ModuleInstance>>('instance')!
 
-const displayPropNames = computed(() => {
-  const names = []
-  for (const [name, prop] of module.value.props.entries()) {
-    if (prop.show) names.push(name)
-  }
-  return names
-})
-
+const visibleProps = computed(() =>
+  Array.from(module.value.props.values()).filter((v) => v.show)
+)
 const getPosition = (index: number) => {
   const side = index < 3 ? 'right' : 'left'
-  const count = Object.values(displayPropNames.value).length
+  const count = Object.values(visibleProps.value).length
   const positions = shape.value.props
 
   const position =
