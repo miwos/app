@@ -9,17 +9,18 @@
 <script setup lang="ts">
 import { onMessage } from '@/composables/onMessage'
 import { useRaf } from '@/composables/useRaf'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
+import { refAutoReset } from '@vueuse/core'
 
 const canvas = ref<HTMLCanvasElement | null>(null)
 let pattern: number[] = []
-let noMatchPattern: number[] = []
 const startTime = ref(0)
 const isRecording = ref(false)
 const duration = ref(0)
+const isMatching = refAutoReset(false, 200)
+const color = computed(() => (isMatching.value ? '#00ce78' : '#00FFF0'))
 const noteMinWidth = 2
 const noteMaxWidth = 15
-let color = '#00FFF0'
 let recordingOffset = 0
 let ctx: CanvasRenderingContext2D | null
 let width = 0
@@ -36,23 +37,13 @@ onMounted(() => {
 onMessage('pattern', (...notes: number[]) => {
   pattern = notes
   duration.value = notes[notes.length - 1]
-  draw()
 })
 
 onMessage('recording', (...notes: number[]) => {
   pattern = notes.map((v) => v - recordingOffset)
 })
 
-let matchBlinkTimer: number | undefined
-onMessage('match', () => {
-  color = 'green'
-  draw()
-  window.clearInterval(matchBlinkTimer)
-  window.setTimeout(() => {
-    color = 'purple'
-    draw()
-  }, 200)
-})
+onMessage('match', () => (isMatching.value = true))
 
 onMessage('record', (state, time) => {
   if (state) {
@@ -77,20 +68,20 @@ const stopRecording = () => {
 
 const { start, stop } = useRaf((time) => {
   duration.value = time - startTime.value
-  draw()
 })
 
 const draw = () => {
   if (!ctx) return
+  console.log('draw')
 
-  ctx.clearRect(0, 0, width, height)
   let noteWidth = Math.max(
     noteMinWidth,
     Math.min(noteMaxWidth, 10000 / duration.value)
   )
   noteWidth = isRecording.value ? noteWidth : Math.round(noteWidth)
 
-  ctx.fillStyle = color
+  ctx.clearRect(0, 0, width, height)
+  ctx.fillStyle = color.value
   ctx.strokeStyle = 'hsl(0, 0%, 48%)'
 
   for (const note of pattern) {
@@ -103,6 +94,8 @@ const draw = () => {
     ctx.stroke()
   }
 }
+
+watch([isRecording, duration, color], draw)
 </script>
 
 <style scoped lang="scss">
@@ -114,7 +107,7 @@ const draw = () => {
   &-rect {
     height: 100%;
     box-sizing: border-box;
-    padding: 5px 0;
+    padding: 5px;
     background-color: hsl(0, 0%, 48%);
     border-left: 1px solid #989898;
   }
