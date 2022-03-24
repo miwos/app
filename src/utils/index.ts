@@ -1,4 +1,5 @@
 export * from './angles'
+export * from './basic'
 export * from './constrainPosition'
 export * from './debounce'
 export * from './emptyImage'

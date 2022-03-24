@@ -20,7 +20,8 @@
     >
       <ModuleContent />
     </div>
-    <ShapeOutline />
+    <!-- <ShapeOutline /> -->
+    <ModuleLabel v-if="module.label" />
     <ModuleInputsOutputs />
     <ModuleProps />
     <BaseContextMenu ref="contextMenu" :menu="contextActions" />
@@ -47,6 +48,7 @@ import ModuleProps from './ModuleProps.vue'
 import ShapeMask from './ShapeMask.vue'
 import ShapeOutline from './ShapeOutline.vue'
 import ShapePath from './ShapePath.vue'
+import ModuleLabel from './ModuleLabel.vue'
 
 const props = defineProps<{
   position: Point

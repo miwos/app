@@ -2,6 +2,7 @@ export interface Module {
   id: string
   shapeId: string
   component?: string
+  label?: string | string[]
   props: Map<string, ModuleProp>
   inputs: ModuleInputOutput[]
   outputs: ModuleInputOutput[]
@@ -24,7 +25,7 @@ export interface ModuleInputOutput {
 
 export type ModuleInfo = Pick<
   Module,
-  'shapeId' | 'props' | 'inputs' | 'outputs'
+  'shapeId' | 'label' | 'props' | 'inputs' | 'outputs'
 >
 
 export interface ModuleInputOutputSerialized {
@@ -33,6 +34,7 @@ export interface ModuleInputOutputSerialized {
 
 export interface ModuleInfoSerialized {
   shape: Module['shapeId']
+  label?: string | Record<number, string>
   // An array for inputs and outputs would be better but `utils#tableToJson()`
   // lua helper can't handle arrays right now.
   inputs?: Record<number, ModuleInputOutputSerialized>

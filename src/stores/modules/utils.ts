@@ -6,6 +6,7 @@ import {
   ModuleInputOutput,
   ModuleInputOutputSerialized,
 } from '@/types/Module'
+import { isObject } from '@/utils'
 
 const parseSignal = (index: number): ModuleInputOutput['signal'] =>
   index === 1 ? 'midi' : 'trigger'
@@ -27,9 +28,12 @@ export const getInfo = async (moduleId: Module['id']): Promise<ModuleInfo> => {
       .sort((a, b) => a.index - b.index)
       .map((v) => [v.name, v])
   )
+  const label =
+    info.label &&
+    (isObject(info.label) ? Object.values(info.label) : info.label.toString())
 
   const inputs = info.inputs ? parseInputsOutputs(info.inputs) : []
   const outputs = info.outputs ? parseInputsOutputs(info.outputs) : []
 
-  return { shapeId, props, inputs, outputs }
+  return { shapeId, label, props, inputs, outputs }
 }
