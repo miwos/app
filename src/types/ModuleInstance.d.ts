@@ -4,7 +4,7 @@ import { Point } from './Point'
 export interface ModuleInstance {
   id: number
   moduleId: Module['id']
-  label: string | string[]
+  label?: string | string[]
   position: Point
   props: Map<string, any>
   isUpdating: boolean

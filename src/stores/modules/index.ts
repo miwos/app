@@ -59,7 +59,7 @@ export const useModules = defineStore('modules', () => {
     for (const file of dirList) {
       const moduleId = nameWithoutExt(file)
       const info = await getInfo(moduleId)
-      state.items.set(moduleId, {
+      add({
         id: moduleId,
         component: components.get(moduleId),
         ...info,
