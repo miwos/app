@@ -5,7 +5,7 @@
     :class="{
       hovered: isHovered,
       focused: isFocused,
-      active: isActive,
+      active: isMidi ? isActive : triggerIsActive,
       instanceFocused: instanceIsFocused,
     }"
     tabindex="0"
@@ -32,6 +32,7 @@ import { useConnectionCurve } from '@/composables/useConnectionCurve'
 import { useConnections } from '@/stores/connections'
 import { useInstances } from '@/stores/instances'
 import { Connection, ConnectionPoint } from '@/types/Connection'
+import { autoResetRef } from '@vueuse/core'
 import { computed, ref, watchEffect } from 'vue'
 
 const props = defineProps<{
@@ -47,6 +48,12 @@ const el = ref<HTMLElement | null>(null)
 const isHovered = connections.isHovered(props.id)
 const isFocused = connections.isFocused(props.id)
 const isActive = computed(() => connections.activeIds.has(props.id))
+
+const isMidi = computed(() => props.from.signal === 'midi')
+
+const triggerIsActive = autoResetRef(false, 100)
+watchEffect(() => isActive.value && (triggerIsActive.value = true))
+
 const instanceIsFocused = computed(
   () =>
     instances.focusedId !== null &&

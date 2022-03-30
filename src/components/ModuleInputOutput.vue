@@ -4,7 +4,7 @@
     ref="el"
     :class="{
       hovered: isHovered || isDragging,
-      active: isActive,
+      active: isMidi ? outputIsActive : triggerIsActive,
       dragging: isDragging,
       connectionHovered: isConnectionHovered,
       connectionFocused: isConnectionFocused,
@@ -47,8 +47,9 @@ import { Connection, ConnectionPoint } from '@/types/Connection'
 import { ModuleInputOutput } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { connectionPointsAreEqual, emptyImage } from '@/utils'
+import { refAutoReset } from '@vueuse/core'
 import { Shape } from 'shape-compiler'
-import { computed, ComputedRef, inject, ref } from 'vue'
+import { computed, ComputedRef, inject, ref, watch, watchEffect } from 'vue'
 
 const props = defineProps<{
   index: number
@@ -73,12 +74,17 @@ const canConnect = computed(
 )
 const isHovered = ref(false)
 const isDragging = ref(false)
-const isActive = computed(() => {
+
+const outputIsActive = computed(() => {
   const id = `${instance.value.id}-${props.index}` as ConnectionPoint['id']
+
   return props.direction === 'in'
     ? instances.activeInputs.has(id)
     : instances.activeOutputs.has(id)
 })
+
+const triggerIsActive = refAutoReset(false, 100)
+watchEffect(() => outputIsActive.value && (triggerIsActive.value = true))
 
 const isMidi = computed(() => props.signal === 'midi')
 const shapeInputOutput = computed(() => {
