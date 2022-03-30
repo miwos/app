@@ -1,10 +1,10 @@
-<svg width="118" height="56" viewBox="0 0 118 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="200" height="58" viewBox="0 0 200 58" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Chords">
-<path id="shape" d="M5 28C5 15.2975 15.2975 5 28 5H90C102.703 5 113 15.2975 113 28C113 40.7025 102.703 51 90 51H28C15.2975 51 5 40.7025 5 28Z" fill="#C4C4C4"/>
-<path id="props" d="M108 28L118 28" stroke="#00D300"/>
-<path id="props_2" d="M0 28L10 28" stroke="#00D300"/>
-<path id="out" d="M81 46V56" stroke="#0000FF"/>
-<path id="in" d="M36 10V0" stroke="#0000FF"/>
-<path id="in_2" d="M79 10V0" stroke="#0000FF"/>
+<path id="shape" d="M5 5H195V53H5V5Z" fill="#C4C4C4"/>
+<path id="props" d="M190 29L200 29" stroke="#00D300"/>
+<path id="props_2" d="M0 43L10 43" stroke="#00D300"/>
+<path id="out" d="M183 48V58" stroke="#0000FF"/>
+<path id="in" d="M183 10V0" stroke="#0000FF"/>
+<path id="in_2" d="M10 29L0 29" stroke="#0000FF"/>
 </g>
 </svg>
