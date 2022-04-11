@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { useMagicKeys } from '@vueuse/core'
+import { onKeyDown, useMagicKeys } from '@vueuse/core'
 // @ts-ignore
 import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
@@ -34,10 +34,8 @@ import { useMidi } from './stores/midi'
 useMidi()
 const app = useApp()
 const editor = useEditor()
-const keys = useMagicKeys()
 
-const ctrlAltLeft = keys['Ctrl+AltLeft']
-watch(ctrlAltLeft, (v) => v && app.toggleViewMode())
+onKeyDown('Alt', (e) => e.ctrlKey && app.toggleViewMode())
 
 const sideBar = ref<InstanceType<typeof AppSidebar>>()
 </script>
