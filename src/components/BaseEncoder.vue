@@ -2,6 +2,9 @@
   <button
     class="encoder"
     :class="{ mapped: !!encoder, transition: transitionEnabled }"
+    @mousedown="isDragging = true"
+    @mouseup="isDragging = false"
+    ref="el"
   >
     <svg
       class="encoder-icon"
@@ -15,11 +18,12 @@
 
 <script setup lang="ts">
 import svg from '@/assets/knob.svg'
+import { useRotation } from '@/composables/useRotation'
 import { useEncoders } from '@/stores/encoders'
 import { useInstances } from '@/stores/instances'
 import { useModules } from '@/stores/modules'
 import { map } from '@/utils'
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const props = defineProps<{
   id: number
@@ -29,6 +33,28 @@ const encoders = useEncoders()
 const instances = useInstances()
 const modules = useModules()
 const encoder = computed(() => encoders.get(props.id))
+const isDragging = ref(false)
+
+const el = ref<HTMLElement | null>(null)
+const dragRotation = useRotation(el)
+
+const prop = computed(() => {
+  if (!encoder.value) return
+
+  const { instanceId, propName } = encoder.value
+  const module = modules.getByInstanceId(instanceId)
+
+  return module.props.get(propName)
+})
+
+watch(dragRotation, (angle) => {
+  if (!prop.value) return
+  const { min, max } = prop.value
+  angle += 135
+  angle = Math.max(Math.min(angle, 270), 0)
+  const value = Math.round(map(angle, 0, 270, min ?? 0, max ?? 127))
+  updateProp(value)
+})
 
 const rotation = computed(() => {
   if (!encoder.value) return 0
@@ -43,6 +69,12 @@ const rotation = computed(() => {
   const { min, max } = prop
   return map(value, min ?? 0, max ?? 127, 0, 270) - 135
 })
+
+const updateProp = (value: number) => {
+  if (!encoder.value) return
+  const { instanceId, propName } = encoder.value
+  instances.updateProp(instanceId, propName, value)
+}
 
 // ? What exactly does this
 // Only transition when we are changing the pages.
