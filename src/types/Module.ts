@@ -34,10 +34,8 @@ export interface ModuleInputOutputSerialized {
 
 export interface ModuleInfoSerialized {
   shape: Module['shapeId']
-  label?: string | Record<number, string>
-  // An array for inputs and outputs would be better but `utils#tableToJson()`
-  // lua helper can't handle arrays right now.
-  inputs?: Record<number, ModuleInputOutputSerialized>
-  outputs?: Record<number, ModuleInputOutputSerialized>
+  label?: string | string[]
+  inputs?: ModuleInputOutputSerialized[]
+  outputs?: ModuleInputOutputSerialized[]
   props: ModuleProp[]
 }

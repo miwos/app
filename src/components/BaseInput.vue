@@ -7,7 +7,7 @@
       type="number"
       v-bind="{ min, max, step }"
     />
-    <span class="input-after">{{ after }}</span>
+    <span class="input-after">{{ unit }}</span>
   </div>
 </template>
 
@@ -17,7 +17,7 @@ import { ref } from 'vue'
 defineProps<{
   value: number
   before?: string
-  after?: string
+  unit?: string
   min?: number
   max?: number
   step?: number
@@ -36,14 +36,6 @@ defineExpose({ focus })
 @use '@/styles/utilities';
 
 .input {
-  @include utilities.font-menu;
-  @include utilities.glass;
-  display: flex;
-  border-radius: var(--radius-xs);
-  width: 4.5em;
-  height: 1.5em;
-  padding: 0 0.3em;
-
   &-before,
   &-after {
     display: flex;

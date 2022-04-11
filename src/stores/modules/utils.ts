@@ -7,30 +7,26 @@ import {
   ModuleInputOutputSerialized,
 } from '@/types/Module'
 import { isObject } from '@/utils'
+// @ts-ignore
+import * as luaJson from 'lua-json'
 
 const parseSignal = (index: number): ModuleInputOutput['signal'] =>
   index === 1 ? 'midi' : 'trigger'
 
 const parseInputsOutputs = (
-  value: Record<number, ModuleInputOutputSerialized>
-): ModuleInputOutput[] =>
-  Object.values(value).map((v) => ({
-    signal: parseSignal(v.signal),
-  }))
+  value: ModuleInputOutputSerialized[]
+): ModuleInputOutput[] => value.map((v) => ({ signal: parseSignal(v.signal) }))
 
 export const getInfo = async (moduleId: Module['id']): Promise<ModuleInfo> => {
   const response = await useLoa().sendRequest('/module/info', [moduleId])
 
-  const info = JSON.parse(response) as ModuleInfoSerialized
+  const info = luaJson.parse(`return ${response}`) as ModuleInfoSerialized
+  const { label } = info
   const shapeId = (info.shape ?? 'Round') as Module['shapeId']
+
   const props = new Map(
-    Object.values(info.props)
-      .sort((a, b) => a.index - b.index)
-      .map((v) => [v.name, v])
+    info.props.sort((a, b) => a.index - b.index).map((v) => [v.name, v])
   )
-  const label =
-    info.label &&
-    (isObject(info.label) ? Object.values(info.label) : info.label.toString())
 
   const inputs = info.inputs ? parseInputsOutputs(info.inputs) : []
   const outputs = info.outputs ? parseInputsOutputs(info.outputs) : []

@@ -18,13 +18,14 @@
       >
         {{ props.name }}
       </button>
-      <BaseInput
+      <component
         v-if="isViewModeVerbose || isFocused"
+        :is="(type && inputComponents[type]) ?? BaseInput"
+        class="module-prop-input"
         ref="input"
-        type="number"
-        :value="toDisplayValue(value)"
+        :value="value"
         v-bind="data"
-        @change="updateProp(fromDisplayValue(($event.target as any).value))"
+        @change="updateProp(($event.target as any).value)"
       />
     </div>
 
@@ -52,11 +53,14 @@ import { Module, ModuleProp } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
 import { computed, ComputedRef, inject, nextTick, ref } from 'vue'
+import type { Component } from 'vue'
 import BaseInput from './BaseInput.vue'
+import PropListInput from './PropListInput.vue'
+import PropButtonInput from './PropButtonInput.vue'
 
 const props = defineProps<{
   name: string
-  value: number
+  value: any
   type?: string
   data: ModuleProp
   position: Point
@@ -78,22 +82,19 @@ const mappedEncoder = encoders.getMapped(instance.value.id, props.name)
 const isFocused = ref(false)
 const isViewModeVerbose = computed(() => app.viewMode === 'verbose')
 
+const inputComponents: Record<string, Component> = {
+  list: PropListInput,
+  button: PropButtonInput,
+}
+
 onMouseDownOutside(el, () => (isFocused.value = false))
 
 const onInputMouseDown = async () => {
   if (isViewModeVerbose.value) return
   isFocused.value = true
   await nextTick()
-  input.value?.focus()
+  input.value?.focus?.()
 }
-
-const toDisplayValue = (value: number) =>
-  props.type === 'percent' ? value * 100 : value
-
-const fromDisplayValue = (displayValue: string) =>
-  props.type === 'percent'
-    ? parseFloat(displayValue) / 100
-    : parseFloat(displayValue)
 
 const updateProp = (value: number) =>
   instances.updateProp(instance.value.id, props.name, value)
@@ -150,15 +151,18 @@ const map = async () => {
     cursor: pointer;
   }
 }
+</style>
 
-input {
-  display: block;
-  border: none;
-  background-color: transparent;
-  font-family: inherit;
-  color: inherit;
-  font-size: inherit;
-  width: 3rem;
-  padding: 0;
+<style lang="scss">
+@use '@/styles/utilities';
+.module-prop-input {
+  @include utilities.font-menu;
+  @include utilities.glass;
+  display: flex;
+  border-radius: var(--radius-xs);
+  width: 6em;
+  height: 1.5em;
+  padding: 0 0.3em;
+  box-sizing: border-box;
 }
 </style>

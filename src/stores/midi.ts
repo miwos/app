@@ -6,7 +6,7 @@ export const useMidi = defineStore('midi', () => {
   const state = reactive({
     devices: [
       { id: 1, label: 'Midi 1', type: MidiDeviceType.Din },
-      { id: 2, label: 'Nord Drum 3', type: MidiDeviceType.Din },
+      { id: 2, label: 'Midi 2', type: MidiDeviceType.Din },
       { id: 3, label: 'Midi 3', type: MidiDeviceType.Usb },
       { id: 4, label: 'Midi 4', type: MidiDeviceType.Usb },
       { id: 5, label: 'Midi 5', type: MidiDeviceType.Usb },

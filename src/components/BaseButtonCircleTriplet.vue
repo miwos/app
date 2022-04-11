@@ -26,7 +26,7 @@ const select = (index: number) => emit('update:value', index)
   display: flex;
 
   &:hover .button:not([aria-selected='true']) {
-    background-color: rgb(77, 77, 77);
+    background-color: var(--glass-color);
   }
 
   &:not(:hover) .button {
