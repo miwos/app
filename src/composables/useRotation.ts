@@ -7,14 +7,13 @@ export const useRotation = (el: Ref<HTMLElement | null>) => {
 
   const initialize = (el: HTMLElement | null) => {
     if (el === null) return
-
-    const { x, y, width, height } = el.getBoundingClientRect()
-    center.value = { x: x + width / 2, y: y + height / 2 }
-
     el.addEventListener('mousedown', handleMouseDown)
   }
 
   const handleMouseDown = () => {
+    if (!el.value) return
+    const { x, y, width, height } = el.value.getBoundingClientRect()
+    center.value = { x: x + width / 2, y: y + height / 2 }
     isRotating.value = true
     window.addEventListener('mouseup', handleMouseUp)
     window.addEventListener('mousemove', handleMouseMove)

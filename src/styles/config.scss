@@ -15,11 +15,10 @@
   --module-outline-color: white;
   --module-shape-color: #929292;
   --module-input-output-color: white;
-  --module-focused-shape-color: #8f8271;
-  --module-focused-outline-color: #eec590;
+  --module-focused-outline-color: hsl(180deg 100% 80%);
 
-  --radius-xs: 6px;
-  --radius-s: 8px;
+  --radius-xs: 5px;
+  --radius-s: 7px;
 
   /* When using the shape color in a different context, for example a small
   shape thumbnail, we have to optically adjust the color a bit so it won't be
@@ -27,7 +26,7 @@
   --module-shape-color-lighter: #bbbbbb;
 
   --connection-color: white;
-  --connection-highlight-color: blue;
+  --connection-highlight-color: hsl(180deg 100% 80%);
   --connection-point-color: white;
 
   --fade-duration: 0.2s;

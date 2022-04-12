@@ -15,10 +15,6 @@ const props = defineProps<{
 }>()
 
 const canvas = ref<HTMLCanvasElement>()
-const repeats = computed(() => {
-  const thresh = (props.feed / 100) * 0.01
-  return Math.floor(Math.log(thresh) / Math.log(props.feed / 100))
-})
 
 let ctx: CanvasRenderingContext2D | null
 let bounds: DOMRect
@@ -27,9 +23,11 @@ onMounted(() => {
   bounds = canvas.value!.getBoundingClientRect()
   canvas.value!.width = bounds.width
   canvas.value!.height = bounds.height
+
+  draw()
 })
 
-watchEffect(() => {
+const draw = () => {
   const { time, feed } = props
   const thresh = (feed / 100) * 0.01
   const repeats = Math.floor(Math.log(thresh) / Math.log(feed / 100))
@@ -51,7 +49,9 @@ watchEffect(() => {
     ctx.fillStyle = color
     ctx.fill()
   }
-})
+}
+
+watchEffect(draw)
 </script>
 
 <style lang="scss" scoped>

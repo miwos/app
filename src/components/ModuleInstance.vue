@@ -17,10 +17,11 @@
       class="module-content"
       ref="content"
       @contextmenu.prevent="onContextMenu"
+      @mouseup="test"
     >
       <ModuleContent />
     </div>
-    <!-- <ShapeOutline /> -->
+    <ShapeOutline v-if="isFocused" />
     <ModuleLabel v-if="module.label" />
     <ModuleInputsOutputs />
     <ModuleProps />
@@ -56,6 +57,12 @@ const props = defineProps<{
 const { instance } = toRefs(props)
 
 const emit = defineEmits(['update:position'])
+
+const test = () => {
+  if (!isDragging.value) {
+    instances.focus(instance.value.id)
+  }
+}
 
 const el = ref<HTMLElement | null>(null)
 const content = ref<HTMLElement | null>(null)
@@ -101,7 +108,8 @@ watch(
 )
 
 const remove = (event: KeyboardEvent) => {
-  if (event.target === el.value) instances.remove(instance.value.id)
+  if (event.target === el.value && isFocused.value)
+    instances.remove(instance.value.id)
 }
 </script>
 
@@ -111,6 +119,7 @@ const remove = (event: KeyboardEvent) => {
     position: absolute;
     top: v-bind('props.position.y + `px`');
     left: v-bind('props.position.x + `px`');
+    outline: none;
 
     transition: opacity 150ms ease-out;
     &.updating {
@@ -156,10 +165,6 @@ const remove = (event: KeyboardEvent) => {
     }
 
     fill: var(--module-shape-color);
-
-    .focused & {
-      fill: var(--module-focused-shape-color);
-    }
   }
 
   &-outline {

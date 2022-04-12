@@ -2,6 +2,8 @@ import { reactive, Ref, ref, watch } from 'vue'
 import { constrainPosition } from '../utils'
 
 export const useDragElement = (el: Ref<HTMLElement | null>) => {
+  const dragThreshold = 5 // px
+  let mouseDownPosition = { x: 0, y: 0 }
   const position = reactive({ x: 0, y: 0 })
   const delta = reactive({ x: 0, y: 0 })
   const dimensions = reactive({ width: 0, height: 0 })
@@ -12,6 +14,7 @@ export const useDragElement = (el: Ref<HTMLElement | null>) => {
     if (el.value === null) return
 
     const { clientX, clientY } = event
+    mouseDownPosition = { x: clientX, y: clientY }
     delta.x = clientX - position.x
     delta.y = clientY - position.y
 
@@ -24,8 +27,6 @@ export const useDragElement = (el: Ref<HTMLElement | null>) => {
   }
 
   const handleMouseMove = (event: MouseEvent) => {
-    isDragging.value = true
-
     const { clientX, clientY } = event
     const newPosition = {
       x: clientX - delta.x,
@@ -38,8 +39,16 @@ export const useDragElement = (el: Ref<HTMLElement | null>) => {
       { width: window.innerWidth, height: window.innerHeight }
     )
 
-    position.x = x
-    position.y = y
+    if (!isDragging.value) {
+      const { x, y } = mouseDownPosition
+      const distance = Math.hypot(clientX - x, clientY - y)
+      if (distance > dragThreshold) isDragging.value = true
+    }
+
+    if (isDragging.value) {
+      position.x = x
+      position.y = y
+    }
   }
 
   const handleMouseUp = () => {

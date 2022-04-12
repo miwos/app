@@ -4,12 +4,17 @@
     ref="el"
     :class="{
       mapped: !!mappedEncoder,
+      focus: isFocused,
+      'mapping-modal': showMapping,
       'side-left': side === 'left',
       'side-right': side === 'right',
     }"
-    @dblclick="map"
   >
-    <div class="module-prop-handle"></div>
+    <div
+      class="module-prop-handle"
+      @mousedown.prevent="map"
+      @contextmenu.prevent="map"
+    ></div>
     <div class="module-prop-content">
       <button
         class="module-prop-name"
@@ -27,19 +32,12 @@
         v-bind="data"
         @change="updateProp(($event.target as any).value)"
       />
-    </div>
-
-    <div class="module-prop-mapping" v-if="showMapping">
-      <select
-        ref="mappingSelect"
+      <ModulePropMapping
+        v-if="showMapping"
         :value="mappedEncoder?.id"
-        @change="mapEncoder(parseInt(($event.target as any).value))"
+        @update:value="mapEncoder"
         @blur="showMapping = false"
-      >
-        <option value="1">Encoder 1</option>
-        <option value="2">Encoder 2</option>
-        <option value="3">Encoder 3</option>
-      </select>
+      />
     </div>
   </div>
 </template>
@@ -57,6 +55,7 @@ import type { Component } from 'vue'
 import BaseInput from './BaseInput.vue'
 import PropListInput from './PropListInput.vue'
 import PropButtonInput from './PropButtonInput.vue'
+import ModulePropMapping from './ModulePropMapping.vue'
 
 const props = defineProps<{
   name: string
@@ -102,11 +101,7 @@ const updateProp = (value: number) =>
 const mapEncoder = (id: number) =>
   encoders.map(id, instance.value.id, props.name)
 
-const map = async () => {
-  showMapping.value = true
-  await nextTick()
-  mappingSelect.value?.focus()
-}
+const map = async () => (showMapping.value = true)
 </script>
 
 <style lang="scss" scoped>
@@ -122,12 +117,17 @@ const map = async () => {
   align-items: center;
   color: var(--module-outline-color);
 
+  &.mapping-modal {
+    z-index: var(--z-modal);
+  }
+
   &.side-left {
     flex-direction: row-reverse;
     transform: translate(-100%, -50%);
   }
 
   &-content {
+    position: relative;
     display: flex;
     gap: 0.25em;
   }
@@ -137,10 +137,11 @@ const map = async () => {
     width: 1rem;
     height: 1rem;
     border-radius: 50%;
-    background-color: red;
     background-color: var(--module-shape-color);
     transition: fill var(--fade-duration);
-    .mapped & {
+    cursor: pointer;
+    .mapped &,
+    .mapping-modal & {
       background-color: var(--mapping-color);
     }
   }
