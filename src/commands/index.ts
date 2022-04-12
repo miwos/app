@@ -1,4 +1,5 @@
 export * from './instance'
+export * from './connection'
 
 let commands: { undo: Function; redo: Function; name: string }[] = []
 

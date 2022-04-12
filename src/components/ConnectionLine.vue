@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import { removeConnection } from '@/commands'
 import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useConnectionCurve } from '@/composables/useConnectionCurve'
 import { useConnections } from '@/stores/connections'
@@ -64,7 +65,7 @@ const instanceIsFocused = computed(
 
 watchEffect(() => (isFocused.value ? el.value?.focus() : el.value?.blur()))
 onMouseDownOutside(el, () => connections.focus(undefined))
-const remove = () => connections.remove(props.id)
+const remove = () => removeConnection(props.id)
 </script>
 
 <style scoped lang="scss">

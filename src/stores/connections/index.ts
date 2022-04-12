@@ -1,22 +1,17 @@
-import {
-  Connection,
-  ConnectionPoint,
-  ConnectionSerialized,
-} from '@/types/Connection'
+import { createConnection } from '@/commands'
+import { usePatch } from '@/stores/patch'
+import { Connection, ConnectionPoint } from '@/types/Connection'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { defineStore } from 'pinia'
 import { computed, reactive, toRefs } from 'vue'
-import { usePatch } from '@/stores/patch'
 import {
   asInput,
   asOutput,
-  deserializeConnection,
   getConnectionId,
   pointsCanConnect,
   serializeConnection,
   sortPointsByPosition,
 } from './utils'
-import { createConnection } from '@/commands/createConnection'
 
 type Id = Connection['id']
 type InstanceId = ModuleInstance['id']
@@ -119,10 +114,12 @@ export const useConnections = defineStore('connections', () => {
   }
 
   const remove = (id: Id, updateDevice = true) => {
+    const removedConnection = get(id)
     state.items.delete(id)
     hover()
     focus()
     if (updateDevice) patch.update()
+    return removedConnection
   }
 
   const clear = (updateDevice = true) => {

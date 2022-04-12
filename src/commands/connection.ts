@@ -13,3 +13,13 @@ export const createConnection = (
     return () => connections.remove(id)
   })
 }
+
+export const removeConnection = (id: Connection['id']) => {
+  const connections = useConnections()
+  let removed: Connection | undefined
+
+  pushCommand('remove connection', () => {
+    removed = connections.remove(id)
+    return () => removed && connections.add(removed.from, removed.to)
+  })
+}
