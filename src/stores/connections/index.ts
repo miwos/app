@@ -16,6 +16,7 @@ import {
   serializeConnection,
   sortPointsByPosition,
 } from './utils'
+import { createConnection } from '@/commands/createConnection'
 
 type Id = Connection['id']
 type InstanceId = ModuleInstance['id']
@@ -73,19 +74,22 @@ export const useConnections = defineStore('connections', () => {
     const id = getConnectionId(from, to)
     state.items.set(id, { id, from, to })
     if (updateDevice) patch.update()
+    return id
   }
 
   const serialize = () => list.value.map(serializeConnection)
 
-  const restore = (serializedConnections: ConnectionSerialized[]) => {
-    for (const serialized of serializedConnections) {
-      const { from, to } = deserializeConnection(serialized)
-      add(from, to, false)
-    }
+  const restore = (
+    data: Pick<Connection, 'from' | 'to'>,
+    updateDevice = true
+  ) => {
+    add(data.from, data.to, false)
+    if (updateDevice) patch.update()
   }
 
   const connectFrom = (point: ConnectionPoint) => (state.startPoint = point)
 
+  // ? Move this function to a command, as it is using the undo redo stack.
   const connectTo = (point: ConnectionPoint) => {
     const { startPoint } = state
     if (!startPoint) return
@@ -109,7 +113,7 @@ export const useConnections = defineStore('connections', () => {
     // Depending on the connection we make, this input could also represent
     // the output, so we make sure to 'cast' the connection point to the
     // correct type.
-    add(asOutput(from), asInput(to))
+    createConnection(asOutput(from), asInput(to))
 
     state.startPoint = undefined
   }

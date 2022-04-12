@@ -20,11 +20,12 @@ import { onKeyDown, useMagicKeys } from '@vueuse/core'
 import { Pane, Splitpanes } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import { ref, watch } from 'vue'
+import { redo, undo } from './commands'
 import AppPatch from './components/AppPatch.vue'
 import AppSidebar from './components/AppSidebar.vue'
 import MenuEncoders from './components/MenuEncoders.vue'
-import MenuMain from './components/MenuMain.vue'
 import MenuEncodersPages from './components/MenuEncodersPages.vue'
+import MenuMain from './components/MenuMain.vue'
 import MenuModulesSearch from './components/MenuModulesSearch.vue'
 import MenuParts from './components/MenuParts.vue'
 import { useApp } from './stores/app'
@@ -36,6 +37,13 @@ const app = useApp()
 const editor = useEditor()
 
 onKeyDown('Alt', (e) => e.ctrlKey && app.toggleViewMode())
+
+const keys = useMagicKeys()
+const undoShortcut = keys['Ctrl+Z']
+const redoShortcut = keys['Ctrl+Y']
+
+watch(undoShortcut, (v) => v && undo())
+watch(redoShortcut, (v) => v && redo())
 
 const sideBar = ref<InstanceType<typeof AppSidebar>>()
 </script>

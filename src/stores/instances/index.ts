@@ -4,6 +4,8 @@ import { useConnections } from '@/stores/connections'
 import { useEncoders } from '@/stores/encoders'
 import { useModules } from '@/stores/modules'
 import { usePatch } from '@/stores/patch'
+import { Connection } from '@/types/Connection'
+import { Encoder } from '@/types/Encoders'
 import {
   ModuleInstance,
   ModuleInstanceSerialized,
@@ -92,45 +94,64 @@ export const useInstances = defineStore('instances', () => {
     state.items.set(id, createInstance({ id, moduleId, position, props }))
     state.sortedIds.push(id)
     if (updateDevice) patch.update()
+
+    return id
   }
 
   const serialize = () =>
     Object.fromEntries(list.value.map((v) => [v.id, serializeInstance(v)]))
 
   const restore = (
-    serializedInstances: Record<Id, ModuleInstanceSerialized>
+    id: Id,
+    data: Pick<ModuleInstance, 'moduleId' | 'position' | 'props'>,
+    updateDevice = true
   ) => {
-    for (const [idStr, serialized] of Object.entries(serializedInstances)) {
-      const id = parseInt(idStr)
-
-      if (state.items.has(id))
-        throw new Error(`Instance with id '${id}' already exists.`)
-
-      const data = deserializeInstance(serialized)
-      state.items.set(id, createInstance({ id, ...data }))
-      state.sortedIds.push(id)
-      state.nextId = Math.max(state.nextId, id + 1)
+    if (state.items.has(id)) {
+      console.warn(`Instance with id '${id}' already exists.`)
+      return
     }
+
+    state.items.set(id, createInstance({ ...data, id }))
+    state.sortedIds.push(id)
+    // If we restore a module instance (e.g. while loading a patch from the
+    // device) we have to make sure that we won't use the restored module's id
+    // for future modules. The easiest way is to just bigger ids.
+    state.nextId = Math.max(state.nextId, id + 1)
+
+    if (updateDevice) patch.update()
   }
 
   const remove = (id: Id, updateDevice = true) => {
     // Remove all encoders and connections that rely on the instance we are
     // about to remove.
 
+    const removedConnections: Connection[] = []
     for (const connection of connections.listConnectedToInstance(id)) {
+      removedConnections.push(connection)
       connections.remove(connection.id, false)
     }
 
+    const removedEncoders: [pageIndex: number, encoder: Encoder][] = []
     encoders.pages.forEach((page, index) => {
       for (const encoder of page.values()) {
-        if (encoder.instanceId === id) encoders.unmap(encoder.id, index)
+        if (encoder.instanceId === id) {
+          removedEncoders.push([index, encoder])
+          encoders.unmap(encoder.id, index)
+        }
       }
     })
 
+    const removedInstance = get(id)
     state.sortedIds.splice(state.sortedIds.indexOf(id), 1)
     state.items.delete(id)
 
     if (updateDevice) patch.update()
+
+    return {
+      instance: removedInstance,
+      connections: removedConnections,
+      encoders: removedEncoders,
+    }
   }
 
   const focus = (id: Id | null) => {
@@ -159,7 +180,7 @@ export const useInstances = defineStore('instances', () => {
   }
 
   const clear = (updateDevice = true) => {
-    state.nextId = 1
+    // state.nextId = 1
     state.sortedIds = []
     state.items.clear()
     if (updateDevice) patch.update()

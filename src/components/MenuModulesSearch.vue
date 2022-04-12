@@ -12,12 +12,13 @@
       v-if="isOpen"
       class="search-results"
       :modules="results"
-      @update:value="createInstance"
+      @update:value="handleModuleSelect"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { createInstance } from '@/commands'
 import { useInstances } from '@/stores/instances'
 import { useModules } from '@/stores/modules'
 import { Module } from '@/types/Module'
@@ -59,8 +60,8 @@ const search = (pattern: string) => {
   results.value = modules.search(pattern)
 }
 
-const createInstance = async (moduleId: Module['id']) => {
-  instances.add(moduleId, position.value)
+const handleModuleSelect = (moduleId: Module['id']) => {
+  createInstance(moduleId, position.value)
   close()
 }
 </script>

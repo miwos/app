@@ -49,6 +49,7 @@ import ModuleProps from './ModuleProps.vue'
 import ShapeMask from './ShapeMask.vue'
 import ShapePath from './ShapePath.vue'
 import ShapeOutline from './ShapeOutline.vue'
+import { removeInstance } from '@/commands'
 
 const props = defineProps<{
   position: Point
@@ -109,7 +110,7 @@ watch(
 
 const remove = (event: KeyboardEvent) => {
   if (event.target === el.value && isFocused.value)
-    instances.remove(instance.value.id)
+    removeInstance(instance.value.id)
 }
 </script>
 

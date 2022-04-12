@@ -7,6 +7,8 @@ import { PatchSerialized } from '@/types/Patch'
 import * as luaJson from 'lua-json'
 import { defineStore } from 'pinia'
 import { reactive, toRefs } from 'vue'
+import { deserializeConnection } from '../connections/utils'
+import { deserializeInstance } from '../instances/utils'
 import { serializePatch } from './utils'
 
 export const usePatch = defineStore('patch', () => {
@@ -21,8 +23,14 @@ export const usePatch = defineStore('patch', () => {
 
   // Actions
   const restore = (serialized: PatchSerialized) => {
-    instances.restore(serialized.instances)
-    connections.restore(serialized.connections)
+    Object.entries(serialized.instances).forEach(([id, v]) =>
+      instances.restore(parseInt(id), deserializeInstance(v), false)
+    )
+
+    serialized.connections.forEach((v) =>
+      connections.restore(deserializeConnection(v), false)
+    )
+
     encoders.restore(serialized.encoders)
   }
 

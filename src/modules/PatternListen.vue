@@ -72,7 +72,6 @@ const { start, stop } = useRaf((time) => {
 
 const draw = () => {
   if (!ctx) return
-  console.log('draw')
 
   let noteWidth = Math.max(
     noteMinWidth,
