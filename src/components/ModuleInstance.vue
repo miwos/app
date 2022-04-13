@@ -8,7 +8,7 @@
       updating: isUpdating,
     }"
     ref="el"
-    tabindex="0"
+    tabindex="-1"
     @keydown.delete="remove"
   >
     <ShapePath />
