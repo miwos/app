@@ -21,7 +21,7 @@
     >
       <ModuleContent />
     </div>
-    <ShapeOutline v-if="isFocused" />
+    <ShapeOutline />
     <ModuleLabel v-if="module.label" />
     <ModuleInputsOutputs />
     <ModuleProps />
@@ -171,7 +171,7 @@ const remove = (event: KeyboardEvent) => {
   &-outline {
     overflow: visible;
     fill: none;
-    stroke: var(--module-outline-color);
+    stroke: hsl(0deg 0% 32% / 23%);
     stroke-width: 1px;
     stroke-linecap: round;
     stroke-linejoin: round;

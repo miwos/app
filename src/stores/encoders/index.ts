@@ -4,7 +4,7 @@ import { Encoder, EncoderPageSerialized } from '@/types/Encoders'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { range } from '@/utils'
 import { defineStore } from 'pinia'
-import { computed, reactive, toRefs } from 'vue'
+import { computed, ComputedRef, reactive, toRefs } from 'vue'
 import { useInstances } from '../instances'
 import {
   deserializeEncoderPage,
@@ -32,10 +32,18 @@ export const useEncoders = defineStore('encoders', () => {
   const list = computed(() => Array.from(currentPage.value.values()))
   const get = (id: Id) => currentPage.value.get(id)
 
-  const getMapped = (instanceId: InstanceId, propName: string) =>
-    computed(() =>
-      list.value.find((encoder) => isMappedTo(encoder, instanceId, propName))
-    )
+  const getMapped = (
+    instanceId: InstanceId,
+    propName: string
+  ): ComputedRef<{ encoder: Encoder; pageIndex: number } | undefined> =>
+    computed(() => {
+      for (const [index, page] of state.pages.entries()) {
+        const encoder = Array.from(page.values()).find((encoder) =>
+          isMappedTo(encoder, instanceId, propName)
+        )
+        if (encoder) return { encoder, pageIndex: index }
+      }
+    })
 
   // Actions
   const serialize = () => state.pages.map(serializeEncoderPage)
@@ -59,6 +67,7 @@ export const useEncoders = defineStore('encoders', () => {
   }
 
   const map = (
+    pageIndex: number,
     id: Encoder['id'],
     instanceId: InstanceId,
     propName: string,
@@ -68,16 +77,19 @@ export const useEncoders = defineStore('encoders', () => {
     // on encoder at a time.
     state.pages.forEach((page, index) => {
       for (const encoder of page.values()) {
-        if (isMappedTo(encoder, instanceId, propName)) unmap(encoder.id, index)
+        if (isMappedTo(encoder, instanceId, propName))
+          unmap(index, encoder.id, false)
       }
     })
 
-    currentPage.value.set(id, { id, instanceId, propName })
+    state.pages[pageIndex].set(id, { id, instanceId, propName })
     if (updateDevice) patch.update()
   }
 
-  const unmap = (id: Encoder['id'], pageIndex: number) =>
+  const unmap = (pageIndex: number, id: Encoder['id'], updateDevice = true) => {
     state.pages[pageIndex].delete(id)
+    if (updateDevice) patch.update()
+  }
 
   const selectPage = (index: number, updateDevice = true) => {
     state.currentPageIndex = index

@@ -139,7 +139,7 @@ export const useInstances = defineStore('instances', () => {
       for (const encoder of page.values()) {
         if (encoder.instanceId === id) {
           removedEncoders.push([index, encoder])
-          encoders.unmap(encoder.id, index)
+          encoders.unmap(index, encoder.id)
         }
       }
     })

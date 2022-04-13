@@ -3,7 +3,8 @@
     class="module-prop"
     ref="el"
     :class="{
-      mapped: !!mappedEncoder,
+      mapped: !!mapping,
+      'mapped-current-page': mapping?.pageIndex === encoders.currentPageIndex,
       focus: isFocused,
       'mapping-modal': showMapping,
       'side-left': side === 'left',
@@ -34,8 +35,8 @@
       />
       <ModulePropMapping
         v-if="showMapping"
-        :value="mappedEncoder?.id"
-        @update:value="mapEncoder"
+        :value="mapping?.encoder?.id"
+        @update:value="updateMapping"
         @blur="showMapping = false"
       />
     </div>
@@ -43,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { mapEncoder } from '@/commands'
 import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useApp } from '@/stores/app'
 import { useEncoders } from '@/stores/encoders'
@@ -50,12 +52,12 @@ import { useInstances } from '@/stores/instances'
 import { Module, ModuleProp } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
-import { computed, ComputedRef, inject, nextTick, ref } from 'vue'
 import type { Component } from 'vue'
+import { computed, ComputedRef, inject, nextTick, ref } from 'vue'
 import BaseInput from './BaseInput.vue'
-import PropListInput from './PropListInput.vue'
-import PropButtonInput from './PropButtonInput.vue'
 import ModulePropMapping from './ModulePropMapping.vue'
+import PropButtonInput from './PropButtonInput.vue'
+import PropListInput from './PropListInput.vue'
 
 const props = defineProps<{
   name: string
@@ -77,7 +79,7 @@ const el = ref<HTMLElement | null>(null)
 const input = ref<HTMLElement | null>(null)
 const mappingSelect = ref<HTMLElement | null>(null)
 const showMapping = ref(false)
-const mappedEncoder = encoders.getMapped(instance.value.id, props.name)
+const mapping = encoders.getMapped(instance.value.id, props.name)
 const isFocused = ref(false)
 const isViewModeVerbose = computed(() => app.viewMode === 'verbose')
 
@@ -98,8 +100,8 @@ const onInputMouseDown = async () => {
 const updateProp = (value: number) =>
   instances.updateProp(instance.value.id, props.name, value)
 
-const mapEncoder = (id: number) =>
-  encoders.map(id, instance.value.id, props.name)
+const updateMapping = (id: number) =>
+  mapEncoder(encoders.currentPageIndex, id, instance.value.id, props.name)
 
 const map = async () => (showMapping.value = true)
 </script>
@@ -137,11 +139,18 @@ const map = async () => (showMapping.value = true)
     width: 1rem;
     height: 1rem;
     border-radius: 50%;
+    box-sizing: border-box;
     background-color: var(--module-shape-color);
     transition: fill var(--fade-duration);
     cursor: pointer;
-    .mapped &,
-    .mapping-modal & {
+
+    .mapped & {
+      // A bit darker than the glass color.
+      background-color: hsl(0deg 0% 29%);
+    }
+
+    .mapping-modal &,
+    .mapped-current-page & {
       background-color: var(--mapping-color);
     }
   }
