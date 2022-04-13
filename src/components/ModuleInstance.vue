@@ -17,7 +17,7 @@
       class="module-content"
       ref="content"
       @contextmenu.prevent="onContextMenu"
-      @mouseup="test"
+      @mouseup="onMouseUp"
     >
       <ModuleContent />
     </div>
@@ -59,8 +59,9 @@ const { instance } = toRefs(props)
 
 const emit = defineEmits(['update:position'])
 
-const test = () => {
-  if (!isDragging.value) {
+const onMouseUp = (e: MouseEvent) => {
+  // Check button to prevent context menu from focusing the instance.
+  if (e.button === 0 && !isDragging.value) {
     instances.focus(instance.value.id)
   }
 }
