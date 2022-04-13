@@ -5,6 +5,7 @@
       ref="input"
       :value="value"
       type="number"
+      @change="emit('update:value', parseInt(($event.target as any).value))"
       v-bind="{ min, max, step }"
     />
     <span class="input-after">{{ unit }}</span>
@@ -21,6 +22,10 @@ defineProps<{
   min?: number
   max?: number
   step?: number
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:value', value: number): void
 }>()
 
 const input = ref<HTMLInputElement | null>(null)

@@ -17,7 +17,7 @@ import { computed, reactive, toRefs } from 'vue'
 import {
   createInstance,
   deserializeInstance,
-  getPropsDefaults,
+  getDefaultProps,
   serializeInstance,
   updatePatchDebounced,
 } from './utils'
@@ -42,9 +42,12 @@ export const useInstances = defineStore('instances', () => {
     nextId: 1,
   })
 
-  loa.on('/instances/prop', ({ args: [id, name, value] }) => {
+  loa.on('/prop/value', ({ args: [id, name, value] }) => {
     try {
-      get(id).props.set(name, value)
+      const prop = get(id).props.get(name)
+      if (!prop)
+        throw new Error(`Prop '${name}' doesn't exist on instance@${id}.`)
+      prop.value = value
     } catch (e) {
       console.warn(`Can't set value for prop '${name}': ${errorMessage(e)}`)
     }
@@ -89,7 +92,7 @@ export const useInstances = defineStore('instances', () => {
   const add = (moduleId: ModuleId, position: Point, updateDevice = true) => {
     const module = modules.get(moduleId)
     const id = state.nextId++
-    const props = getPropsDefaults(module.props)
+    const props = getDefaultProps(module.props)
 
     state.items.set(id, createInstance({ id, moduleId, position, props }))
     state.sortedIds.push(id)
@@ -169,7 +172,13 @@ export const useInstances = defineStore('instances', () => {
     updateDevice = true
   ) => {
     const instance = get(id)
-    instance.props.set(name, value)
+    const prop = instance.props.get(name)
+    if (!prop) {
+      console.warn(`Prop '${name}' doesn't exist on instance@${id}.`)
+      return
+    }
+
+    prop.value = value
 
     if (updateDevice) {
       loa.sendMessage('/patch/prop', [id, name, value])

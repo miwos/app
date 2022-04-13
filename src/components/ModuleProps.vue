@@ -6,7 +6,7 @@
       :type="prop.type"
       :position="getPosition(index)"
       :side="index < 3 ? 'right' : 'left'"
-      :value="instance.props.get(prop.name)"
+      :value="instance.props.get(prop.name)?.value"
       :data="prop"
     />
   </div>

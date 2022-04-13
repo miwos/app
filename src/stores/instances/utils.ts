@@ -4,7 +4,7 @@ import {
   ModuleInstance,
   ModuleInstanceSerialized,
 } from '@/types/ModuleInstance'
-import { debounce } from '@/utils'
+import { debounce, isObject } from '@/utils'
 
 export const updatePatchDebounced = debounce(() => {
   usePatch().update()
@@ -24,7 +24,12 @@ export const serializeInstance = (
     moduleId,
     position: { x, y },
   } = instance
-  const props = Object.fromEntries(instance.props.entries())
+  const props = Object.fromEntries(
+    Array.from(instance.props.entries()).map(([name, v]) => [
+      name,
+      Object.keys(v).length === 1 ? v.value : v,
+    ])
+  )
   return { Module: moduleId, xy: [x, y], props }
 }
 
@@ -35,14 +40,24 @@ export const deserializeInstance = (
     Module,
     xy: [x, y],
   } = serialized
-  const props = new Map(Object.entries(serialized.props))
+  // As a shorthand we also allow `propName: value` instead of
+  // `propName: { value }`.
+  const props = new Map(
+    Object.entries(serialized.props).map(([name, v]) => [
+      name,
+      isObject(v) ? v : { value: v },
+    ])
+  )
+
   return { moduleId: Module, position: { x, y }, props }
 }
 
-export const getPropsDefaults = (props: Module['props']) =>
+export const getDefaultProps = (
+  props: Module['props']
+): ModuleInstance['props'] =>
   new Map(
     Array.from(props.entries()).map(([name, prop]) => [
       name,
-      prop.default ?? prop.min ?? 0,
+      { value: prop.default ?? prop.min ?? 0 },
     ])
   )

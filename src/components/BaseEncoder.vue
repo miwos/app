@@ -38,7 +38,7 @@ const isDragging = ref(false)
 const el = ref<HTMLElement | null>(null)
 const dragRotation = useRotation(el)
 
-const prop = computed(() => {
+const propDefinition = computed(() => {
   if (!encoder.value) return
 
   const { instanceId, propName } = encoder.value
@@ -47,9 +47,15 @@ const prop = computed(() => {
   return module.props.get(propName)
 })
 
+const prop = computed(() => {
+  if (!encoder.value) return
+  const { instanceId, propName } = encoder.value
+  return instances.get(instanceId).props.get(propName)
+})
+
 watch(dragRotation, (angle) => {
-  if (!prop.value) return
-  const { min, max } = prop.value
+  if (!propDefinition.value) return
+  const { min, max } = propDefinition.value
   angle += 135
   angle = Math.max(Math.min(angle, 270), 0)
   const value = Math.round(map(angle, 0, 270, min ?? 0, max ?? 127))
@@ -57,17 +63,9 @@ watch(dragRotation, (angle) => {
 })
 
 const rotation = computed(() => {
-  if (!encoder.value) return 0
-
-  const { instanceId, propName } = encoder.value
-  const value = instances.get(instanceId).props.get(propName)
-  const module = modules.getByInstanceId(instanceId)
-
-  const prop = module.props.get(propName)
-  if (!prop) return
-
-  const { min, max } = prop
-  return map(value, min ?? 0, max ?? 127, 0, 270) - 135
+  if (!encoder.value || !prop.value || !propDefinition.value) return 0
+  const { min, max } = propDefinition.value
+  return map(prop.value.value, min ?? 0, max ?? 127, 0, 270) - 135
 })
 
 const updateProp = (value: number) => {

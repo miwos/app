@@ -30,7 +30,7 @@
         ref="input"
         :value="value"
         v-bind="data"
-        @change="updateProp(($event.target as any).value)"
+        @update:value="updateProp($event)"
       />
       <ModulePropMapping
         v-if="showMapping"

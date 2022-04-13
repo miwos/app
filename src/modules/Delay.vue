@@ -30,7 +30,7 @@ onMounted(() => {
 const draw = () => {
   const { time, feed } = props
   const thresh = (feed / 100) * 0.01
-  const repeats = Math.floor(Math.log(thresh) / Math.log(feed / 100))
+  const repeats = Math.floor(Math.log(thresh) / Math.log((feed - 1) / 100))
 
   if (!ctx) return
   const { width, height } = bounds
@@ -40,7 +40,7 @@ const draw = () => {
   const visibleRepeats = Math.max(width, height) / thickness
 
   for (let i = repeats; i > 0; i--) {
-    // if (repeats > visibleRepeats - 1) continue
+    if (i > visibleRepeats) continue
 
     const mix = i / repeats
     const color = colord('#9800ff').mix('#929292', mix).toRgbString()

@@ -1,5 +1,10 @@
 <template>
-  <component v-if="module?.component" :is="asyncComponent" v-bind="props" />
+  <component
+    v-if="module?.component"
+    :is="asyncComponent"
+    v-bind="propValues"
+    :props="props"
+  />
 </template>
 
 <script setup lang="ts">
@@ -12,6 +17,12 @@ const instance = inject<ComputedRef<ModuleInstance>>('instance')!
 
 const props = computed(() =>
   Object.fromEntries(instance.value?.props.entries())
+)
+
+const propValues = computed(() =>
+  Object.fromEntries(
+    Object.entries(props.value).map(([name, v]) => [name, v.value])
+  )
 )
 
 const asyncComponent = defineAsyncComponent(
