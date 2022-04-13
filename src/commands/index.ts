@@ -4,6 +4,7 @@ import { useParts } from '@/stores/parts'
 export * from './connection'
 export * from './instance'
 export * from './mapping'
+export * from './patch'
 
 interface Command {
   undo: Function

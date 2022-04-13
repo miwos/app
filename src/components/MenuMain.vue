@@ -3,14 +3,13 @@
     <DeviceIndicator />
     <button>File</button>
     <button>Edit</button>
-    <button>Clear</button>
-    RAM: {{ useDevice().usedMemory }}kb
+    <button @click="clearPatch">Clear</button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { clearPatch } from '@/commands'
 import DeviceIndicator from './DeviceIndicator.vue'
-import { useDevice } from '@/stores/device'
 </script>
 
 <style scoped lang="scss">
