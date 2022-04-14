@@ -1,0 +1,364 @@
+[
+  {
+    "id": "Arp",
+    "shapeId": "Arp",
+    "props": [
+      {
+        "min": 1,
+        "type": "number",
+        "index": 1,
+        "max": 500,
+        "name": "interval",
+        "default": 120,
+        "unit": "ms"
+      },
+      {
+        "min": 0,
+        "type": "percent",
+        "index": 2,
+        "max": 100,
+        "name": "gate",
+        "default": 0,
+        "unit": "%"
+      },
+      { "default": false, "type": "button", "name": "hold", "index": 3 }
+    ],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }]
+  },
+  {
+    "id": "Hold",
+    "shapeId": "Transform",
+    "props": [],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }]
+  },
+  {
+    "id": "Chorder",
+    "shapeId": "Round",
+    "props": [
+      {
+        "min": -12,
+        "type": "number",
+        "index": 1,
+        "max": 12,
+        "name": "pitch1",
+        "default": 6
+      },
+      {
+        "min": -12,
+        "type": "number",
+        "index": 2,
+        "max": 12,
+        "name": "pitch2",
+        "default": -12
+      }
+    ],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }]
+  },
+  {
+    "id": "Pitcher",
+    "shapeId": "Transform",
+    "props": [
+      {
+        "min": -24,
+        "type": "number",
+        "index": 1,
+        "max": 24,
+        "name": "pitch",
+        "default": 0
+      }
+    ],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }]
+  },
+  {
+    "id": "Delay",
+    "component": "Delay.vue",
+    "shapeId": "Delay",
+    "label": "Delay",
+    "props": [
+      {
+        "min": 0,
+        "type": "number",
+        "index": 1,
+        "max": 1000,
+        "name": "time",
+        "default": 500,
+        "unit": "ms"
+      },
+      {
+        "min": 0,
+        "type": "percent",
+        "index": 2,
+        "max": 100,
+        "name": "feed",
+        "default": 0,
+        "unit": "%"
+      }
+    ],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }]
+  },
+  {
+    "id": "Output",
+    "component": "Output.vue",
+    "shapeId": "Output",
+    "props": [
+      {
+        "min": 1,
+        "type": "number",
+        "name": "device",
+        "list": false,
+        "max": 16,
+        "index": 1,
+        "default": 1
+      },
+      {
+        "min": 1,
+        "type": "number",
+        "name": "cable",
+        "list": false,
+        "max": 16,
+        "index": 2,
+        "default": 1
+      }
+    ],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": []
+  },
+  {
+    "id": "Input",
+    "component": "Input.vue",
+    "shapeId": "Input",
+    "props": [
+      {
+        "min": 1,
+        "type": "number",
+        "name": "device",
+        "list": false,
+        "max": 16,
+        "index": 1,
+        "default": 1
+      },
+      {
+        "min": 1,
+        "type": "number",
+        "name": "cable",
+        "list": false,
+        "max": 16,
+        "index": 2,
+        "default": 1
+      }
+    ],
+    "inputs": [],
+    "outputs": [{ "signal": "midi" }]
+  },
+  {
+    "id": "Chords",
+    "component": "Chords.vue",
+    "shapeId": "Chords",
+    "props": [
+      { "default": [], "type": "list", "name": "chords", "index": 1 },
+      {
+        "min": 1,
+        "type": "number",
+        "index": 2,
+        "max": 4,
+        "name": "length",
+        "default": 4
+      }
+    ],
+    "inputs": [{ "signal": "midi" }, { "signal": "trigger" }],
+    "outputs": [{ "signal": "midi" }]
+  },
+  {
+    "id": "ChordSplit",
+    "shapeId": "Split",
+    "label": "Chord\nSplit",
+    "props": [
+      {
+        "min": 2,
+        "type": "number",
+        "index": 1,
+        "max": 5,
+        "name": "notes",
+        "default": 3
+      }
+    ],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }, { "signal": "midi" }]
+  },
+  {
+    "id": "Metronome",
+    "component": "Metronome.vue",
+    "shapeId": "Metronome",
+    "props": [
+      {
+        "min": 5,
+        "type": "number",
+        "index": 1,
+        "max": 1000,
+        "name": "time",
+        "default": 1000,
+        "unit": "ms"
+      }
+    ],
+    "inputs": [],
+    "outputs": [{ "signal": "trigger" }]
+  },
+  {
+    "id": "Switch",
+    "shapeId": "Split",
+    "props": [
+      {
+        "type": "switch",
+        "index": 1,
+        "name": "state",
+        "default": 1,
+        "states": 2
+      }
+    ],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }, { "signal": "midi" }]
+  },
+  {
+    "id": "PitchFrom",
+    "shapeId": "TransformWith",
+    "props": [
+      {
+        "min": 0,
+        "type": "number",
+        "index": 1,
+        "max": 12,
+        "name": "key",
+        "default": 0
+      }
+    ],
+    "inputs": [{ "signal": "midi" }, { "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }]
+  },
+  {
+    "id": "VelocitySplit",
+    "shapeId": "Split",
+    "props": [
+      {
+        "min": 0,
+        "type": "number",
+        "index": 1,
+        "max": 127,
+        "name": "thresh",
+        "default": 63
+      }
+    ],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }, { "signal": "midi" }]
+  },
+  {
+    "id": "Test",
+    "shapeId": "Round",
+    "props": [
+      {
+        "min": 0,
+        "type": "number",
+        "index": 1,
+        "max": 127,
+        "name": "param1",
+        "default": 0
+      },
+      {
+        "min": 0,
+        "type": "number",
+        "index": 2,
+        "max": 127,
+        "name": "param2",
+        "default": 0
+      },
+      {
+        "min": 0,
+        "type": "number",
+        "index": 3,
+        "max": 127,
+        "name": "param3",
+        "default": 0
+      },
+      {
+        "min": 0,
+        "type": "number",
+        "index": 4,
+        "max": 127,
+        "name": "param4",
+        "default": 0
+      },
+      {
+        "min": 0,
+        "type": "number",
+        "index": 5,
+        "max": 127,
+        "name": "param5",
+        "default": 0
+      },
+      {
+        "min": 0,
+        "type": "number",
+        "index": 6,
+        "max": 127,
+        "name": "param6",
+        "default": 0
+      }
+    ],
+    "inputs": [],
+    "outputs": []
+  },
+  {
+    "id": "PitchCC",
+    "shapeId": "Convert",
+    "label": ["Note", "CC"],
+    "props": [],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }]
+  },
+  {
+    "id": "PatternListen",
+    "component": "PatternListen.vue",
+    "shapeId": "SlotsVertical",
+    "props": [
+      { "default": false, "type": "button", "name": "record", "index": 1 },
+      {
+        "min": 0,
+        "type": "percent",
+        "index": 2,
+        "max": 100,
+        "name": "precise",
+        "default": 0.80000001192093,
+        "unit": "%"
+      },
+      {
+        "min": 0,
+        "type": "percent",
+        "index": 3,
+        "max": 100,
+        "name": "speed",
+        "default": 0.20000000298023,
+        "unit": "%"
+      }
+    ],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "trigger" }]
+  },
+  {
+    "id": "TriggerReceive",
+    "shapeId": "Round",
+    "props": [],
+    "inputs": [],
+    "outputs": []
+  },
+  {
+    "id": "LowestNote",
+    "shapeId": "Convert",
+    "props": [],
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }]
+  }
+]

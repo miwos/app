@@ -39,3 +39,7 @@ export interface ModuleInfoSerialized {
   outputs?: ModuleInputOutputSerialized[]
   props: ModuleProp[]
 }
+
+export type ModuleSerialized = Omit<Module, 'props'> & {
+  props: ModuleProp[]
+}

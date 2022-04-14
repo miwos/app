@@ -83,7 +83,7 @@ export const useEditor = defineStore('editor', () => {
   const saveAndUpdate = async (name: string, content: string) => {
     await save(name, content)
     await update(name)
-    await modules.updateInfo(nameWithoutExt(name))
+    await modules.updateFromDevice(nameWithoutExt(name))
   }
 
   return {

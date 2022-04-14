@@ -4,12 +4,18 @@ import { Module } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { nameWithoutExt } from '@/utils'
 import Fuse from 'fuse.js'
+// @ts-ignore
+import * as luaJson from 'lua-json'
 import { defineStore } from 'pinia'
 import { reactive, toRefs } from 'vue'
-import { getInfo } from './utils'
+import { deserializeModule } from './utils'
 
 type Id = Module['id']
 type InstanceId = ModuleInstance['id']
+
+// const items = new Map<Id, Module>(
+//   modulesSerialized.map((v) => [v.id, deserializeModule(v as ModuleSerialized)])
+// )
 
 const componentImports = import.meta.globEager('../../modules/*.vue')
 const components = new Map<Module['id'], string>(
@@ -29,8 +35,7 @@ export const useModules = defineStore('modules', () => {
   const instances = useInstances()
 
   const state = reactive({
-    // Once the modules are imported they won't change during runtime.
-    items: new Map<Id, Module>(),
+    items: new Map(),
   })
 
   // Getters
@@ -48,22 +53,17 @@ export const useModules = defineStore('modules', () => {
   // Actions
   const add = (module: Module) => state.items.set(module.id, module)
 
-  const updateInfo = async (moduleId: Module['id']) => {
-    const info = await getInfo(moduleId)
-    const item = get(moduleId)
-    state.items.set(moduleId, { ...item, ...info })
+  const updateFromDevice = async (id: Module['id']) => {
+    const response = await useLoa().sendRequest('/module/info', [id])
+    const serialized = luaJson.parse(`return ${response}`)
+    const data = deserializeModule(serialized)
+    state.items.set(id, { ...data, id, component: components.get(id) })
   }
 
-  const loadFromDevice = async () => {
+  const restoreAllFromDevice = async () => {
     const dirList = await loa.readDirectory('lua/modules')
     for (const file of dirList) {
-      const moduleId = nameWithoutExt(file)
-      const info = await getInfo(moduleId)
-      add({
-        id: moduleId,
-        component: components.get(moduleId),
-        ...info,
-      })
+      await updateFromDevice(nameWithoutExt(file))
     }
     updateFuse(Array.from(state.items.keys()))
   }
@@ -74,7 +74,7 @@ export const useModules = defineStore('modules', () => {
     getByInstanceId,
     search,
     add,
-    updateInfo,
-    loadFromDevice,
+    updateFromDevice,
+    restoreAllFromDevice,
   }
 })

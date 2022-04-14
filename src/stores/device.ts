@@ -1,6 +1,7 @@
 import { useLoa } from '@/services/loa'
 import { useModules } from '@/stores/modules'
 import { useParts } from '@/stores/parts'
+import { Module } from '@/types/Module'
 import { defineStore } from 'pinia'
 import { reactive, toRefs } from 'vue'
 
@@ -23,12 +24,13 @@ export const useDevice = defineStore('device', () => {
     // TODO: rename
     loa.sendMessage('/bridge/connect')
 
-    await modules.loadFromDevice()
+    await modules.restoreAllFromDevice()
+
     parts.select(0)
 
-    memoryInterval = window.setInterval(async () => {
-      state.usedMemory = parseInt(await loa.sendRequest('/info/memory-usage'))
-    }, 1000)
+    // memoryInterval = window.setInterval(async () => {
+    //   state.usedMemory = parseInt(await loa.sendRequest('/info/memory-usage'))
+    // }, 1000)
   }
 
   const disconnect = async () => {
