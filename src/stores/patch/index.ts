@@ -11,11 +11,15 @@ import { deserializeConnection } from '../connections/utils'
 import { deserializeInstance } from '../instances/utils'
 import { serializePatch } from './utils'
 
+import defaultPatch from '@/defaultPatch.json'
+import { useParts } from '../parts'
+
 export const usePatch = defineStore('patch', () => {
   const loa = useLoa()
   const instances = useInstances()
   const connections = useConnections()
   const encoders = useEncoders()
+  const parts = useParts()
 
   const state = reactive({
     name: 'patch1',
@@ -68,6 +72,28 @@ export const usePatch = defineStore('patch', () => {
     await loa.sendRequest('/patch/update', state.name)
   }
 
+  const reset = async () => {
+    clear()
+
+    let patch = luaJson.format(defaultPatch)
+
+    // `lua-json` converts all numerical ids to strings so we convert them back
+    // manually.
+    patch = patch.replace(/\['(\d+)']/g, (_: string, id: string) => `[${id}]`)
+
+    const patchBuffer = new TextEncoder().encode(patch)
+    await loa.writeFile(`lua/patches/patch1.lua`, patchBuffer)
+
+    const emptyPatchBuffer = new TextEncoder().encode(
+      'return { instances = {}, encoders = {{}, {}, {}}, connections = {} }'
+    )
+    await loa.writeFile(`lua/patches/patch2.lua`, emptyPatchBuffer)
+    await loa.writeFile(`lua/patches/patch3.lua`, emptyPatchBuffer)
+
+    useParts().select(0)
+    useEncoders().selectPage(0)
+  }
+
   const clear = (updateDevice = true) => {
     encoders.clear(false)
     connections.clear(false)
@@ -75,5 +101,5 @@ export const usePatch = defineStore('patch', () => {
     if (updateDevice) update()
   }
 
-  return { ...toRefs(state), restore, load, save, update, clear }
+  return { ...toRefs(state), restore, load, save, update, clear, reset }
 })

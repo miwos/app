@@ -40,6 +40,7 @@ export interface ModuleInfoSerialized {
   props: ModuleProp[]
 }
 
-export type ModuleSerialized = Omit<Module, 'props'> & {
+export type ModuleSerialized = Omit<Module, 'shapeId' | 'props'> & {
+  shapeId?: Module['shapeId']
   props: ModuleProp[]
 }

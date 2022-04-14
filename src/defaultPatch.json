@@ -1,0 +1,24 @@
+{
+  "instances": {
+    "4": {
+      "Module": "Input",
+      "xy": [454, 243],
+      "props": { "device": 1, "cable": 1 }
+    },
+    "5": {
+      "Module": "Output",
+      "xy": [453, 707],
+      "props": { "device": 1, "cable": 1 }
+    },
+    "6": {
+      "Module": "Delay",
+      "xy": [416, 400],
+      "props": { "time": 500, "feed": 0 }
+    }
+  },
+  "connections": [
+    [4, 1, 6, 1],
+    [6, 1, 5, 1]
+  ],
+  "encoders": [{}, {}, {}]
+}

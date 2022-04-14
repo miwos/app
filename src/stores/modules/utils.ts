@@ -6,6 +6,7 @@ export const serializeModule = (module: Module) => ({
 })
 
 export const deserializeModule = (serialized: ModuleSerialized): Module => ({
+  shapeId: 'Round',
   ...serialized,
   props: new Map(serialized.props.map((v) => [v.name, v])),
 })
