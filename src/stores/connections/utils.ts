@@ -4,6 +4,7 @@ import {
   ConnectionSerialized,
 } from '@/types/Connection'
 import { useInstances } from '../instances'
+import { useModules } from '../modules'
 
 export const getConnectionId = (
   from: ConnectionPoint,
@@ -37,7 +38,12 @@ export const deserializeConnectionPoint = (
   index: ConnectionPoint['index']
 ): ConnectionPoint => {
   const id = `${instanceId}-${index}` as ConnectionPoint['id']
-  return { id, index, instanceId, direction }
+  const module = useModules().getByInstanceId(instanceId)
+  const signal =
+    direction === 'in'
+      ? module.inputs[index].signal
+      : module.outputs[index].signal
+  return { id, index, instanceId, direction, signal }
 }
 
 export const sortPointsByPosition = (

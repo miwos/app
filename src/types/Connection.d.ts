@@ -16,7 +16,7 @@ export interface ConnectionPoint {
   index: number
   instanceId: ModuleInstance['id']
   isInOut?: ShapeInputOutput['isInOut']
-  signal?: ModuleInputOutput['signal']
+  signal: ModuleInputOutput['signal']
 }
 
 export type ConnectionSerialized = [
