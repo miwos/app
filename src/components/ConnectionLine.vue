@@ -76,6 +76,7 @@ const remove = () => removeConnection(props.id)
   left: 0;
   width: 100vw;
   height: 100vh;
+  outline: none;
 
   .line-hit-area {
     pointer-events: stroke;

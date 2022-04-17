@@ -9,6 +9,8 @@ import { Encoder } from '@/types/Encoders'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
 import { errorMessage } from '@/utils'
+// @ts-ignore
+import * as luaJson from 'lua-json'
 import { defineStore } from 'pinia'
 import { computed, reactive, toRefs } from 'vue'
 import {
@@ -17,10 +19,9 @@ import {
   serializeInstance,
   updatePatchDebounced,
 } from './utils'
-// @ts-ignore
-import * as luaJson from 'lua-json'
 
 type Id = ModuleInstance['id']
+type InputOutputId = `${Id}-${number}`
 type ModuleId = ModuleInstance['moduleId']
 
 export const useInstances = defineStore('instances', () => {
@@ -34,8 +35,8 @@ export const useInstances = defineStore('instances', () => {
     items: new Map<Id, ModuleInstance>(),
     sortedIds: [] as Id[],
     focusedId: null as Id | null,
-    activeInputs: new Set<`${Id}-${number}`>(),
-    activeOutputs: new Set<`${Id}-${number}`>(),
+    activeInputs: new Set<InputOutputId>(),
+    activeOutputs: new Set<InputOutputId>(),
     // We use a one-based index to be consistent with lua.
     nextId: 1,
   })
@@ -66,13 +67,14 @@ export const useInstances = defineStore('instances', () => {
     get(id).isUpdating = false
   })
 
-  loa.on('/instances/outputs', ({ args: [serializedOutputs] }) => {
+  loa.on('/instances/outputs', ({ args: [outputIds] }) => {
+    state.activeOutputs = new Set<InputOutputId>(
+      luaJson.parse(`return ${outputIds}`)
+    )
     state.activeInputs.clear()
-    state.activeOutputs.clear()
     connections.activeIds.clear()
 
-    if (serializedOutputs !== '') {
-      state.activeOutputs = new Set(serializedOutputs.split(','))
+    if (state.activeOutputs.size) {
       for (const { id, from, to } of connections.list) {
         if (state.activeOutputs.has(from.id)) {
           state.activeInputs.add(to.id)
