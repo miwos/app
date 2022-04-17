@@ -13,6 +13,7 @@ export interface ModuleProp {
   type: string
   index: number
   default: number
+  valueType: 'number' | 'table' | 'string'
   list?: boolean
   min?: number
   max?: number

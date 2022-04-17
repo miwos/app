@@ -21,12 +21,16 @@ import { ref, nextTick } from 'vue'
 import { useLogs } from '@/stores/logs'
 import { Log } from '@/types/Log'
 import { tokenizeLuaDump } from '@/utils'
+// @ts-ignore
+import * as luaJson from 'lua-json'
 
 const container = ref<HTMLElement | null>(null)
 const logs = useLogs()
 
 const getLogHtml = (log: Log) =>
-  log.type === 'dump' ? tokenizeLuaDump(JSON.parse(log.text)) : log.text
+  log.type === 'dump'
+    ? tokenizeLuaDump(luaJson.parse(`return ${log.text}`))
+    : log.text
 
 logs.$subscribe(() => nextTick(() => scrollToBottom()))
 

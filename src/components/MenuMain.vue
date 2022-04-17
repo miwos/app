@@ -5,8 +5,8 @@
     <button>Edit</button>
     <button @click="clearPatch">Clear</button>
     <button @click="exportPatch">Export patch</button>
-    <!-- <button @click="updateModules">Update Modules</button> -->
-    <!-- <button @click="exportModules">Export Modules</button> -->
+    <!-- <button @click="updateModules">Update Modules</button>
+    <button @click="exportModules">Export Modules</button> -->
   </div>
 </template>
 

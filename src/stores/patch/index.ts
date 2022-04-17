@@ -55,9 +55,9 @@ export const usePatch = defineStore('patch', () => {
 
   const save = () => {
     const serializedPatch = serializePatch()
-    console.log('save', serializedPatch)
 
     let patch = luaJson.format(serializedPatch)
+    console.log('save', patch)
 
     // `lua-json` converts all numerical ids to strings so we convert them back
     // manually.

@@ -35,7 +35,7 @@ export const useModules = defineStore('modules', () => {
   const instances = useInstances()
 
   const state = reactive({
-    items: new Map(),
+    items: new Map<Id, Module>(),
   })
 
   // Getters

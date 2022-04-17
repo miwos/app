@@ -6,21 +6,19 @@ import { useModules } from '@/stores/modules'
 import { usePatch } from '@/stores/patch'
 import { Connection } from '@/types/Connection'
 import { Encoder } from '@/types/Encoders'
-import {
-  ModuleInstance,
-  ModuleInstanceSerialized,
-} from '@/types/ModuleInstance'
+import { ModuleInstance } from '@/types/ModuleInstance'
 import { Point } from '@/types/Point'
 import { errorMessage } from '@/utils'
 import { defineStore } from 'pinia'
 import { computed, reactive, toRefs } from 'vue'
 import {
   createInstance,
-  deserializeInstance,
   getDefaultProps,
   serializeInstance,
   updatePatchDebounced,
 } from './utils'
+// @ts-ignore
+import * as luaJson from 'lua-json'
 
 type Id = ModuleInstance['id']
 type ModuleId = ModuleInstance['moduleId']
@@ -45,9 +43,16 @@ export const useInstances = defineStore('instances', () => {
   loa.on('/prop/value', ({ args: [id, name, value] }) => {
     try {
       const prop = get(id).props.get(name)
-      if (!prop)
+      const definition = modules.getByInstanceId(id).props.get(name)
+
+      if (!prop || !definition)
         throw new Error(`Prop '${name}' doesn't exist on instance@${id}.`)
-      prop.value = value
+
+      // TODO: refactor
+      prop.value =
+        definition.valueType === 'table'
+          ? luaJson.parse(`return ${value}`)
+          : value
     } catch (e) {
       console.warn(`Can't set value for prop '${name}': ${errorMessage(e)}`)
     }
