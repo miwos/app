@@ -1,5 +1,10 @@
 <template>
-  <div class="modules-select" role="listbox">
+  <div
+    class="modules-select"
+    role="listbox"
+    ref="el"
+    :class="{ overflow: isOverflown }"
+  >
     <div
       v-for="(module, index) in modules"
       :key="module.id"
@@ -8,6 +13,7 @@
       role="option"
       :aria-selected="props.value === module.id"
       @click="emit('update:value', module.id)"
+      @mouseenter="focus(index)"
     >
       <ShapePath
         class="modules-select-thumb"
@@ -21,7 +27,7 @@
 <script setup lang="ts">
 import { useShapes } from '@/stores/shapes'
 import { Module } from '@/types/Module'
-import { onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
+import { nextTick, onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
 import ShapePath from './ShapePath.vue'
 
 const props = defineProps<{
@@ -34,10 +40,21 @@ const emit = defineEmits<{
 }>()
 
 const shapes = useShapes()
+const el = ref<HTMLElement | null>(null)
 const focusedIndex = ref(0)
+const isOverflown = ref(false)
 const { modules } = toRefs(props)
 
-watch(modules, () => (focusedIndex.value = 0))
+let bounds: DOMRect | undefined
+
+watch(modules, async () => {
+  focusedIndex.value = 0
+  if (el.value) {
+    await nextTick()
+    bounds = el.value?.getBoundingClientRect()
+    isOverflown.value = el.value.scrollHeight > el.value.clientHeight
+  }
+})
 
 const onKeyDown = (e: KeyboardEvent) => {
   const { key } = e
@@ -70,6 +87,21 @@ const focus = (index: number) => {
   const { modules } = props
   focusedIndex.value =
     index < 0 ? modules.length - 1 : index >= modules.length ? 0 : index
+
+  scrollOptionIntoView(focusedIndex.value)
+}
+
+const scrollOptionIntoView = (index: number) => {
+  const optionEl = el.value?.children[index] as HTMLElement
+  if (!optionEl || !bounds) return
+
+  const { top, bottom } = optionEl?.getBoundingClientRect()
+  if (bottom > bounds.bottom) {
+    console.log('scroll')
+    optionEl.scrollIntoView({ block: 'end' })
+  } else if (top < bounds.top) {
+    optionEl.scrollIntoView({ block: 'start' })
+  }
 }
 </script>
 
@@ -83,10 +115,16 @@ const focus = (index: number) => {
     display: flex;
     align-items: center;
     gap: 0.5em;
+    cursor: pointer;
 
     &.focused {
       @include utilities.glass-darker;
     }
+  }
+
+  &.overflow {
+    padding-right: 7px;
+    margin-right: -15px;
   }
 
   &-thumb {
@@ -96,5 +134,21 @@ const focus = (index: number) => {
     box-sizing: border-box;
     fill: var(--module-shape-color-lighter);
   }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: var(--glass-color-solid);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: var(--glass-color-darker-solid);
 }
 </style>

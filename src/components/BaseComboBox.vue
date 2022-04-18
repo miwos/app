@@ -6,6 +6,8 @@
       aria-haspopup="listbox"
       tabindex="0"
       @click="toggleOpen"
+      @mousedown.stop
+      @mouseup.stop
       @blur="onBlur"
       @keydown.arrow-up="selectPrev"
       @keydown.arrow-down="selectNext"
@@ -32,6 +34,7 @@
         role="option"
         :aria-selected="selectedIndex === index"
         @mousedown="updateValue(index)"
+        @mouseenter="selectedIndex = index"
       >
         {{ displayOption(option) }}
       </div>
