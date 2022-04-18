@@ -44,6 +44,17 @@ export const useConnectionCurve = (
     let [fromPoint, fromAngle] = getPointAndAngle(from)
     let [toPoint, toAngle] = getPointAndAngle(to)
 
+    // For trigger icons (triangles) the line should start at the triangles tip.
+    const getIconTip = (point: Vec, angle: number) =>
+      point.add(new Vec(-9, 0).rotate(toRadians(angle)))
+
+    if (from.signal === 'trigger') {
+      fromPoint = getIconTip(fromPoint, fromAngle)
+    }
+    if (to.signal === 'trigger') {
+      toPoint = getIconTip(toPoint, toAngle)
+    }
+
     // The normalized distance.
     const distance = toPoint
       .subtract(fromPoint)
