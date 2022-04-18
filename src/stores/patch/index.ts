@@ -13,6 +13,7 @@ import { serializePatch } from './utils'
 
 import defaultPatch from '@/defaultPatch.json'
 import { useParts } from '../parts'
+import { useDevice } from '../device'
 
 export const usePatch = defineStore('patch', () => {
   const loa = useLoa()
@@ -20,6 +21,7 @@ export const usePatch = defineStore('patch', () => {
   const connections = useConnections()
   const encoders = useEncoders()
   const parts = useParts()
+  const device = useDevice()
 
   const state = reactive({
     name: 'patch1',
@@ -54,6 +56,8 @@ export const usePatch = defineStore('patch', () => {
   }
 
   const save = () => {
+    if (!device.isConnected) return
+
     const serializedPatch = serializePatch()
 
     let patch = luaJson.format(serializedPatch)
@@ -68,6 +72,7 @@ export const usePatch = defineStore('patch', () => {
   }
 
   const update = async () => {
+    if (!device.isConnected) return
     await save()
     await loa.sendRequest('/patch/update', state.name)
   }
