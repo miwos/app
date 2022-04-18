@@ -1,6 +1,6 @@
 import { useLoa } from '@/services/loa'
 import { useInstances } from '@/stores/instances'
-import { Module } from '@/types/Module'
+import { Module, ModuleSerialized } from '@/types/Module'
 import { ModuleInstance } from '@/types/ModuleInstance'
 import { nameWithoutExt } from '@/utils'
 import Fuse from 'fuse.js'
@@ -9,13 +9,14 @@ import * as luaJson from 'lua-json'
 import { defineStore } from 'pinia'
 import { reactive, toRefs } from 'vue'
 import { deserializeModule } from './utils'
+import modulesSerialized from '@/modules.json'
 
 type Id = Module['id']
 type InstanceId = ModuleInstance['id']
 
-// const items = new Map<Id, Module>(
-//   modulesSerialized.map((v) => [v.id, deserializeModule(v as ModuleSerialized)])
-// )
+const items = new Map<Id, Module>(
+  modulesSerialized.map((v) => [v.id, deserializeModule(v as ModuleSerialized)])
+)
 
 const componentImports = import.meta.globEager('../../modules/*.vue')
 const components = new Map<Module['id'], string>(
@@ -34,9 +35,8 @@ export const useModules = defineStore('modules', () => {
   const loa = useLoa()
   const instances = useInstances()
 
-  const state = reactive({
-    items: new Map<Id, Module>(),
-  })
+  const state = reactive({ items })
+  updateFuse(Array.from(state.items.keys()))
 
   // Getters
   const get = (id: Id) => {
