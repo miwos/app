@@ -46,6 +46,7 @@ const positionedLabels = computed(() =>
   user-select: none;
   white-space: pre-line;
   color: var(--module-outline-color);
+  text-align: center;
 
   &-item-default {
     text-align: center;

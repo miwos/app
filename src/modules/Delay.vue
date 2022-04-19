@@ -27,6 +27,9 @@ onMounted(() => {
   draw()
 })
 
+const colorBackground = '#929292'
+const colorForeground = '#9d43e4'
+
 const draw = () => {
   const { time, feed } = props
   const thresh = (feed / 100) * 0.01
@@ -42,8 +45,10 @@ const draw = () => {
   for (let i = repeats; i > 0; i--) {
     if (i > visibleRepeats) continue
 
-    const mix = i / repeats
-    const color = colord('#9800ff').mix('#929292', mix).toRgbString()
+    const mix = (i - 1) / repeats
+    const color = colord(colorForeground)
+      .mix(colorBackground, mix)
+      .toRgbString()
     ctx.beginPath()
     ctx.arc(width / 2, height / 2, thickness * i, 0, 2 * Math.PI)
     ctx.fillStyle = color

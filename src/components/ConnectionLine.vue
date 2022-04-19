@@ -30,6 +30,7 @@
 import { removeConnection } from '@/commands'
 import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useConnectionCurve } from '@/composables/useConnectionCurve'
+import { useApp } from '@/stores/app'
 import { useConnections } from '@/stores/connections'
 import { useInstances } from '@/stores/instances'
 import { Connection, ConnectionPoint } from '@/types/Connection'
@@ -42,6 +43,7 @@ const props = defineProps<{
   to: ConnectionPoint
 }>()
 
+const app = useApp()
 const instances = useInstances()
 const connections = useConnections()
 const curve = useConnectionCurve(props.from, props.to)
@@ -52,7 +54,7 @@ const isActive = computed(() => connections.activeIds.has(props.id))
 
 const isMidi = computed(() => props.from.signal === 'midi')
 
-const triggerIsActive = autoResetRef(false, 100)
+const triggerIsActive = autoResetRef(false, app.triggerDuration)
 watchEffect(() => isActive.value && (triggerIsActive.value = true))
 
 const instanceIsFocused = computed(

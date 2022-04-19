@@ -41,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { useApp } from '@/stores/app'
 import { useConnections } from '@/stores/connections'
 import { useInstances } from '@/stores/instances'
 import { Connection, ConnectionPoint } from '@/types/Connection'
@@ -60,6 +61,7 @@ const props = defineProps<{
 
 const connections = useConnections()
 const instances = useInstances()
+const app = useApp()
 const instance = inject<ComputedRef<ModuleInstance>>('instance')!
 const shape = inject<ComputedRef<Shape>>('shape')!
 
@@ -83,7 +85,7 @@ const outputIsActive = computed(() => {
     : instances.activeOutputs.has(id)
 })
 
-const triggerIsActive = refAutoReset(false, 100)
+const triggerIsActive = refAutoReset(false, app.triggerDuration)
 watchEffect(() => outputIsActive.value && (triggerIsActive.value = true))
 
 const isMidi = computed(() => props.signal === 'midi')

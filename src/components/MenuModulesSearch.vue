@@ -50,7 +50,7 @@ const open = () => {
   // Break reactivity, because we don't want the menu to move while it's open.
   position.value = { x: mouse.x.value, y: mouse.y.value }
   shouldAlignAbove.value = position.value.y > window.innerHeight / 2
-  input.value && (input.value.value = '')
+  pattern.value = ''
   isOpen.value = true
 
   // Round max height so the last visible item doesn't get clipped.

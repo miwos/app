@@ -6,6 +6,7 @@ export type ViewMode = 'minimal' | 'verbose'
 export const useApp = defineStore('app', () => {
   const state = reactive({
     viewMode: 'minimal' as ViewMode,
+    triggerDuration: 100,
   })
 
   // Actions
