@@ -1,12 +1,15 @@
 <template>
-  <div class="menu-main">
-    <DeviceIndicator />
-    <button @click="resetPatch">Reset</button>
-    <button>Edit</button>
-    <button @click="clearPatch">Clear</button>
-    <button @click="exportPatch">Export patch</button>
-    <!-- <button @click="updateModules">Update Modules</button>
+  <div class="menu-main-wrap">
+    <div class="menu-main">
+      <DeviceIndicator />
+      <button>Undo</button>
+      <button>Redo</button>
+      <button @click="clearPatch">Clear</button>
+      <!-- <button @click="exportPatch">Export patch</button> -->
+      <!-- <button @click="updateModules">Update Modules</button>
     <button @click="exportModules">Export Modules</button> -->
+    </div>
+    <button class="button-reset" @click="resetPatch">Restore</button>
   </div>
 </template>
 
@@ -37,14 +40,27 @@ const resetPatch = () => patch.reset()
 <style scoped lang="scss">
 @use '@/styles/utilities';
 
+.menu-main-wrap {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
 .menu-main {
   @include utilities.menu;
   @include utilities.glass;
   @include utilities.pill;
-  position: absolute;
-  top: 0;
-  left: 0;
   gap: 0.5em;
   padding-right: 1em;
+}
+
+.button-reset {
+  @include utilities.font-menu;
+  border-radius: var(--radius-s);
+  background-color: hsl(281deg 100% 84%);
+  padding: 0.4em 0.8em;
+  cursor: pointer;
 }
 </style>
