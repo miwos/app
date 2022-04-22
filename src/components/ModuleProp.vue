@@ -97,10 +97,8 @@ const onInputMouseDown = async () => {
   input.value?.focus?.()
 }
 
-const updateProp = (value: number) => {
-  console.log('update prop', props.name, value)
+const updateProp = (value: number) =>
   instances.updateProp(instance.value.id, props.name, value)
-}
 
 const updateMapping = (id: number) =>
   mapEncoder(encoders.currentPageIndex, id, instance.value.id, props.name)

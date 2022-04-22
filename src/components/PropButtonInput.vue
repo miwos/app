@@ -15,10 +15,8 @@ const emit = defineEmits<{
   (e: 'update:value', value: number): void
 }>()
 
-const updateValue = () => {
-  console.log(props.toggle)
+const updateValue = () =>
   emit('update:value', +(props.toggle ? !props.value : true))
-}
 </script>
 
 <style scoped lang="scss">

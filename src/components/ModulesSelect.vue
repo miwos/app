@@ -97,7 +97,6 @@ const scrollOptionIntoView = (index: number) => {
 
   const { top, bottom } = optionEl?.getBoundingClientRect()
   if (bottom > bounds.bottom) {
-    console.log('scroll')
     optionEl.scrollIntoView({ block: 'end' })
   } else if (top < bounds.top) {
     optionEl.scrollIntoView({ block: 'start' })
