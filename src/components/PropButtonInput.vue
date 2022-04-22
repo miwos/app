@@ -1,11 +1,24 @@
 <template>
-  <button class="button-input">{{ name }}</button>
+  <button class="button-input" @click="updateValue">
+    {{ name }}
+  </button>
 </template>
 
 <script setup lang="ts">
 const props = defineProps<{
   name: string
+  toggle: boolean
+  value: number
 }>()
+
+const emit = defineEmits<{
+  (e: 'update:value', value: number): void
+}>()
+
+const updateValue = () => {
+  console.log(props.toggle)
+  emit('update:value', +(props.toggle ? !props.value : true))
+}
 </script>
 
 <style scoped lang="scss">
@@ -20,7 +33,7 @@ const props = defineProps<{
   font-weight: 500;
   cursor: pointer;
 
-  &:hover {
+  &:hover:not(:active) {
     background-color: rgb(255 255 255 / 75%);
   }
 }
