@@ -1,13 +1,15 @@
 <template>
-  <div class="menu-encoders">
-    <BaseEncoder :id="1" style="left: 40px" />
-    <BaseEncoder :id="2" style="top: 58px" />
-    <BaseEncoder :id="3" style="left: 40px; top: 116px" />
+  <div class="menu-encoders" :class="{ label: app.isMapping }">
+    <BaseEncoder :id="1" style="left: 40px; --label: '1'" />
+    <BaseEncoder :id="2" style="top: 58px; --label: '2'" />
+    <BaseEncoder :id="3" style="left: 40px; --label: '3'; top: 116px" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useApp } from '@/stores/app'
 import BaseEncoder from './BaseEncoder.vue'
+const app = useApp()
 </script>
 
 <style scoped lang="scss">
@@ -25,5 +27,15 @@ import BaseEncoder from './BaseEncoder.vue'
 
 .encoder {
   position: absolute;
+  .menu-encoders.label &::before {
+    position: absolute;
+    transform: translateX(-100%);
+    content: var(--label);
+    padding-top: 0.67em;
+    padding-right: 0.5em;
+    font-size: 16px;
+    font-family: 'Vevey Positive';
+    color: var(--module-shape-color);
+  }
 }
 </style>

@@ -3,19 +3,16 @@
     class="module-prop"
     ref="el"
     :class="{
-      mapped: !!mapping,
-      'mapped-current-page': mapping?.pageIndex === encoders.currentPageIndex,
+      mapped: !!mappingInfo,
+      'mapped-current-page':
+        mappingInfo?.pageIndex === encoders.currentPageIndex,
       focus: isFocused,
-      'mapping-modal': showMapping,
+      'mapping-modal': shouldShowMapping,
       'side-left': side === 'left',
       'side-right': side === 'right',
     }"
   >
-    <div
-      class="module-prop-handle"
-      @mousedown.prevent="map"
-      @contextmenu.prevent="map"
-    ></div>
+    <div class="module-prop-handle" @mousedown.prevent="showMapping"></div>
     <div class="module-prop-content">
       <button
         class="module-prop-name"
@@ -34,10 +31,10 @@
         @update:value="updateProp($event)"
       />
       <ModulePropMapping
-        v-if="showMapping"
-        :value="mapping?.encoder?.id"
+        v-if="shouldShowMapping"
+        ref="mapping"
+        :value="mappingInfo?.encoder?.id"
         @update:value="updateMapping"
-        @blur="showMapping = false"
       />
     </div>
   </div>
@@ -68,18 +65,16 @@ const props = defineProps<{
   side: 'left' | 'right'
 }>()
 
-const instance = inject<ComputedRef<ModuleInstance>>('instance')!
-const module = inject<ComputedRef<Module>>('module')!
-
 const app = useApp()
 const encoders = useEncoders()
 const instances = useInstances()
+const instance = inject<ComputedRef<ModuleInstance>>('instance')!
 
 const el = ref<HTMLElement | null>(null)
 const input = ref<HTMLElement | null>(null)
-const mappingSelect = ref<HTMLElement | null>(null)
-const showMapping = ref(false)
-const mapping = encoders.getMapped(instance.value.id, props.name)
+const mapping = ref<HTMLElement | null>(null)
+const shouldShowMapping = ref(false)
+const mappingInfo = encoders.getMapped(instance.value.id, props.name)
 const isFocused = ref(false)
 const isViewModeVerbose = computed(() => app.viewMode === 'verbose')
 
@@ -87,6 +82,24 @@ const inputComponents: Record<string, Component> = {
   list: PropListInput,
   button: PropButtonInput,
 }
+
+const updateProp = (value: number) =>
+  instances.updateProp(instance.value.id, props.name, value)
+
+const updateMapping = (id: number) => {
+  mapEncoder(encoders.currentPageIndex, id, instance.value.id, props.name)
+  hideMapping()
+}
+
+const showMapping = () => {
+  shouldShowMapping.value = app.isMapping = true
+}
+
+const hideMapping = () => {
+  shouldShowMapping.value = app.isMapping = false
+}
+
+onMouseDownOutside(mapping, hideMapping)
 
 onMouseDownOutside(el, () => (isFocused.value = false))
 
@@ -96,14 +109,6 @@ const onInputMouseDown = async () => {
   await nextTick()
   input.value?.focus?.()
 }
-
-const updateProp = (value: number) =>
-  instances.updateProp(instance.value.id, props.name, value)
-
-const updateMapping = (id: number) =>
-  mapEncoder(encoders.currentPageIndex, id, instance.value.id, props.name)
-
-const map = async () => (showMapping.value = true)
 </script>
 
 <style lang="scss" scoped>

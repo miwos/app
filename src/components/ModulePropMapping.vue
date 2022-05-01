@@ -4,9 +4,9 @@
       class="module-prop-mapping-list"
       :value="1"
       :options="[
-        { id: 1, label: 'Map to #1' },
-        { id: 2, label: 'Map to #2' },
-        { id: 3, label: 'Map to #3' },
+        { id: 1, label: 'Map to 1' },
+        { id: 2, label: 'Map to 2' },
+        { id: 3, label: 'Map to 3' },
       ]"
       @update:value="updateValue"
       @blur="emit('blur')"

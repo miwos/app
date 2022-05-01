@@ -7,6 +7,7 @@ export const useApp = defineStore('app', () => {
   const state = reactive({
     viewMode: 'minimal' as ViewMode,
     triggerDuration: 100,
+    isMapping: false,
   })
 
   // Actions
