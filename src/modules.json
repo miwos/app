@@ -99,7 +99,7 @@
       }
     ],
     "id": "Delay",
-    "component": "Delay.vue"
+    "component": "Delay"
   },
   {
     "shapeId": "Output",
@@ -126,7 +126,7 @@
       }
     ],
     "id": "Output",
-    "component": "Output.vue"
+    "component": "Output"
   },
   {
     "shapeId": "Input",
@@ -153,7 +153,7 @@
       }
     ],
     "id": "Input",
-    "component": "Input.vue"
+    "component": "Input"
   },
   {
     "shapeId": "Chords",
@@ -171,7 +171,7 @@
       }
     ],
     "id": "Chords",
-    "component": "Chords.vue"
+    "component": "Chords"
   },
   {
     "shapeId": "Split",
@@ -206,7 +206,7 @@
       }
     ],
     "id": "Metronome",
-    "component": "Metronome.vue"
+    "component": "Metronome"
   },
   {
     "shapeId": "Split",
@@ -345,7 +345,7 @@
       }
     ],
     "id": "PatternListen",
-    "component": "PatternListen.vue"
+    "component": "PatternListen"
   },
   {
     "shapeId": "Round",

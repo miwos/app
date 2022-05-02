@@ -8,9 +8,9 @@
       <MenuModulesSearch />
       <MenuParts />
     </Pane>
-    <Pane v-if="editor.enabled">
+    <!-- <Pane v-if="editor.enabled">
       <AppSidebar ref="sideBar" />
-    </Pane>
+    </Pane> -->
   </Splitpanes>
 </template>
 

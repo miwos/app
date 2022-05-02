@@ -34,3 +34,7 @@
   letter-spacing: 1px;
   font-size: 14px;
 }
+
+@mixin font-dark-bg {
+  font-weight: 200;
+}
