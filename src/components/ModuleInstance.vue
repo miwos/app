@@ -25,7 +25,7 @@
     <ModuleLabel v-if="module.label" />
     <ModuleInputsOutputs />
     <ModuleProps />
-    <!-- <BaseContextMenu ref="contextMenu" :menu="contextActions" /> -->
+    <BaseContextMenu ref="contextMenu" :menu="contextActions" />
   </div>
 </template>
 
@@ -96,7 +96,7 @@ watch(isDragging, (v) => !v && patch.save())
 
 onMouseDownOutside(el, () => instances.focus(null))
 
-const onContextMenu = (e: MouseEvent) => {} //contextMenu.value?.open(e)
+const onContextMenu = (e: MouseEvent) => contextMenu.value?.open(e)
 
 const edit = () => editor.openModule(module.value.id)
 

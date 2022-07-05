@@ -8,6 +8,7 @@
     <MidiDeviceCombo
       :value="instance.props.get('device')?.value"
       preferredAlignment="above"
+      direction="Input"
       @update:value="updateProp('device', $event)"
     />
   </div>

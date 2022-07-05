@@ -57,6 +57,7 @@ export const useModules = defineStore('modules', () => {
     const response = await useLoa().sendRequest('/module/info', [id])
     const serialized = luaJson.parse(`return ${response}`)
     const data = deserializeModule(serialized)
+    // state.items.clear()
     state.items.set(id, { ...data, id, component: components.get(id) })
   }
 

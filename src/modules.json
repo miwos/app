@@ -7,22 +7,31 @@
       {
         "min": 1,
         "type": "number",
-        "index": 1,
-        "max": 500,
         "name": "interval",
         "default": 120,
+        "max": 500,
+        "valueType": "number",
+        "index": 1,
         "unit": "ms"
       },
       {
         "min": 0,
         "type": "percent",
-        "index": 2,
-        "max": 100,
         "name": "gate",
         "default": 0,
+        "max": 100,
+        "valueType": "number",
+        "index": 2,
         "unit": "%"
       },
-      { "default": false, "type": "button", "name": "hold", "index": 3 }
+      {
+        "valueType": "boolean",
+        "type": "button",
+        "index": 3,
+        "toggle": true,
+        "default": false,
+        "name": "hold"
+      }
     ],
     "id": "Arp"
   },
@@ -30,32 +39,17 @@
     "shapeId": "Transform",
     "inputs": [{ "signal": "midi" }],
     "outputs": [{ "signal": "midi" }],
-    "props": [],
-    "id": "Hold"
-  },
-  {
-    "shapeId": "Round",
-    "inputs": [{ "signal": "midi" }],
-    "outputs": [{ "signal": "midi" }],
     "props": [
       {
-        "min": -12,
-        "type": "number",
+        "valueType": "boolean",
+        "type": "button",
         "index": 1,
-        "max": 12,
-        "name": "pitch1",
-        "default": 6
-      },
-      {
-        "min": -12,
-        "type": "number",
-        "index": 2,
-        "max": 12,
-        "name": "pitch2",
-        "default": -12
+        "toggle": true,
+        "default": false,
+        "name": "hold"
       }
     ],
-    "id": "Chorder"
+    "id": "Hold"
   },
   {
     "shapeId": "Transform",
@@ -65,10 +59,11 @@
       {
         "min": -24,
         "type": "number",
-        "index": 1,
-        "max": 24,
         "name": "pitch",
-        "default": 0
+        "default": 0,
+        "max": 24,
+        "valueType": "number",
+        "index": 1
       }
     ],
     "id": "Pitcher"
@@ -82,24 +77,26 @@
       {
         "min": 0,
         "type": "number",
-        "index": 1,
-        "max": 1000,
         "name": "time",
         "default": 500,
+        "max": 1000,
+        "valueType": "number",
+        "index": 1,
         "unit": "ms"
       },
       {
         "min": 0,
         "type": "percent",
-        "index": 2,
-        "max": 100,
         "name": "feed",
         "default": 0,
+        "max": 100,
+        "valueType": "number",
+        "index": 2,
         "unit": "%"
       }
     ],
     "id": "Delay",
-    "component": "Delay"
+    "component": "Delay.vue"
   },
   {
     "shapeId": "Output",
@@ -107,26 +104,28 @@
     "outputs": [],
     "props": [
       {
-        "min": 1,
+        "valueType": "number",
         "type": "number",
+        "index": 1,
+        "max": 16,
+        "min": 2,
         "name": "device",
         "list": false,
-        "max": 16,
-        "index": 1,
-        "default": 1
+        "default": 2
       },
       {
-        "min": 1,
+        "valueType": "number",
         "type": "number",
+        "index": 2,
+        "max": 16,
+        "min": 1,
         "name": "cable",
         "list": false,
-        "max": 16,
-        "index": 2,
         "default": 1
       }
     ],
     "id": "Output",
-    "component": "Output"
+    "component": "Output.vue"
   },
   {
     "shapeId": "Input",
@@ -134,44 +133,53 @@
     "outputs": [{ "signal": "midi" }],
     "props": [
       {
-        "min": 1,
+        "valueType": "number",
         "type": "number",
+        "index": 1,
+        "max": 16,
+        "min": 2,
         "name": "device",
         "list": false,
-        "max": 16,
-        "index": 1,
-        "default": 1
+        "default": 2
       },
       {
-        "min": 1,
+        "valueType": "number",
         "type": "number",
+        "index": 2,
+        "max": 16,
+        "min": 1,
         "name": "cable",
         "list": false,
-        "max": 16,
-        "index": 2,
         "default": 1
       }
     ],
     "id": "Input",
-    "component": "Input"
+    "component": "Input.vue"
   },
   {
     "shapeId": "Chords",
     "inputs": [{ "signal": "midi" }, { "signal": "trigger" }],
     "outputs": [{ "signal": "midi" }],
     "props": [
-      { "default": [], "type": "list", "name": "chords", "index": 1 },
+      {
+        "valueType": "table",
+        "type": "list",
+        "index": 1,
+        "default": [],
+        "name": "chords"
+      },
       {
         "min": 1,
         "type": "number",
-        "index": 2,
-        "max": 4,
         "name": "length",
-        "default": 4
+        "default": 3,
+        "max": 4,
+        "valueType": "number",
+        "index": 2
       }
     ],
     "id": "Chords",
-    "component": "Chords"
+    "component": "Chords.vue"
   },
   {
     "shapeId": "Split",
@@ -182,10 +190,11 @@
       {
         "min": 2,
         "type": "number",
-        "index": 1,
-        "max": 5,
         "name": "notes",
-        "default": 3
+        "default": 2,
+        "max": 5,
+        "valueType": "number",
+        "index": 1
       }
     ],
     "id": "ChordSplit"
@@ -198,15 +207,16 @@
       {
         "min": 5,
         "type": "number",
-        "index": 1,
-        "max": 1000,
         "name": "time",
         "default": 1000,
+        "max": 1000,
+        "valueType": "number",
+        "index": 1,
         "unit": "ms"
       }
     ],
     "id": "Metronome",
-    "component": "Metronome"
+    "component": "Metronome.vue"
   },
   {
     "shapeId": "Split",
@@ -215,8 +225,8 @@
     "props": [
       {
         "type": "switch",
-        "index": 1,
         "name": "state",
+        "index": 1,
         "default": 1,
         "states": 2
       }
@@ -229,31 +239,16 @@
     "outputs": [{ "signal": "midi" }],
     "props": [
       {
-        "min": 0,
+        "min": 22,
         "type": "number",
-        "index": 1,
-        "max": 12,
-        "name": "key",
-        "default": 0
+        "name": "root",
+        "default": 60,
+        "max": 107,
+        "valueType": "number",
+        "index": 1
       }
     ],
     "id": "PitchFrom"
-  },
-  {
-    "shapeId": "Split",
-    "inputs": [{ "signal": "midi" }],
-    "outputs": [{ "signal": "midi" }, { "signal": "midi" }],
-    "props": [
-      {
-        "min": 0,
-        "type": "number",
-        "index": 1,
-        "max": 127,
-        "name": "thresh",
-        "default": 63
-      }
-    ],
-    "id": "VelocitySplit"
   },
   {
     "shapeId": "Round",
@@ -263,50 +258,56 @@
       {
         "min": 0,
         "type": "number",
-        "index": 1,
-        "max": 127,
         "name": "param1",
-        "default": 0
+        "default": 0,
+        "max": 127,
+        "valueType": "number",
+        "index": 1
       },
       {
         "min": 0,
         "type": "number",
-        "index": 2,
-        "max": 127,
         "name": "param2",
-        "default": 0
+        "default": 0,
+        "max": 127,
+        "valueType": "number",
+        "index": 2
       },
       {
         "min": 0,
         "type": "number",
-        "index": 3,
-        "max": 127,
         "name": "param3",
-        "default": 0
+        "default": 0,
+        "max": 127,
+        "valueType": "number",
+        "index": 3
       },
       {
         "min": 0,
         "type": "number",
-        "index": 4,
-        "max": 127,
         "name": "param4",
-        "default": 0
+        "default": 0,
+        "max": 127,
+        "valueType": "number",
+        "index": 4
       },
       {
         "min": 0,
         "type": "number",
-        "index": 5,
-        "max": 127,
         "name": "param5",
-        "default": 0
+        "default": 0,
+        "max": 127,
+        "valueType": "number",
+        "index": 5
       },
       {
         "min": 0,
         "type": "number",
-        "index": 6,
-        "max": 127,
         "name": "param6",
-        "default": 0
+        "default": 0,
+        "max": 127,
+        "valueType": "number",
+        "index": 6
       }
     ],
     "id": "Test"
@@ -324,28 +325,37 @@
     "inputs": [{ "signal": "midi" }],
     "outputs": [{ "signal": "trigger" }],
     "props": [
-      { "default": false, "type": "button", "name": "record", "index": 1 },
+      {
+        "valueType": "boolean",
+        "type": "button",
+        "index": 1,
+        "toggle": true,
+        "default": false,
+        "name": "record"
+      },
       {
         "min": 0,
         "type": "percent",
-        "index": 2,
-        "max": 100,
         "name": "precise",
-        "default": 0.80000001192093,
+        "default": 80,
+        "max": 100,
+        "valueType": "number",
+        "index": 2,
         "unit": "%"
       },
       {
         "min": 0,
         "type": "percent",
-        "index": 3,
-        "max": 100,
         "name": "speed",
-        "default": 0.20000000298023,
+        "default": 20,
+        "max": 100,
+        "valueType": "number",
+        "index": 3,
         "unit": "%"
       }
     ],
     "id": "PatternListen",
-    "component": "PatternListen"
+    "component": "PatternListen.vue"
   },
   {
     "shapeId": "Round",
@@ -360,5 +370,127 @@
     "outputs": [{ "signal": "midi" }],
     "props": [],
     "id": "LowestNote"
+  },
+  {
+    "shapeId": "Transform",
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }],
+    "props": [
+      {
+        "min": 1,
+        "type": "number",
+        "name": "ch",
+        "default": 1,
+        "max": 16,
+        "valueType": "number",
+        "index": 1
+      }
+    ],
+    "id": "Channel"
+  },
+  {
+    "shapeId": "Round",
+    "inputs": [{ "signal": "midi" }],
+    "label": "Chord",
+    "outputs": [{ "signal": "midi" }],
+    "props": [
+      {
+        "min": -12,
+        "type": "number",
+        "name": "note1",
+        "default": 2,
+        "max": 12,
+        "valueType": "number",
+        "index": 1
+      },
+      {
+        "min": -12,
+        "type": "number",
+        "name": "note2",
+        "default": 5,
+        "max": 12,
+        "valueType": "number",
+        "index": 2
+      }
+    ],
+    "id": "Chord"
+  },
+  {
+    "shapeId": "Split",
+    "inputs": [{ "signal": "midi" }],
+    "label": "Key\nSplit",
+    "outputs": [{ "signal": "midi" }, { "signal": "midi" }],
+    "props": [
+      {
+        "min": 22,
+        "type": "number",
+        "name": "divider",
+        "default": 60,
+        "max": 107,
+        "valueType": "number",
+        "index": 1
+      }
+    ],
+    "id": "KeySplit"
+  },
+  {
+    "shapeId": "Filter",
+    "inputs": [{ "signal": "midi" }],
+    "label": ["Low", "Note"],
+    "outputs": [{ "signal": "midi" }],
+    "props": [],
+    "id": "LowestNoteFilter"
+  },
+  {
+    "shapeId": "Filter",
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }],
+    "props": [
+      {
+        "min": 0,
+        "type": "number",
+        "name": "note",
+        "default": 60,
+        "max": 127,
+        "valueType": "number",
+        "index": 1
+      }
+    ],
+    "id": "NoteFilter"
+  },
+  {
+    "shapeId": "Transform",
+    "inputs": [{ "signal": "midi" }],
+    "outputs": [{ "signal": "midi" }],
+    "props": [
+      {
+        "min": 0,
+        "type": "number",
+        "name": "vel",
+        "default": 100,
+        "max": 127,
+        "valueType": "number",
+        "index": 1
+      }
+    ],
+    "id": "Vel"
+  },
+  {
+    "shapeId": "Split",
+    "inputs": [{ "signal": "midi" }],
+    "label": "Vel\nSplit",
+    "outputs": [{ "signal": "midi" }, { "signal": "midi" }],
+    "props": [
+      {
+        "min": 0,
+        "type": "number",
+        "name": "thresh",
+        "default": 63,
+        "max": 127,
+        "valueType": "number",
+        "index": 1
+      }
+    ],
+    "id": "VelSplit"
   }
 ]

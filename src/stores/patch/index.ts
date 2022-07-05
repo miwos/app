@@ -11,7 +11,7 @@ import { deserializeConnection } from '../connections/utils'
 import { deserializeInstance } from '../instances/utils'
 import { serializePatch } from './utils'
 
-import defaultPatch from '@/defaultPatch.json'
+import defaultPatchUrl from '@/defaultPatch.json?url'
 import { useParts } from '../parts'
 import { useDevice } from '../device'
 
@@ -80,7 +80,9 @@ export const usePatch = defineStore('patch', () => {
   const reset = async () => {
     clear()
 
-    let patch = luaJson.format(defaultPatch)
+    const json = await (await fetch(defaultPatchUrl)).json()
+    let patch = luaJson.format(json)
+    console.log(patch)
 
     // `lua-json` converts all numerical ids to strings so we convert them back
     // manually.

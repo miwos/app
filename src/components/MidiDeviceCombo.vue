@@ -2,6 +2,7 @@
   <BaseComboBox
     :options="devices"
     :value="value"
+    :prefix="direction"
     @update:value="emit('update:value', $event)"
   />
 </template>
@@ -12,6 +13,7 @@ import BaseComboBox from './BaseComboBox.vue'
 
 defineProps<{
   value: any
+  direction: 'Input' | 'Output'
 }>()
 
 const emit = defineEmits<{

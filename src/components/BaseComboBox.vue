@@ -56,6 +56,7 @@ const props = defineProps<{
   options: Option[]
   value: any
   preferredAlignment?: Alignment
+  prefix?: string
 }>()
 const { value, options } = toRefs(props)
 
@@ -77,7 +78,7 @@ const onBlur = () => (isOpen.value = false)
 
 const toggleOpen = () => (isOpen.value ? close() : open())
 const displayOption = (option: Option) =>
-  option ? option.label ?? option.id : 'none'
+  option ? `${props.prefix} ${option.label ?? option.id}` : 'none'
 
 const open = async () => {
   isOpen.value = true
