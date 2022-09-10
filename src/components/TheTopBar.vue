@@ -1,11 +1,10 @@
 <template>
   <MNavBar class="m-top-bar">
     <MButtonCircle
-      :style="`background-color: var(${indicatorColor})`"
+      :style="`background-color: var(${statusColor})`"
       @click="toggleDeviceConnection"
     ></MButtonCircle>
-    <button @click="device.open">Open</button>
-    <button @click="device.close">Close</button>
+    <button @click="toggleDeviceConnection">{{ statusText }}</button>
   </MNavBar>
 </template>
 
@@ -21,8 +20,12 @@ const toggleDeviceConnection = () => {
   device.isConnected ? device.close() : device.open()
 }
 
-const indicatorColor = computed(() =>
+const statusColor = computed(() =>
   device.isConnected ? '--color-active' : '--color-disabled'
+)
+
+const statusText = computed(() =>
+  device.isConnected ? 'Disconnect' : 'Connect'
 )
 </script>
 
