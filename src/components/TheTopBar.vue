@@ -1,7 +1,7 @@
 <template>
   <MNavBar class="m-top-bar">
     <MButtonCircle
-      :color="device.isConnected ? 'red' : 'gray'"
+      :style="`background-color: var(${indicatorColor})`"
       @click="toggleDeviceConnection"
     ></MButtonCircle>
     <button @click="device.open">Open</button>
@@ -13,12 +13,17 @@
 import { useDevice } from '@/stores/device'
 import MButtonCircle from '@/ui/MButtonCircle.vue'
 import MNavBar from '@/ui/MNavBar.vue'
+import { computed } from 'vue'
 
 const device = useDevice()
 
 const toggleDeviceConnection = () => {
   device.isConnected ? device.close() : device.open()
 }
+
+const indicatorColor = computed(() =>
+  device.isConnected ? '--color-active' : '--color-disabled'
+)
 </script>
 
 <style scoped>

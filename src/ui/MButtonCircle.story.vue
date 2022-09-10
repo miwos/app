@@ -1,9 +1,6 @@
 <template>
   <Story>
-    <MButtonCircle
-      color="red"
-      @click="hstEvent('Click', $event)"
-    ></MButtonCircle>
+    <MButtonCircle @click="hstEvent('Click', $event)"></MButtonCircle>
   </Story>
 </template>
 

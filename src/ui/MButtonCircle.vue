@@ -4,9 +4,6 @@
 
 <script setup lang="ts">
 const emit = defineEmits(['click'])
-const props = defineProps<{
-  color: string
-}>()
 </script>
 
 <style scoped>
@@ -16,7 +13,6 @@ const props = defineProps<{
   height: 2.5rem;
   border-radius: 50%;
   border: none;
-  background-color: v-bind('props.color');
   cursor: pointer;
 }
 </style>

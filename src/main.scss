@@ -1,9 +1,16 @@
 @use 'sass:color';
 
 :root {
-	--glass-blur: 20px;
-	--glass-color: rgb(0, 0, 0, 0.16);
-	--glass-color-solid: #{color.mix(black, #616161, 16%)};
-	--glass-color-dark: rgb(0, 0, 0, 0.45);
-	--glass-color-dark-solid: #{color.mix(black, #616161, 45%)};
+  --color-background: #616161;
+  --color-active: #d885ff;
+  --color-disabled: #cecece;
+  --color-mapping: #00ce78;
+  --color-parts: #6171ff;
+
+  --color-glass: rgb(0, 0, 0, 0.16);
+  --color-glass-solid: #{color.mix(black, #616161, 16%)};
+  --color-glass-dark: rgb(0, 0, 0, 0.45);
+  --color-glass-dark-solid: #{color.mix(black, #616161, 45%)};
+
+  --glass-blur: 20px;
 }
