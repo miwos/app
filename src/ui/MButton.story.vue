@@ -1,7 +1,7 @@
 <template>
-	<Story>
-		<MButton>Button</MButton>
-	</Story>
+  <Story>
+    <MButton>Button</MButton>
+  </Story>
 </template>
 
 <script setup lang="ts">

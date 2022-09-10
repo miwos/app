@@ -1,10 +1,10 @@
 <template>
-	<Story>
-		<MButtonCircle
-			color="red"
-			@click="hstEvent('Click', $event)"
-		></MButtonCircle>
-	</Story>
+  <Story>
+    <MButtonCircle
+      color="red"
+      @click="hstEvent('Click', $event)"
+    ></MButtonCircle>
+  </Story>
 </template>
 
 <script setup lang="ts">

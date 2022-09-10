@@ -4,6 +4,6 @@ import TheTopBar from './components/TheTopBar.vue'
 </script>
 
 <template>
-	<TheTopBar></TheTopBar>
-	<RouterView />
+  <TheTopBar></TheTopBar>
+  <RouterView />
 </template>
