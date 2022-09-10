@@ -1,0 +1,9 @@
+@mixin glass {
+	background-color: var(--glass-color);
+	backdrop-filter: blur(var(--glass-blur));
+}
+
+@mixin glass-dark {
+	background-color: var(--glass-color-dark);
+	backdrop-filter: blur(var(--glass-blur));
+}
