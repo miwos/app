@@ -1,4 +1,14 @@
 @use 'sass:color';
+@use './assets/fonts/inter/inter.css';
+@import './assets/reset.css';
+
+@font-face {
+  font-family: 'Vevey Positive';
+  src: url('./assets/fonts/vevey-positive-webfont.woff2') format('woff2'),
+    url('./assets/fonts/vevey-positive-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
 
 :root {
   --color-background: #616161;
@@ -13,4 +23,8 @@
   --color-glass-dark-solid: #{color.mix(black, #616161, 45%)};
 
   --glass-blur: 20px;
+}
+
+body {
+  font-family: Inter;
 }
