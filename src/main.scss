@@ -16,6 +16,7 @@
   --color-disabled: #cecece;
   --color-mapping: #00ce78;
   --color-parts: #6171ff;
+  --color-text: white;
 
   --color-glass: rgb(0, 0, 0, 0.16);
   --color-glass-solid: #{color.mix(black, #616161, 16%)};
@@ -27,4 +28,9 @@
 
 body {
   font-family: Inter;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-weight: 200;
+  letter-spacing: 1px;
+  font-size: 14px;
 }
