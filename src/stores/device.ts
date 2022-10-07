@@ -1,25 +1,22 @@
+import { useBridge } from '@/bridge'
 import { defineStore } from 'pinia'
-import { reactive, toRefs } from 'vue'
-import { Bridge } from '@miwos/bridge'
-import { WebSerialTransport } from '@miwos/bridge/dist/WebSerialTransport.js'
+import { ref } from 'vue'
 
 export const useDevice = defineStore('device', () => {
-  const state = reactive({
-    isConnected: false,
-  })
+  const isConnected = ref(false)
 
-  const bridge = new Bridge(new WebSerialTransport())
-  bridge.on('/close', () => (state.isConnected = false))
+  const bridge = useBridge()
+  bridge.on('/close', () => (isConnected.value = false))
 
   const open = async () => {
     await bridge.open({ baudRate: 9600 })
-    state.isConnected = true
+    isConnected.value = true
   }
 
   const close = async () => {
     await bridge.close()
-    state.isConnected = false
+    isConnected.value = false
   }
 
-  return { open, close, ...toRefs(state) }
+  return { isConnected, open, close }
 })
