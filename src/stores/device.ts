@@ -8,6 +8,10 @@ export const useDevice = defineStore('device', () => {
   const bridge = useBridge()
   bridge.on('/close', () => (isConnected.value = false))
 
+  bridge.on('/log/:type', ({ args: [text] }, { type }) =>
+    (console as any)[type]?.(text)
+  )
+
   const open = async () => {
     await bridge.open({ baudRate: 9600 })
     isConnected.value = true
