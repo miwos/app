@@ -1,4 +1,5 @@
 import { useBridge } from '@/bridge'
+import type { DeviceMethods } from '@/types/DeviceMethods'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -22,5 +23,13 @@ export const useDevice = defineStore('device', () => {
     isConnected.value = false
   }
 
-  return { isConnected, open, close }
+  const update = <M extends keyof DeviceMethods>(
+    method: M,
+    args: Parameters<DeviceMethods[M]>
+  ) => {
+    if (!isConnected.value) return
+    bridge.request(method, args) as Promise<ReturnType<DeviceMethods[M]>>
+  }
+
+  return { isConnected, open, close, update }
 })

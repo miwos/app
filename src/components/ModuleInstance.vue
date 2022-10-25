@@ -1,17 +1,51 @@
 <template>
-  <div class="module-instance" ref="el">Module</div>
+  <div class="module-instance" ref="el">
+    {{ module.type }}
+    <ConnectionPoint v-for="point in connectionPoints" :point="point" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useDraggable } from '@/composables/useDraggable'
-import type { Point } from '@/types/Point'
-import { ref, watch } from 'vue'
+import { useModuleDefinitions } from '@/stores/moduleDefinitions'
+import type {
+  Module,
+  Point,
+  ConnectionPoint as TConnectionPoint,
+  ModuleInput,
+  ModuleOutput,
+} from '@/types'
+import { computed, ref, toRefs, watch } from 'vue'
+import ConnectionPoint from './ConnectionPoint.vue'
 
-const props = defineProps<{ position: Point }>()
+const props = defineProps<{ position: Point; module: Module }>()
 const emit = defineEmits<{ (e: 'update:position', position: Point): void }>()
 
 const el = ref<HTMLElement>()
 const { position } = useDraggable(el)
+const { module } = toRefs(props)
+const definition = useModuleDefinitions().items.get(module.value.type)
+
+const connectionPoints = computed((): TConnectionPoint[] => {
+  if (!definition) return []
+
+  const toPoint = (
+    inputOutput: ModuleInput | ModuleOutput,
+    index: number,
+    direction: 'in' | 'out'
+  ) => ({
+    ...inputOutput,
+    id: `${module.value.id},${index}` as const,
+    moduleInstanceId: module.value.id,
+    index,
+    direction,
+  })
+
+  return [
+    ...definition.inputs.map((input, index) => toPoint(input, index, 'in')),
+    ...definition.outputs.map((output, index) => toPoint(output, index, 'in')),
+  ]
+})
 
 watch(position, (position) => emit('update:position', position))
 </script>

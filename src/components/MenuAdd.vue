@@ -1,27 +1,27 @@
 <template>
   <div class="menu-add" v-show="isOpen" :class="`align-${align}`" ref="el">
-    <ModuleSearch
+    <ModuleDefinitionSearch
       ref="search"
       :align-results="align"
-      @select="addModuleInstance"
-    ></ModuleSearch>
+      @select="addModule"
+    ></ModuleDefinitionSearch>
   </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watchEffect } from 'vue'
+import * as commands from '@/commands'
+import type { Module } from '@/types'
 import {
   onClickOutside,
   onKeyDown,
   useMouse,
   useWindowSize,
 } from '@vueuse/core'
-import ModuleSearch from './ModuleSearch.vue'
-import type { Module } from '@/types/Module'
-import { useModuleInstances } from '@/stores/moduleInstances'
+import { nextTick, ref, watchEffect } from 'vue'
+import ModuleDefinitionSearch from './ModuleDefinitionSearch.vue'
 
 const el = ref<HTMLElement>()
-const search = ref<InstanceType<typeof ModuleSearch>>()
+const search = ref<InstanceType<typeof ModuleDefinitionSearch>>()
 const mouse = useMouse()
 const { height: windowHeight } = useWindowSize()
 const position = ref({ x: 0, y: 0 })
@@ -58,8 +58,9 @@ const close = () => {
   isOpen.value = false
 }
 
-const addModuleInstance = (moduleId: Module['id']) => {
-  useModuleInstances().add(moduleId, { x: mouse.x.value, y: mouse.y.value })
+const addModule = (type: Module['type']) => {
+  const position = { x: mouse.x.value, y: mouse.y.value }
+  commands.addModule({ type, position })
   close()
 }
 </script>
