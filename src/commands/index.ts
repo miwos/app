@@ -17,7 +17,7 @@ interface Stack {
 let stacks: Stack[] = []
 
 const getCurrentStack = () => {
-  const index = useProject().activePartIndex
+  const index = useProject().partIndex
   stacks[index] ??= { commands: [], index: 0 }
   return stacks[index]
 }

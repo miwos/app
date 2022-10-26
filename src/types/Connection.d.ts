@@ -1,24 +1,23 @@
-import type { ModuleInstance } from './Module'
+import type Module from './module'
 import type { Signal } from './Signal'
 
 export interface Connection {
-  id: `${ConnectionPoint['id']}-${ConnectionPoint['id']}`
-  from: ConnectionPoint
-  to: ConnectionPoint
-}
-
-export interface ConnectionPoint {
-  id: `${ModuleInstance['id']},${number}`
-  moduleInstanceId: ModuleInstance['id']
-  index: number
-  direction: 'in' | 'out'
-  isInOut?: boolean
-  signal: Signal
+  id: `${Module['id']},${number}-${Module['id']},${number}`
+  from: { moduleId: Module['id']; index: number }
+  to: { moduleId: Module['id']; index: number }
 }
 
 export type ConnectionSerialized = [
-  fromModuleInstanceId: ModuleInstance['id'],
-  fromIndex: ConnectionPoint['index'],
-  toModuleInstanceId: ModuleInstance['id'],
-  toIndex: ConnectionPoint['index']
+  fromModuleId: Module['id'],
+  fromIndex: index,
+  toModuleId: Module['id'],
+  toIndex: index
 ]
+
+export interface ConnectionPoint {
+  moduleId: Module['id']
+  index: number
+  direction: 'in' | 'out'
+  thru?: boolean
+  signal: Signal
+}

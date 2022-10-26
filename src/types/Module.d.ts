@@ -8,6 +8,10 @@ export interface Module {
   position: Point
 }
 
+export interface ModuleSerialized extends Module {
+  position: [x: number, y: number]
+}
+
 export interface ModuleDefinition {
   id: string
   inputs: ModuleInput[]
@@ -16,8 +20,10 @@ export interface ModuleDefinition {
 
 export interface ModuleInput {
   signal: Signal
+  thru?: boolean
 }
 
 export interface ModuleOutput {
   signal: Signal
+  thru?: boolean
 }

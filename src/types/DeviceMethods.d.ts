@@ -2,13 +2,13 @@ import type { ConnectionSerialized } from './Connection'
 import type { Module } from './Module'
 
 export type DeviceMethods = {
-  '/parts/select': (index: number) => boolean
+  '/e/parts/select': (index: number) => boolean
 
-  '/connections/add': (...args: ConnectionSerialized) => void
+  '/e/connections/add': (...args: ConnectionSerialized) => void
 
-  '/connections/remove': (...args: ConnectionSerialized) => void
+  '/e/connections/remove': (...args: ConnectionSerialized) => void
 
-  '/modules/add': (type: Module['type'], id: Module['id']) => void
+  '/e/modules/add': (type: Module['type'], id: Module['id']) => void
 
-  '/modules/remove': (id: Module['id']) => void
+  '/e/modules/remove': (id: Module['id']) => void
 }

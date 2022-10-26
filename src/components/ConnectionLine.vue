@@ -31,12 +31,12 @@ const { from, to } = toRefs(props.connection)
 const modules = useModules()
 
 const fromPosition = computed(() => {
-  const module = modules.items.get(from.value.moduleInstanceId)
+  const module = modules.items.get(from.value.moduleId)
   return module?.position
 })
 
 const toPosition = computed(() => {
-  const module = modules.items.get(to.value.moduleInstanceId)
+  const module = modules.items.get(to.value.moduleId)
   return module?.position
 })
 </script>

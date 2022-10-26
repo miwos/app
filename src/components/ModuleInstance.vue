@@ -8,6 +8,7 @@
 <script setup lang="ts">
 import { useDraggable } from '@/composables/useDraggable'
 import { useModuleDefinitions } from '@/stores/moduleDefinitions'
+import { useProject } from '@/stores/project'
 import type {
   Module,
   Point,
@@ -25,6 +26,7 @@ const el = ref<HTMLElement>()
 const { position } = useDraggable(el)
 const { module } = toRefs(props)
 const definition = useModuleDefinitions().items.get(module.value.type)
+const project = useProject()
 
 const connectionPoints = computed((): TConnectionPoint[] => {
   if (!definition) return []
@@ -35,19 +37,21 @@ const connectionPoints = computed((): TConnectionPoint[] => {
     direction: 'in' | 'out'
   ) => ({
     ...inputOutput,
-    id: `${module.value.id},${index}` as const,
-    moduleInstanceId: module.value.id,
+    moduleId: module.value.id,
     index,
     direction,
   })
 
   return [
-    ...definition.inputs.map((input, index) => toPoint(input, index, 'in')),
-    ...definition.outputs.map((output, index) => toPoint(output, index, 'in')),
+    ...definition.inputs.map((input, i) => toPoint(input, i + 1, 'in')),
+    ...definition.outputs.map((output, i) => toPoint(output, i + 1, 'in')),
   ]
 })
 
-watch(position, (position) => emit('update:position', position))
+watch(position, (position) => {
+  emit('update:position', position)
+  project.save()
+})
 </script>
 
 <style scoped lang="scss">

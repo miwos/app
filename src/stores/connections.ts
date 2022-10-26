@@ -1,4 +1,5 @@
 import { useBridge } from '@/bridge'
+import type { Module, Optional } from '@/types'
 import type {
   Connection,
   ConnectionPoint,
@@ -14,43 +15,54 @@ export const serializeConnection = ({
   from,
   to,
 }: Connection): ConnectionSerialized => [
-  from.moduleInstanceId,
-  from.index + 1, // one-based index
-  to.moduleInstanceId,
-  to.index + 1, // one-based index
+  from.moduleId,
+  from.index,
+  to.moduleId,
+  to.index,
 ]
+
+export const deserializeConnection = (
+  serialized: ConnectionSerialized
+): Connection => {
+  const from = { moduleId: serialized[0], index: serialized[1] }
+  const to = { moduleId: serialized[2], index: serialized[3] }
+  const id =
+    `${from.moduleId},${from.index}-${to.moduleId},${to.index}` as const
+  return { id, from, to }
+}
 
 export const useConnections = defineStore('connections', () => {
   const items = ref(new Map<Id, Connection>())
   const device = useDevice()
 
   // Actions
-  const add = (from: ConnectionPoint, to: ConnectionPoint) => {
-    const id = `${from.id}-${to.id}` as const
-    items.value.set(id, { id, from, to })
-    device.update('/connections/add', [
-      from.moduleInstanceId,
-      from.index,
-      to.moduleInstanceId,
-      to.index,
-    ])
-    return id
+  const serialize = (): ConnectionSerialized[] =>
+    Array.from(items.value.values()).map(serializeConnection)
+
+  const deserialize = (serialized: ConnectionSerialized[]) => {
+    items.value.clear()
+    serialized.forEach((v) => add(deserializeConnection(v), false))
+  }
+
+  const add = (connection: Optional<Connection, 'id'>, updateDevice = true) => {
+    const { from, to } = connection
+    connection.id ??=
+      `${from.moduleId},${from.index}-${to.moduleId},${to.index}` as const
+    items.value.set(connection.id, connection as Connection)
+    if (updateDevice) {
+      const serialized = serializeConnection(connection as Connection)
+      device.update('/e/connections/add', serialized)
+    }
+    return connection.id
   }
 
   const remove = (id: Id) => {
     const connection = items.value.get(id)
     items.value.delete(id)
-    if (connection) {
-      const { from, to } = connection
-      device.update('/connections/remove', [
-        from.moduleInstanceId,
-        from.index,
-        to.moduleInstanceId,
-        to.index,
-      ])
-    }
+    if (connection)
+      device.update('/e/connections/remove', serializeConnection(connection))
     return connection
   }
 
-  return { items, add, remove }
+  return { items, serialize, deserialize, add, remove }
 })
