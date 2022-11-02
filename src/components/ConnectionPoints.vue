@@ -3,15 +3,19 @@
 </template>
 
 <script setup lang="ts">
+import { useModuleDefinitions } from '@/stores/moduleDefinitions'
 import type { ConnectionPoint as TConnectionPoint, Module } from '@/types'
 import { toConnectionPoint } from '@/utils'
 import { computed } from 'vue'
 import ConnectionPoint from './ConnectionPoint.vue'
 
 const props = defineProps<{ module: Module }>()
+const definitions = useModuleDefinitions()
 
 const points = computed((): TConnectionPoint[] => {
-  const { definition, shape } = props.module
+  const definition = definitions.get(props.module.definition)
+  if (!definition) return []
+
   const points: TConnectionPoint[] = []
 
   for (let i = 0; i < definition.inputs.length; i++) {

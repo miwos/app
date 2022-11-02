@@ -3,12 +3,7 @@ import type { Signal } from './Signal'
 
 export interface ModuleDefinition {
   id: string
-  shape: Shape
+  shape: Shape['id']
   inputs: { signal: Signal }[]
   outputs: { signal: Signal }[]
-}
-
-export interface ModuleDefinitionNormalized
-  extends Omit<ModuleDefinition, 'shape'> {
-  shape: string
 }

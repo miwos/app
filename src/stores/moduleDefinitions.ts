@@ -1,4 +1,4 @@
-import type { ModuleDefinition, ModuleDefinitionNormalized } from '@/types'
+import type { ModuleDefinition } from '@/types'
 import { resolveRelations } from '@/utils'
 import Fuse from 'fuse.js'
 import { defineStore } from 'pinia'
@@ -14,7 +14,7 @@ const indexSearch = (keys: string[]) => {
 
 export const useModuleDefinitions = defineStore('module definitions', () => {
   const items = ref(
-    new Map<Id, ModuleDefinitionNormalized>([
+    new Map<Id, ModuleDefinition>([
       [
         'Input',
         {
@@ -36,21 +36,36 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
     ])
   )
 
-  const shapes = useModuleShapes()
   indexSearch(Array.from(items.value.keys()))
 
   // Getters
-  const get = (id: Id): ModuleDefinition | undefined => {
+  const get = (id: Id) => {
     const item = items.value.get(id)
-    if (!item) return
-    return resolveRelations(item, { shape: shapes })
+    if (!item) {
+      console.warn(`module definition '${id}' not found`)
+      return
+    }
+    return item
   }
 
-  const list = computed(() => Array.from(items.value.keys()).map(get))
+  const getConnector = (id: Id, index: number, direction: 'in' | 'out') => {
+    const item = get(id)
+    if (!item) return
+
+    const connector =
+      direction === 'in' ? item.inputs[index] : item.outputs[index]
+    if (!connector) {
+      const name = `${direction === 'in' ? 'input' : 'output'}#${index}}`
+      console.warn(`${name} not found in module definition '${item.id}'`)
+      return
+    }
+
+    return connector
+  }
 
   // Actions
   const search = (query: string): ModuleDefinition[] =>
-    fuse?.search(query).map(({ item: id }) => get(id)!) ?? []
+    fuse?.search(query).map(({ item: id }) => items.value.get(id)!) ?? []
 
-  return { items, get, list, search }
+  return { items, get, getConnector, search }
 })

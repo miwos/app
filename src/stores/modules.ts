@@ -1,36 +1,35 @@
-import type {
-  Module,
-  ModuleNormalized,
-  ModuleSerialized,
-  Optional,
-} from '@/types'
-import { resolveRelations } from '@/utils'
+import type { Module, ModuleSerialized, Optional } from '@/types'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useDevice } from './device'
 import { useModuleDefinitions } from './moduleDefinitions'
 
 type Id = Module['id']
 
-export const serializeModule = (
-  module: ModuleNormalized
-): ModuleSerialized => ({
+export const serializeModule = (module: Module): ModuleSerialized => ({
   ...module,
   position: [module.position.x, module.position.y],
 })
 
-export const deserializeModule = (
-  serialized: ModuleSerialized
-): ModuleNormalized => ({
+export const deserializeModule = (serialized: ModuleSerialized): Module => ({
   ...serialized,
   position: { x: serialized.position[0], y: serialized.position[1] },
 })
 
 export const useModules = defineStore('module-instances', () => {
-  const items = ref(new Map<Id, ModuleNormalized>())
+  const items = ref(new Map<Id, Module>())
   const nextId = ref(1) // We use a one-based index to be consistent with lua.
   const device = useDevice()
-  const definitions = useModuleDefinitions()
+
+  // Getters
+  const get = (id: Id) => {
+    const item = items.value.get(id)
+    if (!item) {
+      console.warn(`module '${id}' not found`)
+      return
+    }
+    return item
+  }
 
   // Actions
   const serialize = () => Array.from(items.value.values()).map(serializeModule)
@@ -46,15 +45,12 @@ export const useModules = defineStore('module-instances', () => {
     }
   }
 
-  const add = (
-    module: Optional<ModuleNormalized, 'id'>,
-    updateDevice = true
-  ) => {
+  const add = (module: Optional<Module, 'id'>, updateDevice = true) => {
     module.id ??= nextId.value++
-    items.value.set(module.id, module as ModuleNormalized)
+    items.value.set(module.id, module as Module)
     if (updateDevice)
       device.update('/e/modules/add', [module.definition, module.id])
-    return module as ModuleNormalized
+    return module as Module
   }
 
   const remove = (id: Id) => {
@@ -64,37 +60,7 @@ export const useModules = defineStore('module-instances', () => {
     return module
   }
 
-  const update = <T extends keyof ModuleNormalized>(
-    id: Id,
-    key: T,
-    value: ModuleNormalized[T]
-  ) => {
-    const item = items.value.get(id)
-    if (item) item[key] = value
-  }
-
   const clear = () => items.value.clear()
 
-  // Getters
-  const get = (id: Id): Module | undefined => {
-    const item = items.value.get(id)
-    if (!item) return
-    return resolveRelations(item, { definition: definitions })
-  }
-
-  const list = computed(() =>
-    Array.from(items.value.keys()).map((id) => get(id)!)
-  )
-
-  return {
-    items,
-    get,
-    list,
-    serialize,
-    deserialize,
-    add,
-    update,
-    remove,
-    clear,
-  }
+  return { items, serialize, deserialize, get, add, remove, clear }
 })

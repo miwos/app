@@ -5,14 +5,10 @@ import type { Signal } from './Signal'
 
 export interface Module {
   id: number
-  definition: ModuleDefinition
+  definition: ModuleDefinition['id']
   position: Point
 }
 
-export interface ModuleNormalized extends Omit<Module, 'definition'> {
-  definition: ModuleDefinition['id']
-}
-
-export interface ModuleSerialized extends ModuleNormalized {
+export interface ModuleSerialized extends Module {
   position: [x: number, y: number]
 }

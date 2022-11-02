@@ -39,6 +39,7 @@ const getPosition = (
   const module = modules.get(moduleId)
   if (!module) return { x: 0, y: 0 }
   const connectionPoint = toConnectionPoint(module, index, direction)
+  if (!connectionPoint) return { x: 0, y: 0 }
 
   return {
     x: module.position.x + connectionPoint.position.x,

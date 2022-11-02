@@ -31,8 +31,14 @@ export const useConnections = defineStore('connections', () => {
   const device = useDevice()
 
   // Getters
-  const get = (id: Id) => items.value.get(id)
-  const list = computed(() => items.value.values())
+  const get = (id: Id) => {
+    const item = items.value.get(id)
+    if (!item) {
+      console.warn(`connection '${id}' not found`)
+      return
+    }
+    return item
+  }
 
   // Actions
   const serialize = (): ConnectionSerialized[] =>
@@ -65,5 +71,5 @@ export const useConnections = defineStore('connections', () => {
 
   const clear = () => items.value.clear()
 
-  return { items, get, list, serialize, deserialize, add, remove, clear }
+  return { items, serialize, deserialize, get, add, remove, clear }
 })

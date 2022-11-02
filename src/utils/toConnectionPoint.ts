@@ -1,35 +1,27 @@
+import { useModuleDefinitions } from '@/stores/moduleDefinitions'
+import { useModuleShapes } from '@/stores/moduleShapes'
 import type { ConnectionPoint, Module, Signal } from '@/types'
 
 export const toConnectionPoint = (
-  { definition, id: moduleId }: Module,
+  module: Module,
   index: number,
   direction: 'in' | 'out'
-): ConnectionPoint => {
-  const category = direction === 'in' ? 'inputs' : 'outputs'
-  const { signal } = definition[category][index] ?? {}
+): ConnectionPoint | undefined => {
+  const definitions = useModuleDefinitions()
+  const shapes = useModuleShapes()
 
-  if (!signal) {
-    const connector = `${direction === 'in' ? 'input' : 'output'}#${index}}`
-    throw new Error(
-      `${connector} doesn't exist on definition '${definition.id}'`
-    )
-  }
+  const definition = definitions.get(module.definition)
+  if (!definition) return
 
-  const { shape } = definition
-  const { positions } = shape[category][index] ?? {}
+  const { signal } =
+    definitions.getConnector(module.definition, index, direction) ?? {}
+  if (!signal) return
 
-  if (!positions) {
-    const connector = `${direction === 'in' ? 'input' : 'output'}#${index}}`
-    throw new Error(`${connector} doesn't exist on shape '${shape.id}'`)
-  }
+  const { positions } =
+    shapes.getConnector(definition.shape, index, direction) ?? {}
+  if (!positions) return
 
   const { inset, outline } = positions
   const position = signal === 'midi' ? inset : outline ?? inset
-  return {
-    signal,
-    moduleId,
-    direction,
-    index,
-    position,
-  }
+  return { signal, moduleId: module.id, direction, index, position }
 }
