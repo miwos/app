@@ -1,8 +1,8 @@
 import { useModules } from '@/stores/modules'
-import type { Module, Optional } from '@/types'
+import type { Module, ModuleNormalized, Optional } from '@/types'
 import { pushCommand } from '.'
 
-export const addModule = (module: Optional<Module, 'id'>) => {
+export const addModule = (module: Optional<ModuleNormalized, 'id'>) => {
   const modules = useModules()
   let id: Module['id']
 
@@ -15,7 +15,7 @@ export const addModule = (module: Optional<Module, 'id'>) => {
 export const removeModule = (id: Module['id']) => {
   const name = 'remove module'
   const modules = useModules()
-  let removed: Module | undefined
+  let removed: ModuleNormalized | undefined
 
   pushCommand(name, () => {
     removed = modules.remove(id)

@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import * as commands from '@/commands'
-import type { Module } from '@/types'
+import type { ModuleDefinition } from '@/types'
 import {
   onClickOutside,
   onKeyDown,
@@ -58,9 +58,9 @@ const close = () => {
   isOpen.value = false
 }
 
-const addModule = (type: Module['type']) => {
+const addModule = (definition: ModuleDefinition['id']) => {
   const position = { x: mouse.x.value, y: mouse.y.value }
-  commands.addModule({ type, position })
+  commands.addModule({ definition, position })
   close()
 }
 </script>

@@ -1,29 +1,18 @@
+import type { Shape, ShapeConnector } from '@miwos/shape'
 import type { ModuleDefinition } from './ModuleDefinition'
 import type { Point } from './Point'
 import type { Signal } from './Signal'
 
 export interface Module {
   id: number
-  type: ModuleDefinition['id']
+  definition: ModuleDefinition
   position: Point
 }
 
-export interface ModuleSerialized extends Module {
+export interface ModuleNormalized extends Omit<Module, 'definition'> {
+  definition: ModuleDefinition['id']
+}
+
+export interface ModuleSerialized extends ModuleNormalized {
   position: [x: number, y: number]
-}
-
-export interface ModuleDefinition {
-  id: string
-  inputs: ModuleInput[]
-  outputs: ModuleOutput[]
-}
-
-export interface ModuleInput {
-  signal: Signal
-  thru?: boolean
-}
-
-export interface ModuleOutput {
-  signal: Signal
-  thru?: boolean
 }

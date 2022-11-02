@@ -15,12 +15,12 @@
 </template>
 
 <script setup lang="ts">
-import type { ConnectionPoint } from '@/types/Connection'
+import { connectFrom, connectTo } from '@/commands'
 import { useDragDrop } from '@/composables/useDragDrop'
+import type { ConnectionPoint } from '@/types/Connection'
+import { createEmptyImage } from '@/utils'
 import { ref } from 'vue'
 import MIcon from './MIcon.vue'
-import { connectFrom, connectTo } from '@/commands'
-import { createEmptyImage } from '@/utils'
 
 const props = defineProps<{
   point: ConnectionPoint
@@ -42,9 +42,18 @@ const { isDragging, isDraggedOver } = useDragDrop(el, handleDrag, handleDrop)
 
 <style scoped lang="scss">
 .connection-point {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: v-bind('point.position.y + `px`');
+  left: v-bind('point.position.x + `px`');
+
   &.dragging .icon,
   &.dragged-over {
     fill: red;
+  }
+
+  svg {
+    display: block;
   }
 }
 </style>

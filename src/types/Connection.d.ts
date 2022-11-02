@@ -1,4 +1,7 @@
+import type { ShapeConnector } from '@miwos/shape/dist'
+import type { ModuleConnector } from './module'
 import type Module from './module'
+import type { Point } from './Point'
 import type { Signal } from './Signal'
 
 export interface Connection {
@@ -20,4 +23,5 @@ export interface ConnectionPoint {
   direction: 'in' | 'out'
   thru?: boolean
   signal: Signal
+  position: Point
 }

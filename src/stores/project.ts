@@ -42,8 +42,8 @@ export const useProject = defineStore('project', () => {
   }
 
   const clear = () => {
-    connections.items.clear()
-    modules.items.clear()
+    connections.clear()
+    modules.clear()
   }
 
   const selectPart = (index: number, updateDevice = true) => {

@@ -2,16 +2,17 @@
   <MenuAdd></MenuAdd>
   <div class="module-instances">
     <ModuleInstance
-      v-for="[id, module] in modules.items"
-      :key="id"
-      :module="module"
-      v-model:position="module.position"
+      v-for="moduleItem in modules.list"
+      :key="moduleItem.id"
+      :module="moduleItem"
+      :position="moduleItem.position"
+      @update:position="modules.update(moduleItem.id, 'position', $event)"
     ></ModuleInstance>
   </div>
   <div class="connections">
     <ConnectionLine
-      v-for="[id, connection] in connections.items"
-      :key="id"
+      v-for="connection in connections.list"
+      :key="connection.id"
       :connection="connection"
     />
   </div>

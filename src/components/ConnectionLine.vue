@@ -19,7 +19,9 @@
 
 <script setup lang="ts">
 import { useModules } from '@/stores/modules'
+import type { Module } from '@/types'
 import type { Connection } from '@/types/Connection'
+import { toConnectionPoint } from '@/utils'
 import { computed, toRefs } from 'vue'
 
 const props = defineProps<{
@@ -27,18 +29,29 @@ const props = defineProps<{
 }>()
 
 const { from, to } = toRefs(props.connection)
-
 const modules = useModules()
 
-const fromPosition = computed(() => {
-  const module = modules.items.get(from.value.moduleId)
-  return module?.position
-})
+const getPosition = (
+  moduleId: Module['id'],
+  index: number,
+  direction: 'in' | 'out'
+) => {
+  const module = modules.get(moduleId)
+  if (!module) return { x: 0, y: 0 }
+  const connectionPoint = toConnectionPoint(module, index, direction)
 
-const toPosition = computed(() => {
-  const module = modules.items.get(to.value.moduleId)
-  return module?.position
-})
+  return {
+    x: module.position.x + connectionPoint.position.x,
+    y: module.position.y + connectionPoint.position.y,
+  }
+}
+
+const fromPosition = computed(() =>
+  getPosition(from.value.moduleId, from.value.index, 'out')
+)
+const toPosition = computed(() =>
+  getPosition(to.value.moduleId, to.value.index, 'in')
+)
 </script>
 
 <style scoped lang="scss">

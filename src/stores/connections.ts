@@ -1,12 +1,7 @@
-import { useBridge } from '@/bridge'
-import type { Module, Optional } from '@/types'
-import type {
-  Connection,
-  ConnectionPoint,
-  ConnectionSerialized,
-} from '@/types/Connection'
+import type { Optional } from '@/types'
+import type { Connection, ConnectionSerialized } from '@/types/Connection'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useDevice } from './device'
 
 type Id = Connection['id']
@@ -34,6 +29,10 @@ export const deserializeConnection = (
 export const useConnections = defineStore('connections', () => {
   const items = ref(new Map<Id, Connection>())
   const device = useDevice()
+
+  // Getters
+  const get = (id: Id) => items.value.get(id)
+  const list = computed(() => items.value.values())
 
   // Actions
   const serialize = (): ConnectionSerialized[] =>
@@ -64,5 +63,7 @@ export const useConnections = defineStore('connections', () => {
     return connection
   }
 
-  return { items, serialize, deserialize, add, remove }
+  const clear = () => items.value.clear()
+
+  return { items, get, list, serialize, deserialize, add, remove, clear }
 })
