@@ -10,6 +10,7 @@ import { useModules } from './modules'
 export const useProject = defineStore('project', () => {
   const partIndex = ref(0)
   const name = ref('project')
+  const isSelecting = ref(false)
 
   const bridge = useBridge()
   const device = useDevice()
@@ -51,5 +52,14 @@ export const useProject = defineStore('project', () => {
     if (updateDevice) device.update('/e/parts/select', [index])
   }
 
-  return { name, partIndex, serialize, save, load, clear, selectPart }
+  return {
+    name,
+    partIndex,
+    isSelecting,
+    serialize,
+    save,
+    load,
+    clear,
+    selectPart,
+  }
 })

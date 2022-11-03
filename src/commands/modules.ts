@@ -1,5 +1,6 @@
+import { useConnections } from '@/stores/connections'
 import { useModules } from '@/stores/modules'
-import type { Module, Optional } from '@/types'
+import type { Connection, Module, Optional } from '@/types'
 import { pushCommand } from '.'
 
 export const addModule = (module: Optional<Module, 'id'>) => {
@@ -12,17 +13,22 @@ export const addModule = (module: Optional<Module, 'id'>) => {
   })
 }
 
-export const removeModule = (id: Module['id']) => {
-  const name = 'remove module'
+export const removeModules = (ids: Set<Module['id']>) => {
+  const name = 'remove modules'
   const modules = useModules()
-  let removed: Module | undefined
+  const connections = useConnections()
+  let removed: { module: Module; connections: Connection[] }[] = []
 
   pushCommand(name, () => {
-    removed = modules.remove(id)
-    return () => {
-      if (!removed)
-        return console.warn(`failed to undo '${name}': module doesn't exist`)
-      modules.add(removed)
+    removed = []
+    for (const id of ids) {
+      const removedItem = modules.remove(id)
+      if (removedItem) removed.push(removedItem)
     }
+    return () =>
+      removed.forEach((item) => {
+        modules.add(item.module)
+        item.connections.forEach((connection) => connections.add(connection))
+      })
   })
 }

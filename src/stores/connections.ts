@@ -1,4 +1,4 @@
-import type { Optional, Point } from '@/types'
+import type { Module, Optional, Point } from '@/types'
 import type {
   Connection,
   ConnectionSerialized,
@@ -47,6 +47,11 @@ export const useConnections = defineStore('connections', () => {
     }
     return item
   }
+
+  const getByModuleId = (id: Module['id']) =>
+    Array.from(items.value.values()).filter(
+      (item) => item.from.moduleId === id || item.to.moduleId === id
+    )
 
   const sortIndexes = computed(
     () =>
@@ -100,6 +105,7 @@ export const useConnections = defineStore('connections', () => {
     serialize,
     deserialize,
     get,
+    getByModuleId,
     getSortIndex,
     add,
     remove,

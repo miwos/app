@@ -1,8 +1,10 @@
 import type { Module, ModuleSerialized, Optional } from '@/types'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { useConnections } from './connections'
 import { useDevice } from './device'
 import { useModuleDefinitions } from './moduleDefinitions'
+import { useModuleShapes } from './moduleShapes'
 
 type Id = Module['id']
 
@@ -19,9 +21,13 @@ export const deserializeModule = (serialized: ModuleSerialized): Module => ({
 export const useModules = defineStore('module-instances', () => {
   const items = ref(new Map<Id, Module>())
   const sortedIds = ref<Id[]>([])
-  const focusedId = ref<Id>()
+  const selectedIds = ref(new Set<Id>())
+  const isDragging = ref(false)
   const nextId = ref(1) // We use a one-based index to be consistent with lua.
   const device = useDevice()
+  const definitions = useModuleDefinitions()
+  const connections = useConnections()
+  const shapes = useModuleShapes()
 
   // Getters
   const get = (id: Id) => {
@@ -31,6 +37,28 @@ export const useModules = defineStore('module-instances', () => {
       return
     }
     return item
+  }
+
+  const getConnector = (id: Id, index: number, direction: 'in' | 'out') => {
+    const item = get(id)
+    if (!item) return
+
+    const definition = definitions.get(item.definition)
+    if (!definition) return
+
+    const definitionConnector = definitions.getConnector(
+      item.definition,
+      index,
+      direction
+    )
+    const shapeConnector = shapes.getConnector(
+      definition.shape,
+      index,
+      direction
+    )
+
+    if (!definitionConnector || !shapeConnector) return
+    return { ...definitionConnector, ...shapeConnector }
   }
 
   const sortIndexes = computed(
@@ -64,16 +92,23 @@ export const useModules = defineStore('module-instances', () => {
   }
 
   const remove = (id: Id) => {
-    const module = items.value.get(id)
+    const module = get(id)
+    if (!module) return
+
+    const removedConnections = connections.getByModuleId(id)
+    removedConnections.forEach(({ id }) => connections.remove(id))
+
     items.value.delete(id)
     sortedIds.value.splice(sortedIds.value.indexOf(id), 1)
+
     device.update('/e/modules/remove', [id])
-    return module
+    return { module, connections: removedConnections }
   }
 
   const focus = (id: Id | undefined) => {
-    focusedId.value = id
+    selectedIds.value.clear()
     if (id === undefined) return
+    selectedIds.value.add(id)
     sortedIds.value.splice(sortedIds.value.indexOf(id), 1).push(id)
     sortedIds.value.push(id)
   }
@@ -85,9 +120,12 @@ export const useModules = defineStore('module-instances', () => {
 
   return {
     items,
+    selectedIds,
+    isDragging,
     serialize,
     deserialize,
     get,
+    getConnector,
     getSortIndex,
     add,
     remove,

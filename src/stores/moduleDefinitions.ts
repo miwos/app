@@ -2,6 +2,7 @@ import type { ModuleDefinition } from '@/types'
 import Fuse from 'fuse.js'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useModuleShapes } from './moduleShapes'
 
 type Id = ModuleDefinition['id']
 
@@ -34,6 +35,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
     ])
   )
 
+  const shapes = useModuleShapes()
   indexSearch(Array.from(items.value.keys()))
 
   // Getters
@@ -50,15 +52,18 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
     const item = get(id)
     if (!item) return
 
-    const connector =
+    const moduleConnector =
       direction === 'in' ? item.inputs[index] : item.outputs[index]
-    if (!connector) {
+    if (!moduleConnector) {
       const name = `${direction === 'in' ? 'input' : 'output'} #${index}`
       console.warn(`${name} not found in module definition '${item.id}'`)
       return
     }
 
-    return connector
+    const shapeConnector = shapes.getConnector(item.shape, index, direction)
+    if (!shapeConnector) return
+
+    return { ...moduleConnector, ...shapeConnector }
   }
 
   // Actions
