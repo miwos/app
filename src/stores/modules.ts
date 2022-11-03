@@ -1,6 +1,6 @@
 import type { Module, ModuleSerialized, Optional } from '@/types'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useDevice } from './device'
 import { useModuleDefinitions } from './moduleDefinitions'
 
@@ -18,6 +18,8 @@ export const deserializeModule = (serialized: ModuleSerialized): Module => ({
 
 export const useModules = defineStore('module-instances', () => {
   const items = ref(new Map<Id, Module>())
+  const sortedIds = ref<Id[]>([])
+  const focusedId = ref<Id>()
   const nextId = ref(1) // We use a one-based index to be consistent with lua.
   const device = useDevice()
 
@@ -30,6 +32,11 @@ export const useModules = defineStore('module-instances', () => {
     }
     return item
   }
+
+  const sortIndexes = computed(
+    () => new Map(sortedIds.value.map((v, i) => [v, i]))
+  )
+  const getSortIndex = (id: Id) => sortIndexes.value.get(id)
 
   // Actions
   const serialize = () => Array.from(items.value.values()).map(serializeModule)
@@ -48,19 +55,43 @@ export const useModules = defineStore('module-instances', () => {
   const add = (module: Optional<Module, 'id'>, updateDevice = true) => {
     module.id ??= nextId.value++
     items.value.set(module.id, module as Module)
+    sortedIds.value.push(module.id)
+
     if (updateDevice)
       device.update('/e/modules/add', [module.definition, module.id])
+
     return module as Module
   }
 
   const remove = (id: Id) => {
     const module = items.value.get(id)
     items.value.delete(id)
+    sortedIds.value.splice(sortedIds.value.indexOf(id), 1)
     device.update('/e/modules/remove', [id])
     return module
   }
 
-  const clear = () => items.value.clear()
+  const focus = (id: Id | undefined) => {
+    focusedId.value = id
+    if (id === undefined) return
+    sortedIds.value.splice(sortedIds.value.indexOf(id), 1).push(id)
+    sortedIds.value.push(id)
+  }
 
-  return { items, serialize, deserialize, get, add, remove, clear }
+  const clear = () => {
+    items.value.clear()
+    sortedIds.value = []
+  }
+
+  return {
+    items,
+    serialize,
+    deserialize,
+    get,
+    getSortIndex,
+    add,
+    remove,
+    focus,
+    clear,
+  }
 })

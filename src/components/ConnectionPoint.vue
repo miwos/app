@@ -17,6 +17,8 @@
 <script setup lang="ts">
 import { connectFrom, connectTo } from '@/commands'
 import { useDragDrop } from '@/composables/useDragDrop'
+import { useConnections } from '@/stores/connections'
+import { useModules } from '@/stores/modules'
 import type { ConnectionPoint } from '@/types/Connection'
 import { createEmptyImage } from '@/utils'
 import { ref } from 'vue'
@@ -27,17 +29,52 @@ const props = defineProps<{
 }>()
 
 const el = ref<HTMLElement>()
+const connections = useConnections()
+const module = useModules().get(props.point.moduleId)
 
-const handleDrag = (event: DragEvent) => {
+const handleDragStart = (event: DragEvent) => {
   if (!event.dataTransfer) return
   event.dataTransfer.setDragImage(createEmptyImage(), 0, 0)
   event.dataTransfer.dropEffect = 'link'
   connectFrom(props.point)
+
+  if (module) {
+    connections.tempConnection = {
+      from: { moduleId: props.point.moduleId, index: props.point.index },
+    }
+  }
 }
 
-const handleDrop = () => connectTo(props.point)
+const handleDrag = (event: DragEvent) => {
+  if (connections.tempConnection)
+    connections.tempConnection.to = { x: event.clientX, y: event.clientY }
+}
 
-const { isDragging, isDraggedOver } = useDragDrop(el, handleDrag, handleDrop)
+const handleDragOver = () => {
+  if (!module || !connections.tempConnection) return
+  // Snap the temporary connection on the connection point.
+  connections.tempConnection.to = {
+    moduleId: props.point.moduleId,
+    index: props.point.index,
+  }
+}
+
+const handleDragEnd = () => {
+  connections.tempConnection = undefined
+}
+
+const handleDrop = () => {
+  connectTo(props.point)
+  connections.tempConnection = undefined
+}
+
+const { isDragging, isDraggedOver } = useDragDrop(el, {
+  handleDragStart,
+  handleDrag,
+  handleDragOver,
+  handleDragEnd,
+  handleDrop,
+})
 </script>
 
 <style scoped lang="scss">
@@ -50,10 +87,6 @@ const { isDragging, isDraggedOver } = useDragDrop(el, handleDrag, handleDrop)
   &.dragging .icon,
   &.dragged-over {
     fill: red;
-  }
-
-  svg {
-    display: block;
   }
 }
 </style>

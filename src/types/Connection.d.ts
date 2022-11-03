@@ -10,6 +10,11 @@ export interface Connection {
   to: { moduleId: Module['id']; index: number }
 }
 
+export interface TemporaryConnection {
+  from: Connection['from']
+  to?: Connection['to'] | Point
+}
+
 export type ConnectionSerialized = [
   fromModuleId: Module['id'],
   fromIndex: index,

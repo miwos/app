@@ -1,8 +1,13 @@
-import type { Optional } from '@/types'
-import type { Connection, ConnectionSerialized } from '@/types/Connection'
+import type { Optional, Point } from '@/types'
+import type {
+  Connection,
+  ConnectionSerialized,
+  TemporaryConnection,
+} from '@/types/Connection'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useDevice } from './device'
+import { useModules } from './modules'
 
 type Id = Connection['id']
 
@@ -28,7 +33,10 @@ export const deserializeConnection = (
 
 export const useConnections = defineStore('connections', () => {
   const items = ref(new Map<Id, Connection>())
+  const tempConnection = ref<TemporaryConnection>()
+
   const device = useDevice()
+  const modules = useModules()
 
   // Getters
   const get = (id: Id) => {
@@ -39,6 +47,21 @@ export const useConnections = defineStore('connections', () => {
     }
     return item
   }
+
+  const sortIndexes = computed(
+    () =>
+      new Map(
+        Array.from(items.value.entries()).map(([id, item]) => {
+          // Make sure the line is always above the modules it is connecting.
+          const sort = Math.max(
+            modules.getSortIndex(item.from.moduleId) ?? 0,
+            modules.getSortIndex(item.to.moduleId) ?? 0
+          )
+          return [id, sort]
+        })
+      )
+  )
+  const getSortIndex = (id: Id) => sortIndexes.value.get(id)
 
   // Actions
   const serialize = (): ConnectionSerialized[] =>
@@ -71,5 +94,15 @@ export const useConnections = defineStore('connections', () => {
 
   const clear = () => items.value.clear()
 
-  return { items, serialize, deserialize, get, add, remove, clear }
+  return {
+    items,
+    tempConnection,
+    serialize,
+    deserialize,
+    get,
+    getSortIndex,
+    add,
+    remove,
+    clear,
+  }
 })

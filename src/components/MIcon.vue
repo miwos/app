@@ -20,3 +20,20 @@ defineProps<{
   type: 'signal-midi' | 'signal-trigger'
 }>()
 </script>
+
+<style scoped lang="scss">
+svg {
+  --hit-area-increase: 4px;
+
+  display: block;
+  overflow: visible;
+
+  > * {
+    stroke: transparent;
+    // The stroke is is drawn on the center so we have to double it.
+    stroke-width: calc(var(--hit-area-increase) * 2);
+    paint-order: stroke;
+    pointer-events: all;
+  }
+}
+</style>

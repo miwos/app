@@ -1,12 +1,13 @@
 <template>
   <div class="module" ref="el">
-    <div class="module-shape" v-html="shape?.path"></div>
+    <div class="module-shape" v-html="shape?.path" @mousedown="focus"></div>
     <ConnectionPoints :module="module" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useDraggable } from '@/composables/useDraggable'
+import { useModules } from '@/stores/modules'
 import { useModuleShapes } from '@/stores/moduleShapes'
 import { useProject } from '@/stores/project'
 import type { Module, Point } from '@/types'
@@ -20,6 +21,7 @@ const el = ref<HTMLElement>()
 const { position } = useDraggable(el)
 const { module } = toRefs(props)
 
+const modules = useModules()
 const shape = useModuleShapes().getByModule(props.module)
 const project = useProject()
 
@@ -27,6 +29,8 @@ watch(position, (position) => {
   emit('update:position', position)
   project.save()
 })
+
+const focus = () => modules.focus(module.value.id)
 </script>
 
 <style scoped lang="scss">
@@ -34,11 +38,13 @@ watch(position, (position) => {
   position: absolute;
   top: v-bind('props.position.y + `px`');
   left: v-bind('props.position.x + `px`');
-  height: 100px;
-  width: 100px;
+  pointer-events: none;
 
   &-shape {
     fill: var(--color-module-bg);
+    &::v-deep(path) {
+      pointer-events: all;
+    }
   }
 }
 </style>

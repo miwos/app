@@ -41,7 +41,7 @@ export const useModuleShapes = defineStore('module shapes', () => {
     const connector =
       direction === 'in' ? item.inputs[index] : item.outputs[index]
     if (!connector) {
-      const name = `${direction === 'in' ? 'input' : 'output'}#${index}}`
+      const name = `${direction === 'in' ? 'input' : 'output'}#${index}`
       console.warn(`${name} not found in shape '${item.id}'`)
       return
     }

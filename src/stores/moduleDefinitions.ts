@@ -1,9 +1,7 @@
 import type { ModuleDefinition } from '@/types'
-import { resolveRelations } from '@/utils'
 import Fuse from 'fuse.js'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
-import { useModuleShapes } from './moduleShapes'
+import { ref } from 'vue'
 
 type Id = ModuleDefinition['id']
 
@@ -55,7 +53,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
     const connector =
       direction === 'in' ? item.inputs[index] : item.outputs[index]
     if (!connector) {
-      const name = `${direction === 'in' ? 'input' : 'output'}#${index}}`
+      const name = `${direction === 'in' ? 'input' : 'output'} #${index}`
       console.warn(`${name} not found in module definition '${item.id}'`)
       return
     }

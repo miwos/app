@@ -18,10 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import { useModules } from '@/stores/modules'
-import type { Module } from '@/types'
 import type { Connection } from '@/types/Connection'
-import { toConnectionPoint } from '@/utils'
+import { getConnectionPointPosition } from '@/utils'
 import { computed, toRefs } from 'vue'
 
 const props = defineProps<{
@@ -29,29 +27,12 @@ const props = defineProps<{
 }>()
 
 const { from, to } = toRefs(props.connection)
-const modules = useModules()
-
-const getPosition = (
-  moduleId: Module['id'],
-  index: number,
-  direction: 'in' | 'out'
-) => {
-  const module = modules.get(moduleId)
-  if (!module) return { x: 0, y: 0 }
-  const connectionPoint = toConnectionPoint(module, index, direction)
-  if (!connectionPoint) return { x: 0, y: 0 }
-
-  return {
-    x: module.position.x + connectionPoint.position.x,
-    y: module.position.y + connectionPoint.position.y,
-  }
-}
 
 const fromPosition = computed(() =>
-  getPosition(from.value.moduleId, from.value.index, 'out')
+  getConnectionPointPosition(from.value.moduleId, from.value.index, 'out')
 )
 const toPosition = computed(() =>
-  getPosition(to.value.moduleId, to.value.index, 'in')
+  getConnectionPointPosition(to.value.moduleId, to.value.index, 'in')
 )
 </script>
 
