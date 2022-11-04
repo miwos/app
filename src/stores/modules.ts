@@ -1,4 +1,5 @@
-import type { Module, ModuleSerialized, Optional } from '@/types'
+import type { Module, ModuleSerialized, Optional, Point, Rect } from '@/types'
+import { getCombinedRect } from '@/utils'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useConnections } from './connections'
@@ -19,15 +20,17 @@ export const deserializeModule = (serialized: ModuleSerialized): Module => ({
 })
 
 export const useModules = defineStore('module-instances', () => {
-  const items = ref(new Map<Id, Module>())
-  const sortedIds = ref<Id[]>([])
-  const selectedIds = ref(new Set<Id>())
-  const isDragging = ref(false)
-  const nextId = ref(1) // We use a one-based index to be consistent with lua.
   const device = useDevice()
   const definitions = useModuleDefinitions()
   const connections = useConnections()
   const shapes = useModuleShapes()
+
+  const items = ref(new Map<Id, Module>())
+  const focusedId = ref<Id>()
+  const sortedIds = ref<Id[]>([])
+  const selectedIds = ref(new Set<Id>())
+  const isDragging = ref(false)
+  const nextId = ref(1) // We use a one-based index to be consistent with lua.
 
   // Getters
   const get = (id: Id) => {
@@ -65,6 +68,19 @@ export const useModules = defineStore('module-instances', () => {
     () => new Map(sortedIds.value.map((v, i) => [v, i]))
   )
   const getSortIndex = (id: Id) => sortIndexes.value.get(id)
+
+  const selectedItems = computed(() => {
+    const items = new Map<Module['id'], Module>()
+    for (const id of selectedIds.value) {
+      const item = get(id)
+      if (item) items.set(id, item)
+    }
+    return items
+  })
+
+  const focusedItem = computed(() =>
+    focusedId.value !== undefined ? get(focusedId.value) : undefined
+  )
 
   // Actions
   const serialize = () => Array.from(items.value.values()).map(serializeModule)
@@ -106,9 +122,8 @@ export const useModules = defineStore('module-instances', () => {
   }
 
   const focus = (id: Id | undefined) => {
-    selectedIds.value.clear()
+    focusedId.value = id
     if (id === undefined) return
-    selectedIds.value.add(id)
     sortedIds.value.splice(sortedIds.value.indexOf(id), 1).push(id)
     sortedIds.value.push(id)
   }
@@ -120,7 +135,10 @@ export const useModules = defineStore('module-instances', () => {
 
   return {
     items,
+    focusedId,
+    focusedItem,
     selectedIds,
+    selectedItems,
     isDragging,
     serialize,
     deserialize,

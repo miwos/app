@@ -83,10 +83,12 @@ const { isDragging, isDraggedOver } = useDragDrop(el, {
   transform: translate(-50%, -50%);
   top: v-bind('point.position.y + `px`');
   left: v-bind('point.position.x + `px`');
+  fill: var(--color-connection);
 
   &.dragging .icon,
   &.dragged-over {
-    fill: red;
+    stroke: red;
+    stroke-width: 8px;
   }
 }
 </style>

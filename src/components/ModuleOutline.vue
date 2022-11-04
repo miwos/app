@@ -37,13 +37,13 @@ const dash = computed(() => {
   position: absolute;
   top: 0;
   left: 0;
-  stroke: blue;
-  stroke-width: 1px;
+  stroke: rgb(0 0 0 / 16%);
+  stroke-width: 8px;
   fill: none;
 
-  stroke-dasharray: v-bind('dash?.dashArray');
-  stroke-dashoffset: v-bind('dash?.dashOffset');
-  stroke-linecap: round;
+  // stroke-dasharray: v-bind('dash?.dashArray');
+  // stroke-dashoffset: v-bind('dash?.dashOffset');
+  // stroke-linecap: round;
   stroke-linejoin: round;
 
   &::v-deep(svg) {

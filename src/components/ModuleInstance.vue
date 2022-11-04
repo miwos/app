@@ -1,7 +1,13 @@
 <template>
-  <div class="module" ref="el" :class="{ isSelected }">
+  <div
+    class="module"
+    ref="el"
+    :class="{ isSelected }"
+    @mousedown="focus"
+    @mouseup="select"
+  >
     <ModuleOutline v-if="shape && isSelected" :module="module" :shape="shape" />
-    <ModuleShape v-if="shape" :shape="shape" @mouseup.prevent="focus" />
+    <ModuleShape v-if="shape" :shape="shape" />
     <ConnectionPoints :module="module" />
   </div>
 </template>
@@ -17,20 +23,26 @@ import { computed, onMounted, ref, toRefs, watch } from 'vue'
 import ConnectionPoints from './ConnectionPoints.vue'
 import ModuleOutline from './ModuleOutline.vue'
 import ModuleShape from './ModuleShape.vue'
+import { useModulesDrag } from '@/composables/useModulesDrag'
 
 const props = defineProps<{ position: Point; module: Module }>()
-const emit = defineEmits<{ (e: 'update:position', position: Point): void }>()
 
 const el = ref<HTMLElement>()
-const { position, isDragging } = useDraggable(el)
-const { module } = toRefs(props)
-
 const modules = useModules()
 const shape = useModuleShapes().getByModule(props.module)
 const project = useProject()
 
-const isSelected = computed(() => modules.selectedIds.has(module.value.id))
-const focus = () => !isDragging.value && modules.focus(module.value.id)
+const isSelected = computed(() => modules.selectedIds.has(props.module.id))
+const focus = () => {
+  if (!modules.selectedItems.size) modules.focus(props.module.id)
+}
+
+const select = () => {
+  if (modules.isDragging) return
+  modules.selectedIds.clear()
+  modules.selectedIds.add(props.module.id)
+  modules.focus(props.module.id)
+}
 
 onMounted(() => {
   if (!el.value) return
@@ -38,14 +50,18 @@ onMounted(() => {
   props.module.size = { width, height }
 })
 
-onMouseUpOutside(el, () => !project.isSelecting && modules.selectedIds.clear())
-
-watch(position, (position) => {
-  emit('update:position', position)
-  project.save()
+onMouseUpOutside(el, () => {
+  if (!modules.isDragging && !project.isSelecting) modules.selectedIds.clear()
 })
 
-watch(isDragging, (value) => (modules.isDragging = value))
+useModulesDrag(el, props.module)
+
+watch(
+  () => props.position,
+  () => project.save()
+)
+
+// watch(isDragging, (value) => (modules.isDragging = value))
 </script>
 
 <style scoped lang="scss">

@@ -1,6 +1,7 @@
 import { useProject } from '@/stores/project'
 export * from './connections'
 export * from './modules'
+export * from './drag'
 
 interface Command {
   undo: Function

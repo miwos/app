@@ -80,6 +80,7 @@ whenever(keys['delete'], () => removeModules(modules.selectedIds))
   position: absolute;
   box-sizing: border-box;
   pointer-events: none;
-  border: 1px solid yellow;
+  background: rgb(0 0 0 / 12%);
+  border-radius: 7px;
 }
 </style>

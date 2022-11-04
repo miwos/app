@@ -8,6 +8,14 @@
       :y2="toPosition?.y"
     />
     <line
+      class="line-selected"
+      v-if="isSelected"
+      :x1="fromPosition?.x"
+      :y1="fromPosition?.y"
+      :x2="toPosition?.x"
+      :y2="toPosition?.y"
+    />
+    <line
       class="line-display"
       :x1="fromPosition?.x"
       :y1="fromPosition?.y"
@@ -18,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import { useModules } from '@/stores/modules'
 import type { Connection } from '@/types/Connection'
 import { getConnectionPointPosition } from '@/utils'
 import { computed, toRefs } from 'vue'
@@ -27,6 +36,13 @@ const props = defineProps<{
 }>()
 
 const { from, to } = toRefs(props.connection)
+const modules = useModules()
+
+const isSelected = computed(
+  () =>
+    modules.selectedIds.has(from.value.moduleId) ||
+    modules.selectedIds.has(to.value.moduleId)
+)
 
 const fromPosition = computed(() =>
   getConnectionPointPosition(from.value.moduleId, from.value.index, 'out')
@@ -60,5 +76,10 @@ const toPosition = computed(() =>
   stroke-width: 1px;
   stroke: var(--color-connection);
   fill: none;
+}
+
+.line-selected {
+  stroke: rgb(0 0 0 / 16%);
+  stroke-width: 8px;
 }
 </style>
