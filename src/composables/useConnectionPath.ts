@@ -1,0 +1,83 @@
+import type { Connection, Point, TemporaryConnection } from '@/types'
+import { getConnectionPoint, isPoint } from '@/utils'
+import { computed } from 'vue'
+import { createHobbyCurve } from 'hobby-curve'
+import Vec from 'tiny-vec'
+
+const toDegrees = (radians: number) => radians * (180 / Math.PI)
+
+const toRadians = (degrees: number) => degrees * (Math.PI / 180)
+
+export const useConnectionPath = (
+  connection: Connection | TemporaryConnection
+) =>
+  computed(() => {
+    const from = getConnectionPoint(
+      connection.from.moduleId,
+      connection.from.index,
+      'out'
+    )
+    if (!from) return
+    const fromPosition = new Vec(from.position)
+
+    const to = isPoint(connection.to)
+      ? undefined
+      : getConnectionPoint(connection.to.moduleId, connection.to.index, 'in')
+
+    const toPosition = new Vec(to?.position ?? (connection.to as Point))
+
+    const controls: Point[] = []
+    const distance = toPosition.subtract(fromPosition)
+    const toIsAbove = distance.y < 0
+    const toIsLeft = distance.x < 0
+
+    // The closer `to` and `from` are from each other. If they are more than
+    // 600px apart we don't consider them close at all.
+    const verticalCloseness = 1 - Math.min(Math.abs(distance.y), 600) / 600
+    const verticalApartness = 1 - verticalCloseness
+
+    // Handle offset based on the horizontal distance and scaled by the vertical
+    // closeness.
+    let offset = distance.x * (0.02 * verticalCloseness + 0.02)
+
+    // In case `to` is above `from` we need to increase the handle offset to
+    // create smoother "S" shaped lines.
+    if (toIsAbove) {
+      offset +=
+        Math.max(400, Math.min(250, Math.abs(distance.x))) *
+        verticalApartness *
+        (toIsLeft ? -1 : 1)
+    }
+
+    const length = 5 + 45 * verticalApartness
+
+    controls.push(
+      new Vec(fromPosition).add(
+        new Vec(0, -1)
+          .multiply(length)
+          .rotate(toRadians(from.angle - 90))
+          .add({ x: offset, y: 0 })
+      )
+    )
+
+    if (to) {
+      controls.push(
+        new Vec(toPosition).add(
+          new Vec(0, -1)
+            .multiply(length)
+            .rotate(toRadians(to.angle - 90))
+            .add({ x: -offset, y: 0 })
+        )
+      )
+    } else {
+      const angle = 0
+      controls.push(
+        new Vec(toPosition)
+          .add(new Vec(0, -1).multiply(length).rotate(angle))
+          .add({ x: -offset, y: 0 })
+      )
+    }
+
+    const data = createHobbyCurve([fromPosition, ...controls, toPosition])
+    return { data, controls }
+  })

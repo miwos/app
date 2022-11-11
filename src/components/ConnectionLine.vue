@@ -1,34 +1,25 @@
 <template>
   <svg class="connection-line">
-    <line
-      class="line-hit-area"
-      :x1="fromPosition?.x"
-      :y1="fromPosition?.y"
-      :x2="toPosition?.x"
-      :y2="toPosition?.y"
-    />
-    <line
-      class="line-selected"
-      v-if="isSelected"
-      :x1="fromPosition?.x"
-      :y1="fromPosition?.y"
-      :x2="toPosition?.x"
-      :y2="toPosition?.y"
-    />
-    <line
-      class="line-display"
-      :x1="fromPosition?.x"
-      :y1="fromPosition?.y"
-      :x2="toPosition?.x"
-      :y2="toPosition?.y"
-    />
+    <path class="line-selected" v-if="isSelected" :d="path?.data" />
+    <path class="line-display" :d="path?.data" />
+    <path class="line-hit-area" :d="path?.data" />
+    <g v-if="debug">
+      <circle
+        v-for="{ x, y } in path?.controls"
+        class="control-point"
+        :cx="x"
+        :cy="y"
+        r="5"
+      />
+    </g>
   </svg>
 </template>
 
 <script setup lang="ts">
+import { useConnectionPath } from '@/composables/useConnectionPath'
 import { useModules } from '@/stores/modules'
 import type { Connection } from '@/types/Connection'
-import { getConnectionPointPosition } from '@/utils'
+import { getConnectionPoint } from '@/utils'
 import { computed, toRefs } from 'vue'
 
 const props = defineProps<{
@@ -38,18 +29,15 @@ const props = defineProps<{
 const { from, to } = toRefs(props.connection)
 const modules = useModules()
 
+const debug = true
+
 const isSelected = computed(
   () =>
     modules.selectedIds.has(from.value.moduleId) ||
     modules.selectedIds.has(to.value.moduleId)
 )
 
-const fromPosition = computed(() =>
-  getConnectionPointPosition(from.value.moduleId, from.value.index, 'out')
-)
-const toPosition = computed(() =>
-  getConnectionPointPosition(to.value.moduleId, to.value.index, 'in')
-)
+const path = useConnectionPath(props.connection)
 </script>
 
 <style scoped lang="scss">
@@ -81,5 +69,10 @@ const toPosition = computed(() =>
 .line-selected {
   stroke: rgb(0 0 0 / 16%);
   stroke-width: 8px;
+  fill: none;
+}
+
+.control-point {
+  fill: blue;
 }
 </style>

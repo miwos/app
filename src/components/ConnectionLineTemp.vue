@@ -1,40 +1,29 @@
 <template>
   <svg class="connection-line-temp">
-    <line
-      :x1="fromPosition?.x"
-      :y1="fromPosition?.y"
-      :x2="toPosition?.x"
-      :y2="toPosition?.y"
-    />
+    <path :d="path?.data" />
+    <g v-if="debug">
+      <circle
+        v-for="{ x, y } in path?.controls"
+        class="control-point"
+        :cx="x"
+        :cy="y"
+        r="5"
+      />
+    </g>
   </svg>
 </template>
 
 <script setup lang="ts">
-import type { Point, TemporaryConnection } from '@/types'
-import { getConnectionPointPosition } from '@/utils'
-import { computed, toRefs } from 'vue'
+import { useConnectionPath } from '@/composables/useConnectionPath'
+import type { TemporaryConnection } from '@/types'
 
 const props = defineProps<{
   connection: TemporaryConnection
 }>()
 
-const { connection } = toRefs(props)
+const debug = true
 
-const isPoint = (obj: any): obj is Point =>
-  obj.x !== undefined && obj.y !== undefined
-
-const fromPosition = computed(() => {
-  const { from } = connection.value
-  return getConnectionPointPosition(from.moduleId, from.index, 'out')
-})
-
-const toPosition = computed(() => {
-  const { to } = connection.value
-  if (!to) return
-  return isPoint(to)
-    ? to
-    : getConnectionPointPosition(to.moduleId, to.index, 'in')
-})
+const path = useConnectionPath(props.connection)
 </script>
 
 <style scoped lang="scss">
@@ -50,5 +39,10 @@ const toPosition = computed(() => {
   stroke-width: 1px;
   stroke: var(--color-connection);
   fill: none;
+}
+
+.control-point {
+  fill: blue;
+  stroke: none;
 }
 </style>

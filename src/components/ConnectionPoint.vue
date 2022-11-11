@@ -81,8 +81,8 @@ const { isDragging, isDraggedOver } = useDragDrop(el, {
 .connection-point {
   position: absolute;
   transform: translate(-50%, -50%);
-  top: v-bind('point.position.y + `px`');
-  left: v-bind('point.position.x + `px`');
+  top: v-bind('point.offset.y + `px`');
+  left: v-bind('point.offset.x + `px`');
   fill: var(--color-connection);
 
   &.dragging .icon,

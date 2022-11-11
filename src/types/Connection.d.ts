@@ -26,7 +26,9 @@ export interface ConnectionPoint {
   moduleId: Module['id']
   index: number
   direction: 'in' | 'out'
+  angle: number
   thru?: boolean
   signal: Signal
+  offset: Point
   position: Point
 }
