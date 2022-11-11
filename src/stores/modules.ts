@@ -111,6 +111,9 @@ export const useModules = defineStore('module-instances', () => {
     const module = get(id)
     if (!module) return
 
+    if (focusedId.value === id) focusedId.value = undefined
+    if (selectedIds.value.has(id)) selectedIds.value.delete(id)
+
     const removedConnections = connections.getByModuleId(id)
     removedConnections.forEach(({ id }) => connections.remove(id))
 
