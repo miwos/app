@@ -11,7 +11,7 @@ export interface Connection {
 }
 
 export interface TemporaryConnection {
-  from: Connection['from']
+  from?: Connection['from'] | Point
   to?: Connection['to'] | Point
 }
 

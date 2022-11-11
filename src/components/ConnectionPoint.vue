@@ -39,21 +39,29 @@ const handleDragStart = (event: DragEvent) => {
   connectFrom(props.point)
 
   if (module) {
+    const { direction } = props.point
     connections.tempConnection = {
-      from: { moduleId: props.point.moduleId, index: props.point.index },
+      [direction === 'out' ? 'from' : 'to']: {
+        moduleId: props.point.moduleId,
+        index: props.point.index,
+      },
     }
   }
 }
 
-const handleDrag = (event: DragEvent) => {
-  if (connections.tempConnection)
-    connections.tempConnection.to = { x: event.clientX, y: event.clientY }
+const handleDrag = ({ clientX, clientY }: DragEvent) => {
+  if (!connections.tempConnection) return
+  // The connection line starts at this connection point and points to the
+  // current mouse position.
+  const oppositeType = props.point.direction === 'out' ? 'to' : 'from'
+  connections.tempConnection[oppositeType] = { x: clientX, y: clientY }
 }
 
 const handleDragOver = () => {
   if (!module || !connections.tempConnection) return
   // Snap the temporary connection on the connection point.
-  connections.tempConnection.to = {
+  const type = props.point.direction === 'out' ? 'from' : 'to'
+  connections.tempConnection[type] = {
     moduleId: props.point.moduleId,
     index: props.point.index,
   }

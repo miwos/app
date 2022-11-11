@@ -14,18 +14,18 @@ export const useConnectionPath = (
   connection: Connection | TemporaryConnection
 ) =>
   computed(() => {
-    const from = getConnectionPoint(
-      connection.from.moduleId,
-      connection.from.index,
-      'out'
-    )
-    if (!from) return
-    const fromPosition = new Vec(from.position)
+    const from = isPoint(connection.from)
+      ? undefined
+      : getConnectionPoint(
+          connection.from.moduleId,
+          connection.from.index,
+          'out'
+        )
+    const fromPosition = new Vec(from?.position ?? (connection.from as Point))
 
     const to = isPoint(connection.to)
       ? undefined
       : getConnectionPoint(connection.to.moduleId, connection.to.index, 'in')
-
     const toPosition = new Vec(to?.position ?? (connection.to as Point))
 
     const controls: Point[] = []
@@ -61,14 +61,23 @@ export const useConnectionPath = (
     const length =
       15 * horizontalApartness + 45 * verticalApartness * signVertical
 
-    controls.push(
-      new Vec(fromPosition).add(
-        new Vec(0, -1)
-          .multiply(length)
-          .rotate(toRadians(from.angle - 90))
+    if (from) {
+      controls.push(
+        new Vec(fromPosition).add(
+          new Vec(0, -1)
+            .multiply(length)
+            .rotate(toRadians(from.angle - 90))
+            .add({ x: offset, y: 0 })
+        )
+      )
+    } else {
+      const angle = Math.PI
+      controls.push(
+        new Vec(fromPosition)
+          .add(new Vec(0, -1).multiply(length).rotate(angle))
           .add({ x: offset, y: 0 })
       )
-    )
+    }
 
     if (to) {
       controls.push(

@@ -18,7 +18,7 @@
       :style="`z-index: ${connections.getSortIndex(id)}`"
     />
     <ConnectionLineTemp
-      v-if="connections.tempConnection?.to"
+      v-if="connections.tempConnection?.from && connections.tempConnection?.to"
       :connection="connections.tempConnection"
       :style="`z-index: ${modules.items.size}`"
     />
