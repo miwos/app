@@ -4,6 +4,8 @@ import { computed } from 'vue'
 import { createHobbyCurve } from 'hobby-curve'
 import Vec from 'tiny-vec'
 
+const weight = (value: number, weight: number) => 1 - weight + weight * value
+
 const toDegrees = (radians: number) => radians * (180 / Math.PI)
 
 const toRadians = (degrees: number) => degrees * (Math.PI / 180)
@@ -36,6 +38,12 @@ export const useConnectionPath = (
     const verticalCloseness = 1 - Math.min(Math.abs(distance.y), 600) / 600
     const verticalApartness = 1 - verticalCloseness
 
+    const horizontalCloseness = 1 - Math.min(Math.abs(distance.x), 600) / 600
+    const horizontalApartness = 1 - horizontalCloseness
+
+    const signHorizontal = toIsLeft ? -1 : 1
+    const signVertical = toIsAbove ? -1 : 1
+
     // Handle offset based on the horizontal distance and scaled by the vertical
     // closeness.
     let offset = distance.x * (0.02 * verticalCloseness + 0.02)
@@ -44,12 +52,14 @@ export const useConnectionPath = (
     // create smoother "S" shaped lines.
     if (toIsAbove) {
       offset +=
-        Math.max(400, Math.min(250, Math.abs(distance.x))) *
+        300 *
+        weight(horizontalApartness, 0.7) *
         verticalApartness *
-        (toIsLeft ? -1 : 1)
+        signHorizontal
     }
 
-    const length = 5 + 45 * verticalApartness
+    const length =
+      15 * horizontalApartness + 45 * verticalApartness * signVertical
 
     controls.push(
       new Vec(fromPosition).add(

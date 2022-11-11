@@ -28,8 +28,7 @@ const props = defineProps<{
 
 const { from, to } = toRefs(props.connection)
 const modules = useModules()
-
-const debug = true
+const debug = false
 
 const isSelected = computed(
   () =>
