@@ -43,12 +43,16 @@ export const drag = (point: Point) => {
   let y = point.y - groupDelta.y
   const { width, height } = groupRect
 
+  // Subtract 1px to prevent any overflow (might be caused be rounding errors).
+  const windowWidth = window.innerWidth - 1
+  const windowHeight = window.innerHeight - 1
+
   // Make sure the group won't leave the window.
   if (x < 0) x = 0
-  else if (x + width > window.innerWidth) x = window.innerWidth - width
+  else if (x + width > windowWidth) x = windowWidth - width
 
   if (y < 0) y = 0
-  else if (y + height > window.innerHeight) y = window.innerHeight - height
+  else if (y + height > windowHeight) y = windowHeight - height
 
   for (const module of group) {
     const delta = moduleDeltas.get(module.id)

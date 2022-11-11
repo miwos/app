@@ -8,10 +8,14 @@ export const getCombinedRect = (rects: Rect[]) => {
 
   for (let i = 1; i < rects.length; i++) {
     const { x, y, width, height } = rects[i]
+    const right = Math.max(rect.x + rect.width, x + width)
+    const bottom = Math.max(rect.y + rect.height, y + height)
+
     rect.x = Math.min(rect.x, x)
     rect.y = Math.min(rect.y, y)
-    rect.width = Math.max(rect.width, x + width - Math.min(rect.x, x))
-    rect.height = Math.max(rect.height, y + height - Math.min(rect.y, y))
+
+    rect.width = right - rect.x
+    rect.height = bottom - rect.y
   }
   return rect
 }
