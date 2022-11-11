@@ -2,7 +2,12 @@
   <svg class="connection-line">
     <path class="line-selected" v-if="isSelected" :d="path?.data" />
     <path class="line-display" :d="path?.data" />
-    <path class="line-hit-area" :d="path?.data" />
+    <path
+      class="line-hit-area"
+      ref="hitArea"
+      :d="path?.data"
+      :style="hitAreaDash"
+    />
     <g v-if="debug">
       <circle
         v-for="{ x, y } in path?.controls"
@@ -19,13 +24,14 @@
 import { useConnectionPath } from '@/composables/useConnectionPath'
 import { useModules } from '@/stores/modules'
 import type { Connection } from '@/types/Connection'
-import { getConnectionPoint } from '@/utils'
-import { computed, toRefs } from 'vue'
+import { watchDebounced } from '@vueuse/core'
+import { computed, ref, toRefs } from 'vue'
 
 const props = defineProps<{
   connection: Connection
 }>()
 
+const hitArea = ref<SVGPathElement>()
 const { from, to } = toRefs(props.connection)
 const modules = useModules()
 const debug = false
@@ -37,6 +43,23 @@ const isSelected = computed(
 )
 
 const path = useConnectionPath(props.connection)
+
+// Add a bit of padding to the start and end of the hit area so it won't cover
+// the connection points (which would block pointer events from them).
+const hitAreaDash = ref({ 'stroke-dasharray': 0, 'stroke-dashoffset': 0 })
+watchDebounced(
+  path,
+  () => {
+    if (!hitArea.value) return
+    const length = hitArea.value.getTotalLength()
+    const padding = 10
+    hitAreaDash.value = {
+      'stroke-dasharray': length - padding * 2,
+      'stroke-dashoffset': -padding,
+    }
+  },
+  { debounce: 100, immediate: true }
+)
 </script>
 
 <style scoped lang="scss">
