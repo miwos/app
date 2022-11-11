@@ -24,6 +24,8 @@ export const startDrag = (modules: Module[], point: Point) => {
   )
   groupDelta = { x: point.x - groupRect.x, y: point.y - groupRect.y }
 
+  modulePositions.clear()
+  moduleDeltas.clear()
   for (const { id, position } of group) {
     // Store the original positions, so we can undo the drag again.
     prevModulePositions.set(id, { x: position.x, y: position.y })
