@@ -16,7 +16,10 @@ export const serializeModule = (module: Module): ModuleSerialized => ({
 
 export const deserializeModule = (serialized: ModuleSerialized): Module => ({
   ...serialized,
-  position: { x: serialized.position[0], y: serialized.position[1] },
+  position: {
+    x: serialized.position?.[0] ?? 0,
+    y: serialized.position?.[1] ?? 0,
+  },
 })
 
 export const useModules = defineStore('module-instances', () => {
@@ -46,11 +49,11 @@ export const useModules = defineStore('module-instances', () => {
     const item = get(id)
     if (!item) return
 
-    const definition = definitions.get(item.definition)
+    const definition = definitions.get(item.type)
     if (!definition) return
 
     const definitionConnector = definitions.getConnector(
-      item.definition,
+      item.type,
       index,
       direction
     )
@@ -89,7 +92,7 @@ export const useModules = defineStore('module-instances', () => {
     items.value.clear()
     for (const serializedModule of serialized) {
       const module = deserializeModule(serializedModule)
-      add(module)
+      add(module, false)
       // Make sure that future module ids won't clash with the currently added
       // module.
       nextId.value = Math.max(nextId.value, module.id + 1)
@@ -101,8 +104,7 @@ export const useModules = defineStore('module-instances', () => {
     items.value.set(module.id, module as Module)
     sortedIds.value.push(module.id)
 
-    if (updateDevice)
-      device.update('/e/modules/add', [module.definition, module.id])
+    if (updateDevice) device.update('/e/modules/add', [module.id, module.type])
 
     return module as Module
   }
