@@ -97,6 +97,10 @@ export const useConnectionPath = (
       )
     }
 
+    if (fromPosition.x === toPosition.x && toPosition.y === fromPosition.y) {
+      return
+    }
+
     const data = createHobbyCurve([fromPosition, ...controls, toPosition])
     return { data, controls }
   })
