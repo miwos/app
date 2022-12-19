@@ -9,7 +9,7 @@ import { useModules } from './modules'
 
 export const useProject = defineStore('project', () => {
   const partIndex = ref(0)
-  const name = ref('project')
+  const name = ref('test')
   const isSelecting = ref(false)
 
   const bridge = useBridge()
@@ -18,7 +18,7 @@ export const useProject = defineStore('project', () => {
   const modules = useModules()
 
   const folder = computed(() => `lua/projects/${name.value}`)
-  const file = computed(() => `${folder.value}/part${partIndex.value}.lua`)
+  const file = computed(() => `${folder.value}/part-${partIndex.value + 1}.lua`)
 
   bridge.on('/parts/select', ({ args: [index] }) => selectPart(index, false))
 

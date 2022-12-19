@@ -16,16 +16,17 @@ export const serializeConnection = ({
   to,
 }: Connection): ConnectionSerialized => [
   from.moduleId,
-  from.index,
+  from.index + 1, // use 1-based index
   to.moduleId,
-  to.index,
+  to.index + 1, // use 1-based index
 ]
 
 export const deserializeConnection = (
   serialized: ConnectionSerialized
 ): Connection => {
-  const from = { moduleId: serialized[0], index: serialized[1] }
-  const to = { moduleId: serialized[2], index: serialized[3] }
+  const [fromModuleId, fromIndex, toModuleId, toIndex] = serialized
+  const from = { moduleId: fromModuleId, index: fromIndex - 1 } // use 0-based index
+  const to = { moduleId: toModuleId, index: toIndex - 1 } // use 0-based index
   const id =
     `${from.moduleId},${from.index}-${to.moduleId},${to.index}` as const
   return { id, from, to }
