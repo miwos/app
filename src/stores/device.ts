@@ -29,13 +29,15 @@ export const useDevice = defineStore('device', () => {
 
   const update = <M extends keyof DeviceMethods>(
     method: M,
-    args: Parameters<DeviceMethods[M]>
+    args?: Parameters<DeviceMethods[M]>
   ) => {
     if (!isConnected.value) return
     // The device's storage is our source of truth for the project. Therefore
     // with each update we also save the whole project.
     project.save()
-    return bridge.request(method, args) as Promise<ReturnType<DeviceMethods[M]>>
+    return bridge.request(method, args ?? []) as Promise<
+      ReturnType<DeviceMethods[M]>
+    >
   }
 
   return { isConnected, open, close, update }

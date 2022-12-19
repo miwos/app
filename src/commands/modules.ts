@@ -19,10 +19,10 @@ export const removeModules = (ids: Set<Module['id']>) => {
   const connections = useConnections()
   let removed: { module: Module; connections: Connection[] }[] = []
 
-  pushCommand(name, () => {
+  pushCommand(name, async () => {
     removed = []
     for (const id of ids) {
-      const removedItem = modules.remove(id)
+      const removedItem = await modules.remove(id)
       if (removedItem) removed.push(removedItem)
     }
     return () =>

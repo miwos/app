@@ -42,9 +42,13 @@ export const useProject = defineStore('project', () => {
     connections.deserialize(serialized.connections)
   }
 
-  const clear = () => {
+  const clear = (updateDevice = true) => {
     connections.clear()
     modules.clear()
+    if (updateDevice) {
+      save()
+      return device.update('/e/patch/clear')
+    }
   }
 
   const selectPart = (index: number, updateDevice = true) => {

@@ -11,4 +11,6 @@ export type DeviceMethods = {
   '/e/modules/add': (id: Module['id'], type: Module['type']) => void
 
   '/e/modules/remove': (id: Module['id']) => void
+
+  '/e/patch/clear': () => boolean
 }
