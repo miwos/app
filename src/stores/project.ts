@@ -45,10 +45,7 @@ export const useProject = defineStore('project', () => {
   const clear = (updateDevice = true) => {
     connections.clear()
     modules.clear()
-    if (updateDevice) {
-      save()
-      return device.update('/e/patch/clear')
-    }
+    if (updateDevice) device.update('/e/patch/clear')
   }
 
   const selectPart = (index: number, updateDevice = true) => {
