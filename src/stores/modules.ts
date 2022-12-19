@@ -1,7 +1,7 @@
 import type { Module, ModuleSerialized, Optional, Point, Rect } from '@/types'
 import { getCombinedRect } from '@/utils'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { useConnections } from './connections'
 import { useDevice } from './device'
 import { useModuleDefinitions } from './moduleDefinitions'
@@ -109,20 +109,22 @@ export const useModules = defineStore('module-instances', () => {
     return module as Module
   }
 
-  const remove = (id: Id) => {
+  const remove = async (id: Id, updateDevice = true) => {
     const module = get(id)
     if (!module) return
 
+    const removedConnections = connections.getByModuleId(id)
+    removedConnections.forEach(({ id }) => connections.remove(id, false))
+    // Wait for the connections to be removed, otherwise they might still be
+    // there after the module has been deleted, causing warnings.
+    await nextTick()
+
     if (focusedId.value === id) focusedId.value = undefined
     if (selectedIds.value.has(id)) selectedIds.value.delete(id)
-
-    const removedConnections = connections.getByModuleId(id)
-    removedConnections.forEach(({ id }) => connections.remove(id))
-
     items.value.delete(id)
     sortedIds.value.splice(sortedIds.value.indexOf(id), 1)
 
-    device.update('/e/modules/remove', [id])
+    if (updateDevice) device.update('/e/modules/remove', [id])
     return { module, connections: removedConnections }
   }
 
@@ -136,6 +138,7 @@ export const useModules = defineStore('module-instances', () => {
   const clear = () => {
     items.value.clear()
     sortedIds.value = []
+    nextId.value = 1
   }
 
   return {

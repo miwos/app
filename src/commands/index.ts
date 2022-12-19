@@ -35,11 +35,11 @@ export const redo = () => {
   stack.index = Math.min(stack.index, stack.commands.length - 1)
 }
 
-export const pushCommand = (name: string, fn: Function) => {
+export const pushCommand = async (name: string, fn: Function) => {
   const stack = getCurrentStack()
 
   // The command `fn` returns a cleanup function we use as redo.
-  const undo = fn()
+  const undo = await fn()
 
   // If we're starting to push new commands while we have undo-ed into the
   // command history we'll delete all 'future' commands.

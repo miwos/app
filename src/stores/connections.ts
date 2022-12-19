@@ -90,10 +90,10 @@ export const useConnections = defineStore('connections', () => {
     return connection.id
   }
 
-  const remove = (id: Id) => {
+  const remove = (id: Id, updateDevice = true) => {
     const connection = items.value.get(id)
     items.value.delete(id)
-    if (connection)
+    if (updateDevice && connection)
       device.update('/e/connections/remove', serializeConnection(connection))
     return connection
   }
