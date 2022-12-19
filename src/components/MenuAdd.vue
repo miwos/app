@@ -58,9 +58,9 @@ const close = () => {
   isOpen.value = false
 }
 
-const addModule = (definition: ModuleDefinition['id']) => {
+const addModule = (type: ModuleDefinition['id']) => {
   const position = { x: mouse.x.value, y: mouse.y.value }
-  commands.addModule({ definition, position })
+  commands.addModule({ type, position })
   close()
 }
 </script>
