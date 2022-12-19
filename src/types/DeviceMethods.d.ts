@@ -8,7 +8,7 @@ export type DeviceMethods = {
 
   '/e/connections/remove': (...args: ConnectionSerialized) => void
 
-  '/e/modules/add': (type: Module['type'], id: Module['id']) => void
+  '/e/modules/add': (id: Module['id'], type: Module['type']) => void
 
   '/e/modules/remove': (id: Module['id']) => void
 }

@@ -13,7 +13,7 @@ const props = defineProps<{ module: Module }>()
 const definitions = useModuleDefinitions()
 
 const points = computed((): TConnectionPoint[] => {
-  const definition = definitions.get(props.module.definition)
+  const definition = definitions.get(props.module.type)
   if (!definition) return []
 
   const points: TConnectionPoint[] = []

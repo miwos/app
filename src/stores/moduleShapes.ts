@@ -30,7 +30,7 @@ export const useModuleShapes = defineStore('module shapes', () => {
   }
 
   const getByModule = (module: Module) => {
-    const definition = definitions.get(module.definition)
+    const definition = definitions.get(module.type)
     return definition ? items.value.get(definition.shape) : undefined
   }
 

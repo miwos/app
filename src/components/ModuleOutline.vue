@@ -13,19 +13,19 @@ const definitions = useModuleDefinitions()
 
 const dash = computed(() => {
   const { shape } = props
-  const definition = definitions.get(props.module.definition)
+  const definition = definitions.get(props.module.type)
   if (!definition) return
 
   const holes = []
 
   for (let i = 0; i < definition.inputs.length; i++) {
     const { signal, offset } =
-      definitions.getConnector(props.module.definition, i, 'in') ?? {}
+      definitions.getConnector(props.module.type, i, 'in') ?? {}
     if (offset !== undefined && signal === 'midi') holes.push(offset)
   }
   for (let i = 0; i < definition.outputs.length; i++) {
     const { signal, offset } =
-      definitions.getConnector(props.module.definition, i, 'out') ?? {}
+      definitions.getConnector(props.module.type, i, 'out') ?? {}
     if (offset !== undefined && signal === 'midi') holes.push(offset)
   }
   return perforatePath(shape.pathLength, holes)

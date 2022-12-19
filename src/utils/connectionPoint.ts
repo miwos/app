@@ -15,11 +15,11 @@ export const getConnectionPoint = (
   const module = modules.get(moduleId)
   if (!module) return
 
-  const definition = definitions.get(module.definition)
+  const definition = definitions.get(module.type)
   if (!definition) return
 
   const { signal } =
-    definitions.getConnector(module.definition, index, direction) ?? {}
+    definitions.getConnector(module.type, index, direction) ?? {}
   if (!signal) return
 
   const { positions, angle } =
