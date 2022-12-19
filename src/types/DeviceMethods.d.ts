@@ -1,5 +1,6 @@
 import type { ConnectionSerialized } from './Connection'
 import type { Module } from './Module'
+import type { ModuleDefinitionSerialized } from './ModuleDefinition'
 
 export type DeviceMethods = {
   '/e/parts/select': (index: number) => boolean
@@ -13,4 +14,6 @@ export type DeviceMethods = {
   '/e/modules/remove': (id: Module['id']) => void
 
   '/e/patch/clear': () => boolean
+
+  '/e/modules/definitions': () => string
 }

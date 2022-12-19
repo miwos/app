@@ -1,7 +1,13 @@
-import type { ModuleDefinition } from '@/types'
+import type {
+  ModuleDefinition,
+  ModuleDefinitionSerialized,
+  Signal,
+} from '@/types'
+import { luaToJson } from '@/utils'
 import Fuse from 'fuse.js'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useDevice } from './device'
 import { useModuleShapes } from './moduleShapes'
 
 type Id = ModuleDefinition['id']
@@ -12,30 +18,10 @@ const indexSearch = (keys: string[]) => {
 }
 
 export const useModuleDefinitions = defineStore('module definitions', () => {
-  const items = ref(
-    new Map<Id, ModuleDefinition>([
-      [
-        'Input',
-        {
-          id: 'Input',
-          shape: 'Input',
-          inputs: [],
-          outputs: [{ signal: 'midi' }],
-        },
-      ],
-      [
-        'Output',
-        {
-          id: 'Output',
-          shape: 'Output',
-          inputs: [{ signal: 'midi' }],
-          outputs: [],
-        },
-      ],
-    ])
-  )
+  const items = ref(new Map<Id, ModuleDefinition>())
 
   const shapes = useModuleShapes()
+  const device = useDevice()
   indexSearch(Array.from(items.value.keys()))
 
   // Getters
@@ -70,5 +56,26 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
   const search = (query: string): ModuleDefinition[] =>
     fuse?.search(query).map(({ item: id }) => items.value.get(id)!) ?? []
 
-  return { items, get, getConnector, search }
+  const deserialize = (serialized: ModuleDefinitionSerialized[]) => {
+    for (const serializedDefinition of serialized) {
+      const { shape, id, inputs, outputs } = serializedDefinition
+      items.value.set(id, {
+        ...serializedDefinition,
+        inputs: inputs?.map((signal) => ({ signal })) ?? [],
+        outputs: outputs?.map((signal) => ({ signal })) ?? [],
+        shape: shape ?? id,
+      })
+    }
+  }
+
+  const loadFromDevice = async () => {
+    const result = await device.request('/e/modules/definitions')
+    if (!result) return
+
+    items.value.clear()
+    deserialize(<ModuleDefinitionSerialized[]>luaToJson(result))
+    indexSearch(Array.from(items.value.keys()))
+  }
+
+  return { items, get, getConnector, search, loadFromDevice }
 })

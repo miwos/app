@@ -2,6 +2,7 @@ import { useBridge } from '@/bridge'
 import type { DeviceMethods } from '@/types/DeviceMethods'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useModuleDefinitions } from './moduleDefinitions'
 import { useProject } from './project'
 
 export const useDevice = defineStore('device', () => {
@@ -9,6 +10,7 @@ export const useDevice = defineStore('device', () => {
 
   const bridge = useBridge()
   const project = useProject()
+  const moduleDefinitions = useModuleDefinitions()
 
   bridge.on('/close', () => (isConnected.value = false))
 
@@ -19,6 +21,7 @@ export const useDevice = defineStore('device', () => {
   const open = async () => {
     await bridge.open({ baudRate: 9600 })
     isConnected.value = true
+    await moduleDefinitions.loadFromDevice()
     project.load()
   }
 
@@ -40,5 +43,15 @@ export const useDevice = defineStore('device', () => {
     >
   }
 
-  return { isConnected, open, close, update }
+  const request = <M extends keyof DeviceMethods>(
+    method: M,
+    args?: Parameters<DeviceMethods[M]>
+  ) => {
+    if (!isConnected.value) return
+    return bridge.request(method, args ?? []) as Promise<
+      ReturnType<DeviceMethods[M]>
+    >
+  }
+
+  return { isConnected, open, close, update, request }
 })

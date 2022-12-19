@@ -7,3 +7,9 @@ export interface ModuleDefinition {
   inputs: { signal: Signal }[]
   outputs: { signal: Signal }[]
 }
+
+export interface ModuleDefinitionSerialized
+  extends Omit<ModuleDefinition, 'inputs' | 'outputs'> {
+  inputs?: Signal[]
+  outputs?: Signal[]
+}
