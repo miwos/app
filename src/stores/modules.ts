@@ -1,3 +1,4 @@
+import { useBridge } from '@/bridge'
 import type { Module, ModuleSerialized, Optional, Point, Rect } from '@/types'
 import { getCombinedRect } from '@/utils'
 import { defineStore } from 'pinia'
@@ -16,6 +17,7 @@ export const serializeModule = (module: Module): ModuleSerialized => ({
 
 export const deserializeModule = (serialized: ModuleSerialized): Module => ({
   ...serialized,
+  props: serialized.props ?? {},
   position: {
     x: serialized.position?.[0] ?? 0,
     y: serialized.position?.[1] ?? 0,
@@ -27,6 +29,7 @@ export const useModules = defineStore('module-instances', () => {
   const definitions = useModuleDefinitions()
   const connections = useConnections()
   const shapes = useModuleShapes()
+  const bridge = useBridge()
 
   const items = ref(new Map<Id, Module>())
   const focusedId = ref<Id>()
@@ -34,6 +37,12 @@ export const useModules = defineStore('module-instances', () => {
   const selectedIds = ref(new Set<Id>())
   const isDragging = ref(false)
   const nextId = ref(1) // We use a one-based index to be consistent with lua.
+
+  bridge.on('/e/modules/prop', ({ args: [id, name, value] }) => {
+    const item = get(id)
+    if (!item) return
+    item.props[name] = value
+  })
 
   // Getters
   const get = (id: Id) => {
@@ -99,8 +108,12 @@ export const useModules = defineStore('module-instances', () => {
     }
   }
 
-  const add = (module: Optional<Module, 'id'>, updateDevice = true) => {
+  const add = (
+    module: Optional<Module, 'id' | 'props'>,
+    updateDevice = true
+  ) => {
     module.id ??= nextId.value++
+    module.props ??= definitions.getDefaultProps(module.type)
     items.value.set(module.id, module as Module)
     sortedIds.value.push(module.id)
 
@@ -135,6 +148,19 @@ export const useModules = defineStore('module-instances', () => {
     sortedIds.value.push(id)
   }
 
+  const updateProp = (
+    id: Id,
+    name: string,
+    value: unknown,
+    updateDevice = true
+  ) => {
+    const item = get(id)
+    if (!item) return
+
+    item.props[name] = value
+    if (updateDevice) device.update('/e/modules/prop', [id, name, value])
+  }
+
   const clear = () => {
     items.value.clear()
     sortedIds.value = []
@@ -156,6 +182,7 @@ export const useModules = defineStore('module-instances', () => {
     add,
     remove,
     focus,
+    updateProp,
     clear,
   }
 })

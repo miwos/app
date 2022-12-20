@@ -1,5 +1,5 @@
 <template>
-  <div class="menu-add" v-show="isOpen" :class="`align-${align}`" ref="el">
+  <div class="menu-add" v-if="isOpen" :class="`align-${align}`" ref="el">
     <ModuleDefinitionSearch
       ref="search"
       :align-results="align"

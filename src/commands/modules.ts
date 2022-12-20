@@ -3,7 +3,7 @@ import { useModules } from '@/stores/modules'
 import type { Connection, Module, Optional } from '@/types'
 import { pushCommand } from '.'
 
-export const addModule = (module: Optional<Module, 'id'>) => {
+export const addModule = (module: Optional<Module, 'id' | 'props'>) => {
   const modules = useModules()
   let id: Module['id']
 

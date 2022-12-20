@@ -30,7 +30,7 @@ export const useProject = defineStore('project', () => {
 
   const save = debounce(() => {
     if (!device.isConnected) return
-    const content = jsonToLua(serialize())
+    const content = jsonToLua({ ...serialize(), mappings: [[[1, 'device']]] })
     return bridge.writeFile(file.value, content)
   }, 1000)
 

@@ -1,14 +1,9 @@
 <template>
-  <div
-    class="module"
-    ref="el"
-    :class="{ isSelected }"
-    @mousedown="focus"
-    @mouseup="select"
-  >
+  <div class="module" ref="el" :class="{ isSelected }">
     <ModuleOutline v-if="shape && isSelected" :module="module" :shape="shape" />
     <ModuleShape v-if="shape" :shape="shape" />
     <ConnectionPoints :module="module" />
+    <ModuleProps :module="module" />
   </div>
 </template>
 
@@ -24,6 +19,7 @@ import ConnectionPoints from './ConnectionPoints.vue'
 import ModuleOutline from './ModuleOutline.vue'
 import ModuleShape from './ModuleShape.vue'
 import { useModulesDrag } from '@/composables/useModulesDrag'
+import ModuleProps from './ModuleProps.vue'
 
 const props = defineProps<{ position: Point; module: Module }>()
 

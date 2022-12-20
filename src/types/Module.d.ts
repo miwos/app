@@ -8,9 +8,10 @@ export interface Module {
   type: ModuleDefinition['id']
   position: Point
   size?: Size
+  props: Record<string, unknown>
 }
 
 export interface ModuleSerialized extends Pick<Module, 'id' | 'type'> {
-  props?: Record<string, number>
+  props?: Record<string, unknown>
   position?: [x: number, y: number]
 }

@@ -6,10 +6,12 @@ export interface ModuleDefinition {
   shape: Shape['id']
   inputs: { signal: Signal }[]
   outputs: { signal: Signal }[]
+  props: Record<string, { type: string; options: Record<string, any> }>
 }
 
 export interface ModuleDefinitionSerialized
-  extends Omit<ModuleDefinition, 'inputs' | 'outputs'> {
+  extends Pick<ModuleDefinition, 'id' | 'shape'> {
   inputs?: Signal[]
   outputs?: Signal[]
+  props?: Record<string, [type: string, options: Record<string, any>]>
 }
