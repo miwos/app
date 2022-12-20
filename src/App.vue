@@ -1,5 +1,5 @@
 <template>
-  <TheTopBar></TheTopBar>
+  <TheTopBar />
   <RouterView />
 </template>
 

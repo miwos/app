@@ -1,5 +1,5 @@
 <template>
-  <MenuAdd></MenuAdd>
+  <MenuAdd />
   <div class="selection" v-if="isSelecting" :style="style"></div>
   <div class="module-instances">
     <ModuleInstance
