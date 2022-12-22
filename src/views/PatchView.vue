@@ -1,5 +1,6 @@
 <template>
   <MenuAdd />
+  <TheEncoders />
   <div class="selection" v-if="isSelecting" :style="style"></div>
   <div class="module-instances">
     <ModuleInstance
@@ -32,6 +33,7 @@ import ConnectionLine from '@/components/ConnectionLine.vue'
 import ConnectionLineTemp from '@/components/ConnectionLineTemp.vue'
 import MenuAdd from '@/components/MenuAdd.vue'
 import ModuleInstance from '@/components/ModuleInstance.vue'
+import TheEncoders from '@/components/TheEncoders.vue'
 import { useSelection } from '@/composables/useSelection'
 import { useConnections } from '@/stores/connections'
 import { useModules } from '@/stores/modules'

@@ -1,6 +1,7 @@
 <template>
   <TheTopBar />
   <RouterView />
+  <div id="dialog-layer"></div>
 </template>
 
 <script setup lang="ts">

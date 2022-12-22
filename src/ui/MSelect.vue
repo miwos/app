@@ -4,11 +4,14 @@
     class="m-select"
     :class="{ overflow: isOverflowing }"
     role="listbox"
+    :data-theme="theme ?? 'default'"
+    tabindex="0"
   >
     <li
       v-for="(option, index) in props.options"
       :key="option.id"
       class="m-select-option"
+      :class="{ focus: index === focusedIndex }"
       role="option"
       :aria-selected="props.value === option.id"
       @click="emit('update:value', option.id)"
@@ -31,7 +34,9 @@ const emit = defineEmits<{ (e: 'update:value', id: any): void }>()
 
 const props = defineProps<{
   value?: any
-  options: { id: any }[]
+  options: { id: any; label?: string }[]
+  theme?: 'default' | 'none'
+  autoFocus?: boolean
 }>()
 
 const el = ref<HTMLElement>()
@@ -39,6 +44,8 @@ const { options } = toRefs(props)
 const focusedIndex = ref(0)
 const bounds = useElementBounding(el, { windowScroll: false })
 const isOverflowing = ref(false)
+
+onMounted(() => props.autoFocus && el.value?.focus())
 
 watch(options, async () => {
   focusedIndex.value = 0
@@ -93,6 +100,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
 .m-select {
   list-style: none;
   padding-left: 0;
+  margin: 0;
   overflow-y: auto;
 
   &-option {
@@ -113,4 +121,55 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
     background: var(--glass-color-darker-solid);
   }
 }
+
+.m-select[data-theme='default'] {
+  --radius: var(--radius-s);
+  border-radius: var(--radius);
+  white-space: nowrap;
+  background-color: var(--m-select-color-bg);
+
+  .m-select-option {
+    height: 23px;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--radius);
+    cursor: pointer;
+
+    &.focus:not(:last-child, :first-child) {
+      margin: -1px 0;
+      padding-top: 1px;
+      padding-bottom: 1px;
+    }
+
+    &.focus {
+      background-color: var(--m-select-color-focus);
+    }
+  }
+}
+
+// .m-select {
+//   --radius: var(--radius-s);
+//   --option-height: 23px;
+//   border-radius: var(--radius);
+//   white-space: nowrap;
+//   outline: none;
+//   background-color: red;
+// }
+// .m-select-option {
+//   height: var(--option-height);
+//   display: flex;
+//   align-items: center;
+//   padding: 0 var(--radius);
+//   cursor: pointer;
+//   &:first-child {
+//     padding-top: 2px;
+//     border-top-left-radius: var(--radius);
+//     border-top-right-radius: var(--radius);
+//   }
+//   &:last-child {
+//     padding-bottom: 2px;
+//     border-bottom-left-radius: var(--radius);
+//     border-bottom-right-radius: var(--radius);
+//   }
+// }
 </style>

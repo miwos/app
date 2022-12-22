@@ -1,7 +1,11 @@
 <template>
-  <div class="module-prop" ref="el">
-    <button class="module-prop-handle"></button>
-    <div class="module-prop-content">
+  <div
+    class="module-prop"
+    :style="mappingIsVisible ? 'z-index: 1' : ''"
+    ref="el"
+  >
+    <button class="module-prop-handle" @click="showMapping"></button>
+    <div class="module-prop-content" ref="content">
       <button
         v-if="nameIsVisible"
         ref="name"
@@ -22,15 +26,25 @@
         @blur="hideField"
       />
     </div>
+    <Teleport to="body">
+      <MappingSelect
+        v-if="mappingIsVisible"
+        ref="mapping"
+        class="module-prop-mapping"
+        @update:value="hideMapping"
+      />
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
 import { onMouseUpOutside } from '@/composables/onMouseUpOutside'
+import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
 import { useApp } from '@/stores/app'
 import type { Point } from '@/types'
 import Number from '@/ui/MNumber.vue'
 import { computed, nextTick, ref, type Component } from 'vue'
+import MappingSelect from './MappingSelect.vue'
 
 const props = defineProps<{
   name: string
@@ -46,9 +60,16 @@ const components: Record<string, Component> = { Number }
 
 const app = useApp()
 const el = ref<HTMLElement>()
+const content = ref<HTMLElement>()
+
 const field = ref<HTMLElement>()
-const name = ref<HTMLElement>()
 const fieldIsVisible = ref(false)
+
+const mapping = ref<HTMLElement>()
+const mappingIsVisible = ref(false)
+const mappingPosition = ref({ x: 0, y: 0 })
+
+const name = ref<HTMLElement>()
 const nameIsVisible = computed(
   () => app.showPropFields || !fieldIsVisible.value
 )
@@ -65,7 +86,24 @@ const hideField = () => {
   fieldIsVisible.value = false
 }
 
+let activeElement: Element | null
+const showMapping = () => {
+  // The mapping select is teleported and thereby breaking the tab flow. To let
+  // the user continue where we left off before the mapping dialog we store the
+  // currently focused element and restore it in `hideMapping()`.
+  activeElement = document.activeElement
+  const { top = 0, left = 0 } = content.value?.getBoundingClientRect() ?? {}
+  mappingPosition.value = { x: left, y: top }
+  mappingIsVisible.value = app.isMapping = true
+}
+
+const hideMapping = () => {
+  mappingIsVisible.value = app.isMapping = false
+  window.setTimeout(() => (activeElement as HTMLElement)?.focus())
+}
+
 onMouseUpOutside(el, hideField)
+onMouseDownOutside(mapping, hideMapping)
 </script>
 
 <style scoped lang="scss">
@@ -100,6 +138,10 @@ onMouseUpOutside(el, hideField)
     }
   }
 
+  &-content {
+    position: relative;
+  }
+
   &-name {
     font-family: 'Vevey Positive';
     font-size: 16px;
@@ -116,6 +158,11 @@ onMouseUpOutside(el, hideField)
     padding: 0 0.3em;
     box-sizing: border-box;
     font-weight: 300;
+  }
+
+  &-mapping {
+    top: v-bind('mappingPosition.y + `px`');
+    left: v-bind('mappingPosition.x + `px`');
   }
 }
 </style>

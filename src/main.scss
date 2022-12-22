@@ -30,13 +30,20 @@
 
   --radius-xs: 5px;
   --radius-s: 7px;
+
+  --z-menu: 1;
+  --z-dialog: 2;
 }
 
-body {
+#app {
   font-family: Inter;
   background-color: var(--color-background);
   color: var(--color-text);
   font-weight: 200;
   letter-spacing: 1px;
   font-size: 14px;
+}
+
+*:focus-visible {
+  outline: blue;
 }

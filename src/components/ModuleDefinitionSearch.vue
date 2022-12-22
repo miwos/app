@@ -11,6 +11,7 @@
     <MSelect
       class="module-search-results"
       :options="results"
+      theme="none"
       @update:value="emit('select', $event)"
     >
       <template #option="{ id, isFocused }">
