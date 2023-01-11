@@ -12,8 +12,8 @@ type Id = Shape['id']
 export const useModuleShapes = defineStore('module shapes', () => {
   const items = ref(
     new Map<string, Shape>([
-      ['Input', { id: 'Input', ...parseSVG(inputShape) }],
-      ['Output', { id: 'Output', ...parseSVG(outputShape) }],
+      ['Input', parseSVG('Input', inputShape)],
+      ['Output', parseSVG('Output', outputShape)],
     ])
   )
 
