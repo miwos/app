@@ -10,9 +10,9 @@
 import MSelect from '@/ui/MSelect.vue'
 
 const options = [
-  { id: 1, label: 'Map to 1' },
-  { id: 2, label: 'Map to 2' },
-  { id: 3, label: 'Map to 3' },
+  { id: 0, label: 'Map to 1' },
+  { id: 1, label: 'Map to 2' },
+  { id: 2, label: 'Map to 3' },
 ]
 </script>
 

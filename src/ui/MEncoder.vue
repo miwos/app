@@ -15,6 +15,7 @@ export interface Props {
   value?: number
   min?: number
   max?: number
+  step?: number
   enabled?: boolean
 }
 
@@ -39,8 +40,10 @@ useRotation(el, { onRotate })
 const valueToAngle = (value: number) =>
   map(value, props.min, props.max, -135, 135)
 
-const angleToValue = (angle: number) =>
-  map(angle, -135, 135, props.min, props.max)
+const angleToValue = (angle: number) => {
+  let value = map(angle, -135, 135, props.min, props.max)
+  return props.step ? Math.ceil(value / props.step) * props.step : value
+}
 </script>
 
 <style scoped lang="scss">
@@ -62,10 +65,14 @@ const angleToValue = (angle: number) =>
   }
 
   &-dial {
-    stroke: #d5d5d5;
+    stroke: var(--m-encoder-dial-color);
     stroke-width: 3;
     stroke-linecap: round;
     vector-effect: non-scaling-stroke;
+
+    .disabled & {
+      stroke: #d5d5d5;
+    }
   }
 }
 </style>

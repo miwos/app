@@ -29,25 +29,28 @@
     <Teleport to="body">
       <MappingSelect
         v-if="mappingIsVisible"
-        ref="mapping"
+        ref="mappingSelect"
         class="module-prop-mapping"
-        @update:value="hideMapping"
+        :value="mapping?.slot"
+        @update:value="updateMapping"
       />
     </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMouseUpOutside } from '@/composables/onMouseUpOutside'
 import { onMouseDownOutside } from '@/composables/onMouseDownOutside'
+import { onMouseUpOutside } from '@/composables/onMouseUpOutside'
 import { useApp } from '@/stores/app'
-import type { Point } from '@/types'
+import { useMappings } from '@/stores/mappings'
+import type { Module, Point } from '@/types'
 import Number from '@/ui/MNumber.vue'
 import { computed, nextTick, ref, type Component } from 'vue'
 import MappingSelect from './MappingSelect.vue'
 
 const props = defineProps<{
   name: string
+  moduleId: Module['id']
   type: string
   value: unknown
   options: any
@@ -65,9 +68,11 @@ const content = ref<HTMLElement>()
 const field = ref<HTMLElement>()
 const fieldIsVisible = ref(false)
 
-const mapping = ref<HTMLElement>()
+const mappings = useMappings()
+const mappingSelect = ref<HTMLElement>()
 const mappingIsVisible = ref(false)
 const mappingPosition = ref({ x: 0, y: 0 })
+const mapping = mappings.getMapping(props.moduleId, props.name)
 
 const name = ref<HTMLElement>()
 const nameIsVisible = computed(
@@ -102,8 +107,14 @@ const hideMapping = () => {
   window.setTimeout(() => (activeElement as HTMLElement)?.focus())
 }
 
+const updateMapping = (slot: number) => {
+  const { moduleId, name: prop } = props
+  mappings.add(mappings.pageIndex, { slot, moduleId, prop })
+  hideMapping()
+}
+
 onMouseUpOutside(el, hideField)
-onMouseDownOutside(mapping, hideMapping)
+onMouseDownOutside(mappingSelect, hideMapping)
 </script>
 
 <style scoped lang="scss">

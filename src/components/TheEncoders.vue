@@ -1,17 +1,65 @@
 <template>
   <div class="encoders" :class="{ 'show-labels': app.isMapping }">
-    <MEncoder :enabled="!!encoders[0]" v-bind="encoders[0]" class="encoder" />
-    <MEncoder :enabled="!!encoders[1]" v-bind="encoders[0]" class="encoder" />
-    <MEncoder :enabled="!!encoders[2]" v-bind="encoders[0]" class="encoder" />
+    <MEncoder
+      v-for="count in 3"
+      :enabled="encoders.has(count - 1)"
+      v-bind="encoders.get(count - 1)"
+      @update:value="updateValue(count - 1, $event)"
+      class="encoder"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { useApp } from '@/stores/app'
+import { useMappings } from '@/stores/mappings'
+import { useModuleDefinitions } from '@/stores/moduleDefinitions'
+import { useModules } from '@/stores/modules'
 import MEncoder from '@/ui/MEncoder.vue'
-const app = useApp()
+import { computed } from 'vue'
 
-const encoders: { min: number; max: number }[] = []
+const app = useApp()
+const modules = useModules()
+const definitions = useModuleDefinitions()
+const mappings = useMappings()
+
+interface Encoder {
+  value: number
+  min: number
+  max: number
+  step?: number
+}
+
+const encoders = computed(() => {
+  const page = mappings.getPage(mappings.pageIndex)
+  if (!page) return new Map()
+
+  const encoders = new Map<number, Encoder>()
+  for (const { moduleId, prop, slot } of page.values()) {
+    const module = modules.get(moduleId)
+    if (!module) continue
+
+    const propOptions = definitions.get(module.type)?.props[prop]?.options
+    if (!propOptions) continue
+
+    const { min, max, step, value: defaultValue } = propOptions
+    const value = module.props[prop]
+
+    encoders.set(slot, { min, max, step, value: value ?? defaultValue })
+  }
+
+  return encoders
+})
+
+const updateValue = (slot: number, value: number) => {
+  if (!encoders.value?.has(slot)) return
+
+  const mapping = mappings.getCurrentPage()?.get(slot)
+  if (!mapping) return
+
+  const { moduleId, prop } = mapping
+  modules.updateProp(moduleId, prop, value)
+}
 </script>
 
 <style scoped lang="scss">
@@ -27,6 +75,9 @@ const encoders: { min: number; max: number }[] = []
 }
 
 .encoder {
+  --m-encoder-color: var(--color-mapping);
+  --m-encoder-dial-color: white;
+
   position: absolute;
   counter-increment: encoder;
 

@@ -45,7 +45,13 @@ const focusedIndex = ref(0)
 const bounds = useElementBounding(el, { windowScroll: false })
 const isOverflowing = ref(false)
 
-onMounted(() => props.autoFocus && el.value?.focus())
+onMounted(() => {
+  if (props.autoFocus) el.value?.focus()
+  if (props.value !== undefined) {
+    const index = props.options.findIndex(v => v.id === props.value)
+    focus(index)
+  }
+})
 
 watch(options, async () => {
   focusedIndex.value = 0

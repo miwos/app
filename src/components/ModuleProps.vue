@@ -3,6 +3,7 @@
     <ModuleProp
       v-for="(prop, name, index) in listedProps"
       :name="`${name}`"
+      :moduleId="module.id"
       :type="prop.type"
       :position="getPosition(index)"
       :side="index < 3 ? 'right' : 'left'"
