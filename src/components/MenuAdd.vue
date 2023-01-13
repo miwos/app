@@ -68,6 +68,7 @@ const addModule = (type: ModuleDefinition['id']) => {
 <style scoped lang="scss">
 .menu-add {
   position: absolute;
+  z-index: var(--z-menu);
   top: v-bind('position.y + `px`');
   left: v-bind('position.x + `px`');
 

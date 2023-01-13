@@ -12,6 +12,7 @@ specifiers:
   '@vue/tsconfig': ^0.1.3
   '@vueuse/core': ^9.10.0
   buffer: ^6.0.3
+  colorize-template: ^1.0.0
   eslint: ^8.31.0
   eslint-plugin-vue: ^9.8.0
   fuse.js: ^6.6.2
@@ -36,6 +37,7 @@ specifiers:
 dependencies:
   '@vueuse/core': 9.10.0_vue@3.2.45
   buffer: 6.0.3
+  colorize-template: 1.0.0
   fuse.js: 6.6.2
   hobby-curve: 0.2.1
   lua-json: 1.0.1
@@ -1168,6 +1170,10 @@ packages:
   /color-name/1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
     dev: true
+
+  /colorize-template/1.0.0:
+    resolution: {integrity: sha512-beJ9v9RjpbYZ8OdwJgIRZD3YUkZPXmi1MK+yX0J24UupKVHa9yk0jiARgt2i6MBX6AKjYA0SNsBn65bUPuVQiw==}
+    dev: false
 
   /combined-stream/1.0.8:
     resolution: {integrity: sha512-FQN4MRfuJeHf7cBbBMJFXhKSDq+2kAArBlmRBvcvFE5BB1HZKXtSFASDhdlz9zOYwxh8lDdnvmMOe/+5cdoEdg==}

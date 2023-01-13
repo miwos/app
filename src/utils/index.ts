@@ -1,5 +1,6 @@
 export * from './connectionPoint'
 export * from './containsRect'
+export * from './createColorize'
 export * from './createEmptyImage'
 export * from './debounce'
 export * from './getCombinedRect'

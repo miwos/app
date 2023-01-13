@@ -2,8 +2,11 @@ import { useBridge } from '@/bridge'
 import type { DeviceMethods } from '@/types/DeviceMethods'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useLog } from './log'
+import type { LogType } from './log'
 import { useModuleDefinitions } from './moduleDefinitions'
 import { useProject } from './project'
+import { luaToJson } from '@/utils'
 
 export const useDevice = defineStore('device', () => {
   const isConnected = ref(false)
@@ -11,12 +14,19 @@ export const useDevice = defineStore('device', () => {
   const bridge = useBridge()
   const project = useProject()
   const moduleDefinitions = useModuleDefinitions()
+  const log = useLog()
 
   bridge.on('/close', () => (isConnected.value = false))
 
-  bridge.on('/log/:type', ({ args: [text] }, { type }) =>
-    (console as any)[type]?.(text)
-  )
+  bridge.on('/log/:type', ({ args: [text] }, { type }) => {
+    if (['info', 'warn', 'error'].includes(type)) {
+      log.log(type as LogType, text)
+    } else if (type === 'dump') {
+      log.dump(luaToJson(text))
+    } else if (type === 'stack') {
+      // log.stack(text)
+    }
+  })
 
   const open = async () => {
     await bridge.open({ baudRate: 9600 })
