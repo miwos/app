@@ -1,7 +1,7 @@
 <template>
   <TheTopBar />
   <RouterView />
-  <TheConsole />
+  <TheLog />
   <div id="dialog-layer"></div>
 </template>
 
@@ -11,7 +11,7 @@ import { watch } from 'vue'
 import { RouterView } from 'vue-router'
 import { redo, undo } from './commands'
 import TheTopBar from './components/TheTopBar.vue'
-import TheConsole from './components/TheConsole.vue'
+import TheLog from './components/TheLog.vue'
 
 const keys = useMagicKeys()
 watch(keys['Ctrl+Z'], (v) => v && undo())

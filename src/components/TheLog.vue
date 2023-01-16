@@ -1,0 +1,142 @@
+<template>
+  <div class="log glass-dark" ref="el">
+    <button class="log-clear" @click="log.clear()">Clear</button>
+    <div class="log-content">
+      <div class="log-lines" v-html="log.lines"></div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useLog } from '@/stores/log'
+import { nextTick, ref } from 'vue'
+
+const el = ref<HTMLElement>()
+const log = useLog()
+
+log.$subscribe(() => nextTick(() => scrollToBottom()))
+
+const scrollToBottom = () =>
+  el.value && (el.value.scrollTop = el.value.scrollHeight)
+</script>
+
+<style scoped lang="scss">
+.log {
+  --line-height: 1.2em;
+  --lines: 10;
+
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: var(--z-panel);
+
+  margin: 1rem;
+
+  border-radius: var(--radius-s);
+  font-size: 10pt;
+
+  &-clear {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 0.5em;
+  }
+
+  &-content {
+    width: 80ch;
+    height: calc(var(--lines) * var(--line-height));
+    line-height: var(--line-height);
+    overflow-y: auto;
+
+    margin: 0;
+    padding: var(--line-height);
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: monospace;
+  }
+}
+</style>
+
+<style lang="scss">
+.log {
+  --color-log-black: black;
+  --color-log-white: white;
+  --color-log-gray: gray;
+  --color-log-red: red;
+  --color-log-green: green;
+  --color-log-blue: blue;
+  --color-log-yellow: yellow;
+  --color-log-magenta: magenta;
+  --color-log-cyan: cyan;
+
+  --color-log-info: var(--color-log-white);
+  --color-log-warn: var(--color-log-yellow);
+  --color-log-error: var(--color-log-red);
+  --color-log-success: var(--color-log-green);
+
+  --color-log-key: var(--color-log-green);
+  --color-log-specialKey: var(--color-log-cyan);
+  --color-log-complexType: var(--color-log-magenta);
+  --color-log-number: var(--color-log-red);
+  --color-log-boolean: var(--color-log-blue);
+  --color-log-string: var(--color-log-yellow);
+
+  .mark-black {
+    color: var(--color-log-black);
+  }
+  .mark-white {
+    color: var(--color-log-white);
+  }
+  .mark-gray {
+    color: var(--color-log-gray);
+  }
+  .mark-red {
+    color: var(--color-log-red);
+  }
+  .mark-green {
+    color: var(--color-log-green);
+  }
+  .mark-blue {
+    color: var(--color-log-blue);
+  }
+  .mark-yellow {
+    color: var(--color-log-yellow);
+  }
+  .mark-magenta {
+    color: var(--color-log-magenta);
+  }
+  .mark-cyan {
+    color: var(--color-log-cyan);
+  }
+  .mark-info {
+    color: var(--color-log-info);
+  }
+  .mark-warn {
+    color: var(--color-log-warn);
+  }
+  .mark-error {
+    color: var(--color-log-error);
+  }
+  .mark-success {
+    color: var(--color-log-success);
+  }
+  .mark-key {
+    color: var(--color-log-key);
+  }
+  .mark-specialKey {
+    color: var(--color-log-specialKey);
+  }
+  .mark-complexType {
+    color: var(--color-log-complexType);
+  }
+  .mark-number {
+    color: var(--color-log-number);
+  }
+  .mark-boolean {
+    color: var(--color-log-boolean);
+  }
+  .mark-string {
+    color: var(--color-log-string);
+  }
+}
+</style>
