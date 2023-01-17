@@ -31,7 +31,8 @@ export const useDevice = defineStore('device', () => {
   const open = async () => {
     await bridge.open({ baudRate: 9600 })
     isConnected.value = true
-    await moduleDefinitions.loadFromDevice()
+    await moduleDefinitions.loadAllFromDevice()
+    window.postMessage({ method: 'deviceConnected' })
     project.load()
   }
 
@@ -48,7 +49,9 @@ export const useDevice = defineStore('device', () => {
     // The device's storage is our source of truth for the project. Therefore
     // with each update we also save the whole project.
     project.save()
-    return bridge.request(method, args ?? []) as Promise<
+    // TODO: remove `any`, use `MessageArg` as soon as bridge exports it, or
+    // make args optional in bridge itself.
+    return bridge.request(method, args ?? ([] as any[])) as Promise<
       ReturnType<DeviceMethods[M]>
     >
   }
@@ -58,7 +61,9 @@ export const useDevice = defineStore('device', () => {
     args?: Parameters<DeviceMethods[M]>
   ) => {
     if (!isConnected.value) return
-    return bridge.request(method, args ?? []) as Promise<
+    // TODO: remove `any`, use `MessageArg` as soon as bridge exports it, or
+    // make args optional in bridge itself.
+    return bridge.request(method, args ?? ([] as any)) as Promise<
       ReturnType<DeviceMethods[M]>
     >
   }

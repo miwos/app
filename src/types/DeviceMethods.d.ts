@@ -12,6 +12,7 @@ export type DeviceMethods = {
   '/e/modules/remove': (id: Module['id']) => void
   '/e/modules/prop': (id: Module['id'], name: string, value: unknown) => boolean
   '/e/modules/definitions': () => string
+  '/e/modules/definition': (moduleName: string) => string
 
   '/e/patch/clear': () => boolean
 
