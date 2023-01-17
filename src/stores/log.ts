@@ -67,7 +67,12 @@ export const useLog = defineStore('logs', () => {
   }
 
   const log = (type: LogType, text: string) => {
-    // console[type](text)
+    if (type === 'error') {
+      text = text.replace(
+        /^([\w\/]+\.lua:\d+):/,
+        `<button class="log-file-link" onclick="window.postMessage({ method: 'launchEditor', file: '$1' })">$1</button>`
+      )
+    }
     addLines(colorize`<span class="mark-${type}">${text}</span>`)
   }
 

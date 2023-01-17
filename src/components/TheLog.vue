@@ -68,6 +68,11 @@ const scrollToBottom = () =>
 
 <style lang="scss">
 .log {
+  &-file-link {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
   --color-log-black: black;
   --color-log-white: white;
   --color-log-gray: gray;
