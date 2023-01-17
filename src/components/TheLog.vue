@@ -1,7 +1,7 @@
 <template>
-  <div class="log glass-dark" ref="el">
+  <div class="log">
     <button class="log-clear" @click="log.clear()">Clear</button>
-    <div class="log-content">
+    <div class="log-content" ref="content">
       <div class="log-lines" v-html="log.lines"></div>
     </div>
   </div>
@@ -11,13 +11,13 @@
 import { useLog } from '@/stores/log'
 import { nextTick, ref } from 'vue'
 
-const el = ref<HTMLElement>()
+const content = ref<HTMLElement>()
 const log = useLog()
 
 log.$subscribe(() => nextTick(() => scrollToBottom()))
 
 const scrollToBottom = () =>
-  el.value && (el.value.scrollTop = el.value.scrollHeight)
+  content.value && (content.value.scrollTop = content.value.scrollHeight)
 </script>
 
 <style scoped lang="scss">
@@ -29,10 +29,11 @@ const scrollToBottom = () =>
   left: 0;
   bottom: 0;
   z-index: var(--z-panel);
+  background-color: hsl(0deg 0% 12%);
 
   margin: 1rem;
 
-  border-radius: var(--radius-s);
+  border-radius: var(--radius-xs);
   font-size: 10pt;
 
   &-clear {
@@ -53,6 +54,14 @@ const scrollToBottom = () =>
     white-space: pre-wrap;
     word-break: break-all;
     font-family: monospace;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: hsl(0deg 0% 12%);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(0deg 0% 27%);
   }
 }
 </style>
