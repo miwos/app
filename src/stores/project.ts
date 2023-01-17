@@ -46,7 +46,7 @@ export const useProject = defineStore('project', () => {
   const load = async () => {
     if (!device.isConnected) return
     const content = await bridge.readFile(file.value)
-    console.log(content)
+    // console.log(content)
     const serialized = luaToJson(content) as ProjectSerialized
     modules.deserialize(serialized.modules)
     connections.deserialize(serialized.connections)
