@@ -1,15 +1,15 @@
 <template>
   <div class="module-props">
     <ModuleProp
-      v-for="(prop, name, index) in listedProps"
-      :name="`${name}`"
-      :moduleId="module.id"
+      v-for="(prop, index) in listedProps"
+      :name="prop.name"
       :type="prop.type"
+      :moduleId="module.id"
       :position="getPosition(index)"
       :side="index < 3 ? 'right' : 'left'"
       :options="prop.options"
-      :value="module.props[name]"
-      @update:value="modules.updateProp(module.id, name, $event)"
+      :value="module.props[prop.name]"
+      @update:value="modules.updateProp(module.id, prop.name, $event)"
     />
   </div>
 </template>
@@ -27,15 +27,16 @@ const props = defineProps<{
 }>()
 
 const modules = useModules()
-const definition = useModuleDefinitions().get(props.module.type)!
-const shape = useModuleShapes().get(definition.shape)!
+const definition = computed(
+  () => useModuleDefinitions().get(props.module.type)!
+)
+const shape = useModuleShapes().get(definition.value.shape)!
 
 const listedProps = computed(() =>
-  Object.fromEntries(
-    Object.entries(definition.props).filter(
-      ([, prop]) => prop.options.list ?? true
-    )
-  )
+  Object.entries(definition.value.props)
+    .map(([name, prop]) => ({ name, ...prop }))
+    .filter((v) => v.options.listed ?? true)
+    .sort((a, b) => a.options.index - b.options.index)
 )
 
 const getPosition = (index: number) => {

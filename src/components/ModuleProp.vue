@@ -1,6 +1,7 @@
 <template>
   <div
     class="module-prop"
+    :class="`side-${side}`"
     :style="mappingIsVisible ? 'z-index: 1' : ''"
     ref="el"
   >
@@ -55,6 +56,7 @@ const props = defineProps<{
   value: unknown
   options: any
   position: Point
+  side: 'left' | 'right'
 }>()
 
 const emit = defineEmits<{ (e: 'update:value', value: unknown): void }>()
@@ -127,6 +129,11 @@ onMouseDownOutside(mappingSelect, hideMapping)
   height: 2em;
   display: flex;
   align-items: center;
+
+  &.side-left {
+    transform: translate(-100%, -50%);
+    flex-direction: row-reverse;
+  }
 
   &-handle {
     display: block;
