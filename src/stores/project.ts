@@ -22,7 +22,13 @@ export const useProject = defineStore('project', () => {
   const folder = computed(() => `lua/projects/${name.value}`)
   const file = computed(() => `${folder.value}/part-${partIndex.value + 1}.lua`)
 
-  bridge.on('/parts/select', ({ args: [index] }) => selectPart(index, false))
+  bridge.on('/e/parts/select', ({ args: [index] }) => selectPart(index, false))
+
+  bridge.on('/e/project/open', ({ args: [projectName] }) => {
+    name.value = projectName
+    partIndex.value = 0
+    load()
+  })
 
   // Actions
   const serialize = () => ({
