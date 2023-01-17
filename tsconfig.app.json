@@ -5,7 +5,7 @@
   "compilerOptions": {
     "composite": true,
     "target": "ESNext",
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
