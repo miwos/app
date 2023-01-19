@@ -170,6 +170,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
     const result = await device.request('/e/modules/definition', [moduleName])
     if (!result) return
     deserialize([luaToJson(result)])
+    indexSearch(Array.from(items.value.keys()))
   }
 
   return {
