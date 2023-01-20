@@ -2,7 +2,11 @@
   <div
     class="module-prop"
     :class="`side-${side}`"
-    :style="mappingIsVisible ? 'z-index: 1' : ''"
+    :style="{
+      'z-index': mappingIsVisible ? 1 : undefined,
+      top: props.position.y + 'px',
+      left: props.position.x + 'px',
+    }"
     ref="el"
   >
     <button class="module-prop-handle" @click="showMapping"></button>
@@ -123,8 +127,6 @@ onMouseDownOutside(mappingSelect, hideMapping)
 .module-prop {
   position: absolute;
   transform: translateY(-50%);
-  top: v-bind('props.position.y + `px`');
-  left: v-bind('props.position.x + `px`');
   gap: 0.5em;
   height: 2em;
   display: flex;
