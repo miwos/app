@@ -2,7 +2,7 @@
   <div class="log">
     <button class="log-clear" @click="log.clear()">Clear</button>
     <div class="log-content" ref="content">
-      <div class="log-lines" v-html="log.lines"></div>
+      <LogEntry v-for="entry in log.entries" v-bind="entry" />
     </div>
   </div>
 </template>
@@ -10,6 +10,7 @@
 <script setup lang="ts">
 import { useLog } from '@/stores/log'
 import { nextTick, ref } from 'vue'
+import LogEntry from './LogEntry.vue'
 
 const content = ref<HTMLElement>()
 const log = useLog()
@@ -75,9 +76,9 @@ const scrollToBottom = () =>
 
   --color-log-black: black;
   --color-log-white: white;
-  --color-log-gray: gray;
+  --color-log-gray: #7b7b7b;
   --color-log-red: red;
-  --color-log-green: green;
+  --color-log-green: rgb(32 203 80);
   --color-log-blue: blue;
   --color-log-yellow: yellow;
   --color-log-magenta: magenta;
@@ -90,8 +91,8 @@ const scrollToBottom = () =>
 
   --color-log-key: var(--color-log-green);
   --color-log-specialKey: var(--color-log-cyan);
-  --color-log-complexType: var(--color-log-magenta);
-  --color-log-number: var(--color-log-red);
+  --color-log-complexType: #ff4cf5;
+  --color-log-number: tomato;
   --color-log-boolean: var(--color-log-blue);
   --color-log-string: var(--color-log-yellow);
 

@@ -1,5 +1,6 @@
 // import { createColorize } from '@/utils'
 import { highlightLuaDump } from '@/lua-dump'
+import type { LogEntry, LogType } from '@/types/Log'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -41,8 +42,6 @@ const createColorize = (colors: Colors = {}) => {
   }
 }
 
-export type LogType = 'info' | 'warn' | 'error'
-
 // prettier-ignore
 const marks = [
   'black', 'white', 'gray', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan',
@@ -58,22 +57,17 @@ const colors = Object.fromEntries(
 const colorize = createColorize(colors)
 
 export const useLog = defineStore('logs', () => {
-  const lines = ref('')
-  const maxLines = 1000
-
-  const addLines = (text: string) => {
-    lines.value += text
-    lines.value = lines.value.split('\n').slice(-maxLines).join('\n') + '\n'
-  }
+  const entries = ref<LogEntry[]>([])
 
   const log = (type: LogType, text: string) => {
-    if (type === 'error') {
-      text = text.replace(
-        /^([\w\/]+\.lua:\d+):/,
-        `<button class="log-file-link" onclick="window.postMessage({ method: 'launchEditor', file: '$1' })">$1</button>`
-      )
+    text = colorize`${text}`
+
+    const lastEntry = entries.value[entries.value.length - 1]
+    if (lastEntry && lastEntry.type === type && lastEntry.text === text) {
+      lastEntry.count += 1
+    } else {
+      entries.value.push({ type, text, count: 1 })
     }
-    addLines(colorize`<span class="mark-${type}">${text}</span>`)
   }
 
   const info = (text: string) => log('info', text)
@@ -82,15 +76,15 @@ export const useLog = defineStore('logs', () => {
 
   const error = (text: string) => log('error', text)
 
-  const clear = () => (lines.value = '')
+  const clear = () => (entries.value = [])
 
   const dump = (dump: any) => {
     const highlighted = highlightLuaDump(
       dump,
       (value, type) => colors[type]?.(value) ?? ''
     )
-    addLines(highlighted)
+    entries.value.push({ type: 'dump', text: highlighted, count: 1 })
   }
 
-  return { lines, log, info, warn, error, dump, clear }
+  return { entries, log, info, warn, error, dump, clear }
 })
