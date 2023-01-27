@@ -30,5 +30,6 @@ const options = [
   font-size: 14px;
   letter-spacing: 1px;
   white-space: nowrap;
+  z-index: var(--z-dialog);
 }
 </style>
