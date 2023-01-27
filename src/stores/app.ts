@@ -1,5 +1,6 @@
 import { useBridge } from '@/bridge'
 import { useDevice } from '@/stores/device'
+import { useLog } from '@/stores/log'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useModuleDefinitions } from './moduleDefinitions'
@@ -10,6 +11,7 @@ export const useApp = defineStore('app', () => {
 
   const bridge = useBridge()
   const device = useDevice()
+  const log = useLog()
   const definitions = useModuleDefinitions()
 
   window.addEventListener('message', async ({ data }) => {
@@ -24,6 +26,9 @@ export const useApp = defineStore('app', () => {
       const { path, content } = data.params
       await bridge.writeFile(`lua/${path}`, content)
       const isHotReplaced = await bridge.request('/lua/update', `lua/${path}`)
+
+      const type = isHotReplaced ? 'hmr update' : 'reload'
+      log.info(`{success ${type}} {gray ${path}}`)
 
       const match = path.match(/^modules\/(.*)\.lua$/)
       if (match) {
