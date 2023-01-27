@@ -39,5 +39,6 @@ const statusText = computed(() =>
 <style scoped>
 .m-top-bar {
   padding-left: 0 !important;
+  margin: 1rem;
 }
 </style>
