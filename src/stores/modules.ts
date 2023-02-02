@@ -1,7 +1,7 @@
 import { useBridge } from '@/bridge'
 import type { Module, ModuleSerialized, Optional, Point, Rect } from '@/types'
-import { getCombinedRect } from '@/utils'
-import { defineStore } from 'pinia'
+import { getCombinedRect, unpackBytes } from '@/utils'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, nextTick, ref } from 'vue'
 import { useConnections } from './connections'
 import { useDevice } from './device'
@@ -37,11 +37,34 @@ export const useModules = defineStore('module-instances', () => {
   const selectedIds = ref(new Set<Id>())
   const isDragging = ref(false)
   const nextId = ref(1) // We use a one-based index to be consistent with lua.
+  const activeInputIds = ref(new Set<number>())
+  const activeOutputIds = ref(new Set<number>())
 
   bridge.on('/e/modules/prop', ({ args: [id, name, value] }) => {
     const item = get(id)
     if (!item) return
     item.props[name] = value
+  })
+
+  bridge.on('/e/modules/active-outputs', ({ args }) => {
+    activeOutputIds.value = new Set(
+      args.map((packed: number) => {
+        const [moduleId, index] = unpackBytes(packed)
+        return `${moduleId}-${index - 1}` // use zero-based index
+      })
+    )
+
+    activeInputIds.value.clear()
+    connections.activeIds.clear()
+
+    if (activeOutputIds.value.size) {
+      for (const { id, from, to } of connections.items.values()) {
+        if (activeOutputIds.value.has(from.moduleId)) {
+          activeInputIds.value.add(to.moduleId)
+          connections.activeIds.add(id)
+        }
+      }
+    }
   })
 
   // Getters
@@ -174,6 +197,8 @@ export const useModules = defineStore('module-instances', () => {
     selectedIds,
     selectedItems,
     isDragging,
+    activeInputIds,
+    activeOutputIds,
     serialize,
     deserialize,
     get,
@@ -186,3 +211,6 @@ export const useModules = defineStore('module-instances', () => {
     clear,
   }
 })
+
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useModules, import.meta.hot))

@@ -5,7 +5,7 @@ import type {
 } from '@/types'
 import { luaToJson } from '@/utils'
 import Fuse from 'fuse.js'
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useDevice } from './device'
 import { useModuleShapes } from './moduleShapes'
@@ -183,3 +183,6 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
     loadAllFromDevice,
   }
 })
+
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useModuleDefinitions, import.meta.hot))

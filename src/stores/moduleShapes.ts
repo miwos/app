@@ -1,5 +1,5 @@
 import { parseSVG, type Shape } from '@miwos/shape'
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 
 import inputShape from '@/assets/shapes/Input.svg'
@@ -56,3 +56,6 @@ export const useModuleShapes = defineStore('module shapes', () => {
 
   return { items, get, getByModule, getConnector }
 })
+
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useModuleShapes, import.meta.hot))

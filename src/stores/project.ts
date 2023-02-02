@@ -1,7 +1,7 @@
 import { useBridge } from '@/bridge'
 import type { ProjectSerialized } from '@/types'
 import { debounce, jsonToLua, luaToJson } from '@/utils'
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useConnections } from './connections'
 import { useDevice } from './device'
@@ -76,3 +76,6 @@ export const useProject = defineStore('project', () => {
     selectPart,
   }
 })
+
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useProject, import.meta.hot))

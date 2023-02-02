@@ -5,7 +5,7 @@ import type {
   MappingPageSerialized,
   MappingSerialized,
 } from '@/types/Mapping'
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useDevice } from './device'
 
@@ -126,3 +126,6 @@ export const useMappings = defineStore('mappings', () => {
     clear,
   }
 })
+
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useMappings, import.meta.hot))

@@ -1,7 +1,7 @@
 import { useBridge } from '@/bridge'
 import { useDevice } from '@/stores/device'
 import { useLog } from '@/stores/log'
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useModuleDefinitions } from './moduleDefinitions'
 
@@ -47,3 +47,6 @@ export const useApp = defineStore('app', () => {
 
   return { showPropFields, isMapping }
 })
+
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useApp, import.meta.hot))

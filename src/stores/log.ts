@@ -1,7 +1,7 @@
 // import { createColorize } from '@/utils'
 import { highlightLuaDump } from '@/lua-dump'
 import type { LogEntry, LogType } from '@/types/Log'
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export type Colors = Record<string, (input: string) => string>
@@ -88,3 +88,6 @@ export const useLog = defineStore('logs', () => {
 
   return { entries, log, info, warn, error, dump, clear }
 })
+
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useLog, import.meta.hot))

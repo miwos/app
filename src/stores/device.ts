@@ -1,12 +1,12 @@
 import { useBridge } from '@/bridge'
 import type { DeviceMethods } from '@/types/DeviceMethods'
-import { defineStore } from 'pinia'
+import type { LogType } from '@/types/Log'
+import { luaToJson } from '@/utils'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useLog } from './log'
-import type { LogType } from './log'
 import { useModuleDefinitions } from './moduleDefinitions'
 import { useProject } from './project'
-import { luaToJson } from '@/utils'
 
 export const useDevice = defineStore('device', () => {
   const isConnected = ref(false)
@@ -70,3 +70,6 @@ export const useDevice = defineStore('device', () => {
 
   return { isConnected, open, close, update, request }
 })
+
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useDevice, import.meta.hot))

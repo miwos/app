@@ -4,7 +4,7 @@ import type {
   ConnectionSerialized,
   TemporaryConnection,
 } from '@/types/Connection'
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useDevice } from './device'
 import { useModules } from './modules'
@@ -35,6 +35,7 @@ export const deserializeConnection = (
 export const useConnections = defineStore('connections', () => {
   const items = ref(new Map<Id, Connection>())
   const tempConnection = ref<TemporaryConnection>()
+  const activeIds = ref(new Set<Id>())
 
   const device = useDevice()
   const modules = useModules()
@@ -103,6 +104,7 @@ export const useConnections = defineStore('connections', () => {
   return {
     items,
     tempConnection,
+    activeIds,
     serialize,
     deserialize,
     get,
@@ -113,3 +115,6 @@ export const useConnections = defineStore('connections', () => {
     clear,
   }
 })
+
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useConnections, import.meta.hot))
