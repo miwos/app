@@ -35,7 +35,6 @@ export const deserializeConnection = (
 export const useConnections = defineStore('connections', () => {
   const items = ref(new Map<Id, Connection>())
   const tempConnection = ref<TemporaryConnection>()
-  const activeIds = ref(new Set<Id>())
 
   const device = useDevice()
   const modules = useModules()
@@ -54,6 +53,17 @@ export const useConnections = defineStore('connections', () => {
     Array.from(items.value.values()).filter(
       (item) => item.from.moduleId === id || item.to.moduleId === id
     )
+
+  const list = computed(() => Array.from(items.value.values()))
+
+  const activeIds = computed((): Set<Id> => {
+    const ids = new Set<Id>()
+    for (const { id, from } of list.value) {
+      const outputId = `${from.moduleId}-${from.index}`
+      if (modules.activeOutputIds.has(outputId)) ids.add(id)
+    }
+    return ids
+  })
 
   const sortIndexes = computed(
     () =>

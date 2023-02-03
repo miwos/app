@@ -4,6 +4,7 @@
     :class="{
       'dragged-over': isDraggedOver,
       dragging: isDragging,
+      active: isActive,
     }"
     ref="el"
     draggable="true"
@@ -21,7 +22,7 @@ import { useConnections } from '@/stores/connections'
 import { useModules } from '@/stores/modules'
 import type { ConnectionPoint } from '@/types/Connection'
 import { createEmptyImage } from '@/utils'
-import { ref } from 'vue'
+import { computed, ref, toRefs } from 'vue'
 import MIcon from './MIcon.vue'
 
 const props = defineProps<{
@@ -30,7 +31,13 @@ const props = defineProps<{
 
 const el = ref<HTMLElement>()
 const connections = useConnections()
-const module = useModules().get(props.point.moduleId)
+const modules = useModules()
+const module = modules.get(props.point.moduleId)
+const isActive = computed(() =>
+  props.point.direction == 'in'
+    ? modules.activeInputIds.has(props.point.id)
+    : modules.activeOutputIds.has(props.point.id)
+)
 
 const handleDragStart = (event: DragEvent) => {
   if (!event.dataTransfer) return
@@ -92,6 +99,10 @@ const { isDragging, isDraggedOver } = useDragDrop(el, {
   top: v-bind('point.offset.y + `px`');
   left: v-bind('point.offset.x + `px`');
   fill: var(--color-connection);
+  transition: fill var(--transition-duration-connection);
+  &.active {
+    fill: var(--color-active);
+  }
 
   &.dragging .icon,
   &.dragged-over {

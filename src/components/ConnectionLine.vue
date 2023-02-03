@@ -1,5 +1,5 @@
 <template>
-  <svg class="connection-line">
+  <svg class="connection-line" :class="{ active: isActive }">
     <path class="line-selected" v-if="isSelected" :d="path?.data" />
     <path class="line-display" :d="path?.data" />
     <path
@@ -22,6 +22,7 @@
 
 <script setup lang="ts">
 import { useConnectionPath } from '@/composables/useConnectionPath'
+import { useConnections } from '@/stores/connections'
 import { useModules } from '@/stores/modules'
 import type { Connection } from '@/types/Connection'
 import { watchDebounced } from '@vueuse/core'
@@ -34,6 +35,7 @@ const props = defineProps<{
 const hitArea = ref<SVGPathElement>()
 const { from, to } = toRefs(props.connection)
 const modules = useModules()
+const connections = useConnections()
 const debug = false
 
 const isSelected = computed(
@@ -41,6 +43,7 @@ const isSelected = computed(
     modules.selectedIds.has(from.value.moduleId) ||
     modules.selectedIds.has(to.value.moduleId)
 )
+const isActive = computed(() => connections.activeIds.has(props.connection.id))
 
 const path = useConnectionPath(props.connection)
 
@@ -85,7 +88,11 @@ watchDebounced(
 .line-display {
   stroke-width: 1px;
   stroke: var(--color-connection);
+  transition: stroke var(--transition-duration-connection);
   fill: none;
+  .active & {
+    stroke: var(--color-active);
+  }
 }
 
 .line-selected {

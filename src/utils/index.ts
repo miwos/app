@@ -1,3 +1,4 @@
+export * from './bytes'
 export * from './connectionPoint'
 export * from './containsRect'
 export * from './createColorize'

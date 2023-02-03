@@ -10,6 +10,8 @@ import { useModuleShapes } from './moduleShapes'
 
 type Id = Module['id']
 
+const activeOutputDuration = 100 // ms
+
 export const serializeModule = (module: Module): ModuleSerialized => ({
   ...module,
   position: [module.position.x, module.position.y],
@@ -37,8 +39,7 @@ export const useModules = defineStore('module-instances', () => {
   const selectedIds = ref(new Set<Id>())
   const isDragging = ref(false)
   const nextId = ref(1) // We use a one-based index to be consistent with lua.
-  const activeInputIds = ref(new Set<number>())
-  const activeOutputIds = ref(new Set<number>())
+  const activeOutputIds = ref(new Set<string>())
 
   bridge.on('/e/modules/prop', ({ args: [id, name, value] }) => {
     const item = get(id)
@@ -46,25 +47,33 @@ export const useModules = defineStore('module-instances', () => {
     item.props[name] = value
   })
 
+  const outputResetTimers: Record<string, number> = {}
+  let sustainedIds = new Set<string>()
   bridge.on('/e/modules/active-outputs', ({ args }) => {
-    activeOutputIds.value = new Set(
-      args.map((packed: number) => {
-        const [moduleId, index] = unpackBytes(packed)
-        return `${moduleId}-${index - 1}` // use zero-based index
-      })
-    )
+    const newSustainedIds = new Set<string>()
+    for (const packed of args) {
+      const [moduleId, indexAndSustained] = unpackBytes(packed)
+      const index = indexAndSustained & 0x7f
+      const isSustained = indexAndSustained >> 7
+      const id = `${moduleId}-${index - 1}` // use zero-based index
 
-    activeInputIds.value.clear()
-    connections.activeIds.clear()
-
-    if (activeOutputIds.value.size) {
-      for (const { id, from, to } of connections.items.values()) {
-        if (activeOutputIds.value.has(from.moduleId)) {
-          activeInputIds.value.add(to.moduleId)
-          connections.activeIds.add(id)
-        }
+      activeOutputIds.value.add(id)
+      if (isSustained) {
+        newSustainedIds.add(id)
+      } else {
+        window.clearTimeout(outputResetTimers[id])
+        outputResetTimers[id] = window.setTimeout(
+          () => activeOutputIds.value.delete(id),
+          activeOutputDuration
+        )
       }
     }
+
+    for (const id of sustainedIds) {
+      if (!newSustainedIds.has(id)) activeOutputIds.value.delete(id)
+    }
+
+    sustainedIds = newSustainedIds
   })
 
   // Getters
@@ -98,6 +107,16 @@ export const useModules = defineStore('module-instances', () => {
     if (!definitionConnector || !shapeConnector) return
     return { ...definitionConnector, ...shapeConnector }
   }
+
+  const activeInputIds = computed(
+    () =>
+      new Set<string>(
+        Array.from(connections.activeIds.values()).map((id) => {
+          const connection = connections.items.get(id)!
+          return `${connection.to.moduleId}-${connection.to.index}`
+        })
+      )
+  )
 
   const sortIndexes = computed(
     () => new Map(sortedIds.value.map((v, i) => [v, i]))

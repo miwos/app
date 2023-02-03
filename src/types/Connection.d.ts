@@ -23,6 +23,7 @@ export type ConnectionSerialized = [
 ]
 
 export interface ConnectionPoint {
+  id: `${ConnectionPoint['moduleId']}-${ConnectionPoint['index']}`
   moduleId: Module['id']
   index: number
   direction: 'in' | 'out'

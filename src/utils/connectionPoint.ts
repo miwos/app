@@ -33,5 +33,6 @@ export const getConnectionPoint = (
     y: offset.y + module.position.y,
   }
 
-  return { signal, moduleId, direction, index, offset, angle, position }
+  const id = `${moduleId}-${index}` as const
+  return { id, signal, moduleId, direction, index, offset, angle, position }
 }
