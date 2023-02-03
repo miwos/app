@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span :class="`log-entry-${type}`" v-html="html"></span>
+    <span :class="`log-entry-${type} mark-${type}`" v-html="html"></span>
     <span v-if="props.count > 1" class="mark-yellow"> (x{{ count }})</span>
   </div>
 </template>

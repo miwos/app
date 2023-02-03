@@ -93,7 +93,7 @@ const scrollToBottom = () =>
   --color-log-specialKey: var(--color-log-cyan);
   --color-log-complexType: #ff4cf5;
   --color-log-number: tomato;
-  --color-log-boolean: var(--color-log-blue);
+  --color-log-boolean: rgb(81 130 255);
   --color-log-string: var(--color-log-yellow);
 
   .mark-black {
