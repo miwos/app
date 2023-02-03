@@ -3,33 +3,9 @@
 </template>
 
 <script setup lang="ts">
-import { useModuleDefinitions } from '@/stores/moduleDefinitions'
 import type { Module } from '@/types'
-import { perforatePath, type Shape } from '@miwos/shape'
-import { computed } from 'vue'
-
-const props = defineProps<{ module: Module; shape: Shape }>()
-const definitions = useModuleDefinitions()
-
-const dash = computed(() => {
-  const { shape } = props
-  const definition = definitions.get(props.module.type)
-  if (!definition) return
-
-  const holes = []
-
-  for (let i = 0; i < definition.inputs.length; i++) {
-    const { signal, offset } =
-      definitions.getConnector(props.module.type, i, 'in') ?? {}
-    if (offset !== undefined && signal === 'midi') holes.push(offset)
-  }
-  for (let i = 0; i < definition.outputs.length; i++) {
-    const { signal, offset } =
-      definitions.getConnector(props.module.type, i, 'out') ?? {}
-    if (offset !== undefined && signal === 'midi') holes.push(offset)
-  }
-  return perforatePath(shape.pathLength, holes)
-})
+import type { Shape } from '@miwos/shape'
+defineProps<{ module: Module; shape: Shape }>()
 </script>
 
 <style scoped lang="scss">
@@ -40,10 +16,6 @@ const dash = computed(() => {
   stroke: rgb(0 0 0 / 16%);
   stroke-width: 8px;
   fill: none;
-
-  // stroke-dasharray: v-bind('dash?.dashArray');
-  // stroke-dashoffset: v-bind('dash?.dashOffset');
-  // stroke-linecap: round;
   stroke-linejoin: round;
 
   &::v-deep(svg) {
