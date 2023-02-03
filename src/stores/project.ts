@@ -31,7 +31,7 @@ export const useProject = defineStore('project', () => {
   })
 
   // Actions
-  const serialize = () => ({
+  const serialize = (): ProjectSerialized => ({
     connections: connections.serialize(),
     modules: modules.serialize(),
     mappings: mappings.serialize(),
