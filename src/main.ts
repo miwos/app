@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import Previewer from 'virtual:vue-component-preview'
 
 import './main.scss'
 
@@ -19,5 +20,6 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+app.use(Previewer)
 
 app.mount('#app')

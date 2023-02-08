@@ -16,6 +16,7 @@
   "dependencies": {
     "@vueuse/core": "^9.11.1",
     "buffer": "^6.0.3",
+    "colord": "^2.9.3",
     "colorize-template": "^1.0.0",
     "fuse.js": "^6.6.2",
     "hobby-curve": "^0.2.1",
