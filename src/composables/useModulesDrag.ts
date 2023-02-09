@@ -12,8 +12,13 @@ export const useModulesDrag = (
   const dragThreshold = 5 // px
   let positionMouseDown = { x: 0, y: 0 }
 
-  const handleMouseMove = ({ clientX, clientY }: MouseEvent) => {
-    if (!modules.isDragging) {
+  const handleMouseMove = (event: MouseEvent) => {
+    event.preventDefault()
+    const { clientX, clientY } = event
+
+    if (modules.isDragging) {
+      drag({ x: clientX, y: clientY })
+    } else {
       const { x, y } = positionMouseDown
       const distance = Math.hypot(clientX - x, clientY - y)
 
@@ -28,8 +33,6 @@ export const useModulesDrag = (
         modules.isDragging = true
       }
     }
-
-    if (modules.isDragging) drag({ x: clientX, y: clientY })
   }
 
   const handleMouseUp = () => {
