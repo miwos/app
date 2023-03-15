@@ -7,6 +7,7 @@ export interface Module {
   id: number
   type: ModuleDefinition['id']
   position: Point
+  label?: string | string[]
   size?: Size
   props: Record<string, unknown>
 }

@@ -14,6 +14,7 @@
       />
       <ModuleShape v-if="shape" :shape="shape" />
       <ModuleContent :module="module" :mask="`url(#${maskId})`" />
+      <ModuleLabel :module="module" :shape="shape" />
       <ConnectionPoints :module="module" />
       <ModuleProps :module="module" />
     </template>
@@ -42,6 +43,7 @@ import { useModulesDrag } from '@/composables/useModulesDrag'
 import ModuleProps from './ModuleProps.vue'
 import ModuleContent from './ModuleContent.vue'
 import ModuleMask from './ModuleMask.vue'
+import ModuleLabel from './ModuleLabel.vue'
 
 const moduleComponentsImport = import.meta.glob([
   '../modules/*.vue',
