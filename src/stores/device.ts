@@ -10,6 +10,12 @@ import { useProject } from './project'
 
 export const useDevice = defineStore('device', () => {
   const isConnected = ref(false)
+  const ports = [
+    { id: 0, label: 'PC', hasCables: true },
+    { id: 1, label: 'DIN 1' },
+    { id: 2, label: 'DIN 2' },
+    { id: 3, label: 'USB' },
+  ]
 
   const bridge = useBridge()
   const project = useProject()
@@ -68,7 +74,7 @@ export const useDevice = defineStore('device', () => {
     >
   }
 
-  return { isConnected, open, close, update, request }
+  return { ports, isConnected, open, close, update, request }
 })
 
 if (import.meta.hot)

@@ -31,14 +31,16 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
             },
           ],
           shape: 'Input',
+          clipContent: false,
           props: {
-            device: {
+            port: {
               type: 'Number',
               options: {
-                value: 4,
+                value: 1,
                 max: 13,
                 step: 1,
                 min: 1,
+                listed: false,
               },
             },
             cable: {
@@ -48,6 +50,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
                 max: 16,
                 step: 1,
                 min: 1,
+                listed: false,
               },
             },
           },
@@ -64,14 +67,16 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
           ],
           outputs: [],
           shape: 'Output',
+          clipContent: false,
           props: {
-            device: {
+            port: {
               type: 'Number',
               options: {
                 value: 1,
                 max: 13,
                 step: 1,
                 min: 1,
+                listed: false,
               },
             },
             cable: {
@@ -81,6 +86,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
                 max: 16,
                 step: 1,
                 min: 1,
+                listed: false,
               },
             },
           },
@@ -139,12 +145,16 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
 
   const deserialize = (serialized: ModuleDefinitionSerialized[]) => {
     for (const serializedDefinition of serialized) {
-      const { shape, id, inputs, outputs, props = {} } = serializedDefinition
+      // prettier-ignore
+      const { shape, id, label, inputs, outputs, props = {} } = 
+        serializedDefinition
+
       items.value.set(id, {
         id,
         inputs: inputs?.map((signal) => ({ signal })) ?? [],
         outputs: outputs?.map((signal) => ({ signal })) ?? [],
         shape: shape ?? id,
+        label: label ?? id,
         props: Object.fromEntries(
           Object.entries(props).map(([name, [type, options]]) => [
             name,

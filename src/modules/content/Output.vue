@@ -5,8 +5,8 @@
     @update:value="emit('update:port', $event)"
     theme="default"
     label="Dropdown"
-    preferredAlignment="above"
-    class="module-input-content"
+    preferredAlignment="below"
+    class="module-output-content"
   >
     <template #currentOption="{ label }">
       <div class="font-vevey">{{ label }}</div>
@@ -32,10 +32,10 @@ const device = useDevice()
 </script>
 
 <style scoped lang="scss">
-.module-input-content {
+.module-output-content {
   pointer-events: all;
   position: absolute;
-  bottom: 100%;
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
 }

@@ -3,8 +3,9 @@
     ref="el"
     class="m-select"
     :class="{ overflow: isOverflowing }"
-    role="listbox"
     :data-theme="theme ?? 'default'"
+    role="listbox"
+    :aria-label="label"
     tabindex="0"
   >
     <li
@@ -37,6 +38,7 @@ const props = defineProps<{
   options: { id: any; label?: string }[]
   theme?: 'default' | 'none'
   autoFocus?: boolean
+  label?: string
 }>()
 
 const el = ref<HTMLElement>()
@@ -48,7 +50,7 @@ const isOverflowing = ref(false)
 onMounted(() => {
   if (props.autoFocus) el.value?.focus()
   if (props.value !== undefined) {
-    const index = props.options.findIndex(v => v.id === props.value)
+    const index = props.options.findIndex((v) => v.id === props.value)
     focus(index)
   }
 })
@@ -88,6 +90,7 @@ const onKeyDown = (e: KeyboardEvent) => {
     e.preventDefault()
     focus(focusedIndex.value + 1)
   } else if (key === 'Enter') {
+    e.preventDefault()
     emit('update:value', options.value[focusedIndex.value].id)
   } else if (key === 'PageUp' || key === 'Home') {
     e.preventDefault()
