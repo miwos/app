@@ -6,6 +6,7 @@ import inputShape from '@/assets/shapes/Input.svg'
 import outputShape from '@/assets/shapes/Output.svg'
 import chordShape from '@/assets/shapes/Chord.svg'
 import delayShape from '@/assets/shapes/Delay.svg'
+import splitShape from '@/assets/shapes/Split.svg'
 
 import type { Module } from '@/types'
 import { useModuleDefinitions } from './moduleDefinitions'
@@ -19,6 +20,7 @@ export const useModuleShapes = defineStore('module shapes', () => {
       ['Output', parseSVG('Output', outputShape)],
       ['Chord', parseSVG('Chord', chordShape)],
       ['Delay', parseSVG('Delay', delayShape)],
+      ['Split', parseSVG('Split', splitShape)],
     ])
   )
 
