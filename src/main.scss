@@ -38,6 +38,10 @@
   --z-dialog: 3;
 }
 
+body {
+  overflow: hidden;
+}
+
 #app {
   font-family: Inter;
   background-color: var(--color-background);
@@ -48,5 +52,5 @@
 }
 
 *:focus-visible {
-  outline: blue;
+  outline: 2px solid blue;
 }
