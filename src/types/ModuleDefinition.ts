@@ -3,17 +3,19 @@ import type { Signal } from './Signal'
 
 export interface ModuleDefinition {
   id: string
+  label?: string | string[]
   shape: Shape['id']
-  clipContent?: boolean
+  clipContent: boolean
   inputs: { signal: Signal }[]
   outputs: { signal: Signal }[]
   props: Record<string, { type: string; options: Record<string, any> }>
-  label?: string | string[]
 }
 
-export interface ModuleDefinitionSerialized
-  extends Pick<ModuleDefinition, 'id' | 'shape'> {
+export interface ModuleDefinitionSerialized {
+  id: string
   label?: string | string[]
+  shape: Shape['id']
+  clipContent?: boolean
   inputs?: Signal[]
   outputs?: Signal[]
   props?: Record<string, [type: string, options: Record<string, any>]>

@@ -1,8 +1,4 @@
-import type {
-  ModuleDefinition,
-  ModuleDefinitionSerialized,
-  Signal,
-} from '@/types'
+import type { ModuleDefinition, ModuleDefinitionSerialized } from '@/types'
 import { luaToJson } from '@/utils'
 import Fuse from 'fuse.js'
 import { acceptHMRUpdate, defineStore } from 'pinia'
@@ -33,7 +29,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
           shape: 'Input',
           clipContent: false,
           props: {
-            port: {
+            device: {
               type: 'Number',
               options: {
                 value: 1,
@@ -69,7 +65,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
           shape: 'Output',
           clipContent: false,
           props: {
-            port: {
+            device: {
               type: 'Number',
               options: {
                 value: 1,
@@ -146,7 +142,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
   const deserialize = (serialized: ModuleDefinitionSerialized[]) => {
     for (const serializedDefinition of serialized) {
       // prettier-ignore
-      const { shape, id, label, inputs, outputs, props = {} } = 
+      const { shape, id, label, clipContent, inputs, outputs, props = {} } = 
         serializedDefinition
 
       items.value.set(id, {
@@ -155,6 +151,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
         outputs: outputs?.map((signal) => ({ signal })) ?? [],
         shape: shape ?? id,
         label: label ?? id,
+        clipContent: clipContent ?? true,
         props: Object.fromEntries(
           Object.entries(props).map(([name, [type, options]]) => [
             name,

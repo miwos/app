@@ -1,8 +1,8 @@
 <template>
   <MDropdown
-    :options="device.ports"
-    :value="port"
-    @update:value="emit('update:port', $event)"
+    :options="device.midiDevices"
+    :value="props.device"
+    @update:value="emit('update:device', $event)"
     theme="default"
     label="Dropdown"
     preferredAlignment="below"
@@ -19,13 +19,13 @@
 import { useDevice } from '@/stores/device'
 import MDropdown from '@/ui/MDropdown.vue'
 
-defineProps<{
-  port: number
+const props = defineProps<{
+  device: number
   cable: number
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:port', port: number): void
+  (e: 'update:device', device: number): void
 }>()
 
 const device = useDevice()

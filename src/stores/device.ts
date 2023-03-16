@@ -10,11 +10,12 @@ import { useProject } from './project'
 
 export const useDevice = defineStore('device', () => {
   const isConnected = ref(false)
-  const ports = [
-    { id: 0, label: 'PC', hasCables: true },
-    { id: 1, label: 'DIN 1' },
-    { id: 2, label: 'DIN 2' },
-    { id: 3, label: 'USB' },
+  const midiDevices = [
+    { id: 1, label: 'PC', hasCables: true },
+    { id: 2, label: 'DIN 1' },
+    { id: 3, label: 'DIN 2' },
+    // Todo: handle USB port's midi devices 5-13
+    { id: 4, label: 'USB' },
   ]
 
   const bridge = useBridge()
@@ -74,7 +75,7 @@ export const useDevice = defineStore('device', () => {
     >
   }
 
-  return { ports, isConnected, open, close, update, request }
+  return { midiDevices, isConnected, open, close, update, request }
 })
 
 if (import.meta.hot)
