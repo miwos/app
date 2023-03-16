@@ -7,6 +7,7 @@
       spellcheck="false"
       :value="query"
       @input="query = ($event.target as any).value"
+      @blur="emit('blur')"
     />
     <MSelect
       class="module-search-results"
@@ -34,6 +35,7 @@ import MSelect from '../ui/MSelect.vue'
 
 const emit = defineEmits<{
   (e: 'select', type: ModuleDefinition['id']): void
+  (e: 'blur'): void
 }>()
 defineProps<{
   alignResults: 'top' | 'bottom'
@@ -57,6 +59,12 @@ defineExpose({ focus, clear })
   flex-direction: column;
   gap: 0.5rem;
   height: 100%;
+
+  // The lightbox and the search being the only element on the page should
+  // provide enough focus.
+  :focus-visible {
+    outline: none;
+  }
 
   &.align-results-top {
     flex-direction: column-reverse;

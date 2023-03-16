@@ -4,12 +4,14 @@
       ref="search"
       :align-results="align"
       @select="addModule"
+      @blur="close()"
     ></ModuleDefinitionSearch>
   </div>
 </template>
 
 <script setup lang="ts">
 import * as commands from '@/commands'
+import { useApp } from '@/stores/app'
 import type { ModuleDefinition } from '@/types'
 import {
   onClickOutside,
@@ -23,6 +25,7 @@ import ModuleDefinitionSearch from './ModuleDefinitionSearch.vue'
 const el = ref<HTMLElement>()
 const search = ref<InstanceType<typeof ModuleDefinitionSearch>>()
 const mouse = useMouse()
+const app = useApp()
 const { height: windowHeight } = useWindowSize()
 const position = ref({ x: 0, y: 0 })
 const isOpen = ref(false)
@@ -45,6 +48,8 @@ watchEffect(() => {
 const open = () => {
   if (isOpen.value) return
 
+  app.isOverlaying = true
+
   position.value = { x: mouse.x.value, y: mouse.y.value }
   isOpen.value = true
 
@@ -55,6 +60,7 @@ const open = () => {
 }
 
 const close = () => {
+  app.isOverlaying = false
   isOpen.value = false
 }
 

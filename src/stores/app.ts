@@ -8,6 +8,7 @@ import { useModuleDefinitions } from './moduleDefinitions'
 export const useApp = defineStore('app', () => {
   const showPropFields = ref(false)
   const isMapping = ref(false)
+  const isOverlaying = ref(false)
 
   const bridge = useBridge()
   const device = useDevice()
@@ -45,7 +46,7 @@ export const useApp = defineStore('app', () => {
     }
   })
 
-  return { showPropFields, isMapping }
+  return { showPropFields, isMapping, isOverlaying }
 })
 
 if (import.meta.hot)

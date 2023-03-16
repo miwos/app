@@ -1,30 +1,34 @@
 <template>
-  <MenuAdd />
-  <TheEncoders />
-  <div class="selection" v-if="isSelecting" :style="style"></div>
-  <div class="module-instances">
-    <ModuleInstance
-      v-for="[id, item] in modules.items"
-      :key="id"
-      :module="item"
-      v-model:position="item.position"
-      :style="`z-index: ${modules.getSortIndex(id)}`"
-    ></ModuleInstance>
-  </div>
-  <div class="connections">
-    <ConnectionLine
-      v-for="[id, connection] in connections.items"
-      :key="id"
-      :connection="connection"
-      :style="`z-index: ${connections.getSortIndex(id)}`"
-    />
-    <ConnectionLineTemp
-      v-if="connections.tempConnection?.from && connections.tempConnection?.to"
-      :connection="connections.tempConnection"
-      :style="`z-index: ${modules.items.size}`"
-    />
-  </div>
   <div class="background" ref="bg"></div>
+  <div class="selection" v-if="isSelecting" :style="style"></div>
+  <div class="patch" :class="app.isOverlaying && 'dim'">
+    <div class="module-instances">
+      <ModuleInstance
+        v-for="[id, item] in modules.items"
+        :key="id"
+        :module="item"
+        v-model:position="item.position"
+        :style="`z-index: ${modules.getSortIndex(id)}`"
+      ></ModuleInstance>
+    </div>
+    <div class="connections">
+      <ConnectionLine
+        v-for="[id, connection] in connections.items"
+        :key="id"
+        :connection="connection"
+        :style="`z-index: ${connections.getSortIndex(id)}`"
+      />
+      <ConnectionLineTemp
+        v-if="
+          connections.tempConnection?.from && connections.tempConnection?.to
+        "
+        :connection="connections.tempConnection"
+        :style="`z-index: ${modules.items.size}`"
+      />
+    </div>
+  </div>
+  <TheEncoders />
+  <MenuAdd />
 </template>
 
 <script setup lang="ts">
@@ -35,6 +39,7 @@ import MenuAdd from '@/components/MenuAdd.vue'
 import ModuleInstance from '@/components/ModuleInstance.vue'
 import TheEncoders from '@/components/TheEncoders.vue'
 import { useSelection } from '@/composables/useSelection'
+import { useApp } from '@/stores/app'
 import { useConnections } from '@/stores/connections'
 import { useModules } from '@/stores/modules'
 import { useProject } from '@/stores/project'
@@ -46,6 +51,7 @@ const bg = ref<HTMLElement>()
 const modules = useModules()
 const connections = useConnections()
 const project = useProject()
+const app = useApp()
 
 const { style, rect, cancel, isSelecting } = useSelection(bg)
 const keys = useMagicKeys()
@@ -76,6 +82,19 @@ whenever(keys['delete'], () => removeModules(modules.selectedIds))
 .background {
   width: 100vw;
   height: 100vh;
+}
+
+.patch {
+  // Create a new stacking context, so modules and connections don't
+  // overlay menus and dialogs.
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 100ms ease;
+
+  &.dim {
+    opacity: 0.3;
+  }
 }
 
 .selection {
