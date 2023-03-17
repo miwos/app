@@ -3,7 +3,7 @@ import type { Signal } from './Signal'
 
 export interface ModuleDefinition {
   id: string
-  label?: string | string[]
+  label?: string
   shape: Shape['id']
   clipContent: boolean
   inputs: { signal: Signal }[]
@@ -13,7 +13,7 @@ export interface ModuleDefinition {
 
 export interface ModuleDefinitionSerialized {
   id: string
-  label?: string | string[]
+  label?: string
   shape: Shape['id']
   clipContent?: boolean
   inputs?: Signal[]

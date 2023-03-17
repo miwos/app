@@ -6,13 +6,16 @@ import type { Signal } from './Signal'
 export interface Module {
   id: number
   type: ModuleDefinition['id']
+  label: string
   position: Point
-  label?: string | string[]
   size?: Size
   props: Record<string, unknown>
 }
 
-export interface ModuleSerialized extends Pick<Module, 'id' | 'type'> {
+export interface ModuleSerialized {
+  id: number
+  type: ModuleDefinition['id']
+  label?: string
   props?: Record<string, unknown>
   position?: [x: number, y: number]
 }

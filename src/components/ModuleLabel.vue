@@ -15,30 +15,32 @@
         {{ label.text }}
       </div>
     </template>
-    <div class="module-label-default" v-else>{{ labels[0] }}</div>
+    <div class="module-label-default" v-else>{{ module.label }}</div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useModuleDefinitions } from '@/stores/moduleDefinitions'
 import type { Module } from '@/types'
 import { computed } from 'vue'
-import { asArray } from '@/utils'
 import type { Shape } from '@miwos/shape'
 
 const props = defineProps<{ module: Module; shape?: Shape }>()
-const definition = computed(() => useModuleDefinitions().get(props.module.type))
 
-const labels = computed(() =>
-  asArray(props.module.label ?? definition.value?.label).filter(Boolean)
-)
+const positionedLabels = computed(() => {
+  const { label } = props.module
 
-const positionedLabels = computed(() =>
-  props.shape?.labels.map((labelDefinition, index) => ({
+  const labelDefinitions = props.shape?.labels
+  if (!labelDefinitions) return []
+
+  // A label can contain line breaks. If the shape defines multiple labels we
+  // can split the label and position each line accordingly.
+  const labels = labelDefinitions.length > 1 ? label.split('\n') : [label]
+
+  return labelDefinitions.map((labelDefinition, index) => ({
     ...labelDefinition,
-    text: labels.value[index],
+    text: labels[index],
   }))
-)
+})
 </script>
 
 <style scoped lang="scss">

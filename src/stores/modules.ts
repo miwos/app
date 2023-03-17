@@ -1,6 +1,6 @@
 import { useBridge } from '@/bridge'
-import type { Module, ModuleSerialized, Optional, Point, Rect } from '@/types'
-import { getCombinedRect, unpackBytes } from '@/utils'
+import type { Module, ModuleSerialized, Optional } from '@/types'
+import { unpackBytes } from '@/utils'
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, nextTick, ref } from 'vue'
 import { useConnections } from './connections'
@@ -12,6 +12,9 @@ type Id = Module['id']
 
 const activeOutputDuration = 100 // ms
 
+const getDefaultLabel = (type: Module['type']) =>
+  useModuleDefinitions().get(type)?.label ?? type
+
 export const serializeModule = (module: Module): ModuleSerialized => ({
   ...module,
   position: [module.position.x, module.position.y],
@@ -19,6 +22,7 @@ export const serializeModule = (module: Module): ModuleSerialized => ({
 
 export const deserializeModule = (serialized: ModuleSerialized): Module => ({
   ...serialized,
+  label: serialized.label ?? getDefaultLabel(serialized.type),
   props: serialized.props ?? {},
   position: {
     x: serialized.position?.[0] ?? 0,
