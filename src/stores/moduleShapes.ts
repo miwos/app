@@ -60,4 +60,6 @@ export const useModuleShapes = defineStore('module shapes', () => {
 })
 
 if (import.meta.hot)
-  import.meta.hot.accept(acceptHMRUpdate(useModuleShapes, import.meta.hot))
+  import.meta.hot.accept(
+    acceptHMRUpdate(useModuleShapes as any, import.meta.hot)
+  )

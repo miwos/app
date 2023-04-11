@@ -128,4 +128,4 @@ export const useMappings = defineStore('mappings', () => {
 })
 
 if (import.meta.hot)
-  import.meta.hot.accept(acceptHMRUpdate(useMappings, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useMappings as any, import.meta.hot))

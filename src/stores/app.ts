@@ -50,4 +50,4 @@ export const useApp = defineStore('app', () => {
 })
 
 if (import.meta.hot)
-  import.meta.hot.accept(acceptHMRUpdate(useApp, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useApp as any, import.meta.hot))

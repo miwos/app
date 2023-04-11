@@ -127,4 +127,6 @@ export const useConnections = defineStore('connections', () => {
 })
 
 if (import.meta.hot)
-  import.meta.hot.accept(acceptHMRUpdate(useConnections, import.meta.hot))
+  import.meta.hot.accept(
+    acceptHMRUpdate(useConnections as any, import.meta.hot)
+  )

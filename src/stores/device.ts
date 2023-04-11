@@ -79,4 +79,4 @@ export const useDevice = defineStore('device', () => {
 })
 
 if (import.meta.hot)
-  import.meta.hot.accept(acceptHMRUpdate(useDevice, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useDevice as any, import.meta.hot))

@@ -236,4 +236,4 @@ export const useModules = defineStore('module-instances', () => {
 })
 
 if (import.meta.hot)
-  import.meta.hot.accept(acceptHMRUpdate(useModules, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useModules as any, import.meta.hot))

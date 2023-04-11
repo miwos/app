@@ -90,4 +90,4 @@ export const useLog = defineStore('logs', () => {
 })
 
 if (import.meta.hot)
-  import.meta.hot.accept(acceptHMRUpdate(useLog, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useLog as any, import.meta.hot))
