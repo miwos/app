@@ -1,9 +1,7 @@
 <template>
   <div class="background" ref="bg"></div>
   <div class="selection" v-if="isSelecting" :style="style"></div>
-  <div class="modulator-instances">
-    <ModulatorInstance v-for="[id, item] in modulators.items" />
-  </div>
+  <TheModulators />
   <div class="patch" :class="app.isOverlaying && 'dim'">
     <div class="module-instances">
       <ModuleInstance
@@ -12,7 +10,7 @@
         :module="item"
         v-model:position="item.position"
         :style="`z-index: ${modules.getSortIndex(id)}`"
-      ></ModuleInstance>
+      />
     </div>
     <div class="connections">
       <ConnectionLine
@@ -42,6 +40,7 @@ import MenuAdd from '@/components/MenuAdd.vue'
 import ModulatorInstance from '@/components/ModulatorInstance.vue'
 import ModuleInstance from '@/components/ModuleInstance.vue'
 import TheEncoders from '@/components/TheEncoders.vue'
+import TheModulators from '@/components/TheModulators.vue'
 import { useSelection } from '@/composables/useSelection'
 import { useApp } from '@/stores/app'
 import { useConnections } from '@/stores/connections'
@@ -103,14 +102,6 @@ whenever(keys['delete'], () => removeModules(modules.selectedIds))
   &.dim {
     opacity: 0.3;
   }
-}
-
-.modulator-instances {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100px;
-  margin: 1rem;
 }
 
 .selection {

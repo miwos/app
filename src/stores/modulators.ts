@@ -1,9 +1,12 @@
 import type { Modulator, ModulatorSerialized, Optional } from '@/types'
-import { defineStore } from 'pinia'
+import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useDevice } from './device'
 import { useModulatorDefinitions } from './modulatorDefinitions'
 import { useProject } from './project'
+import { useBridge } from '@/bridge'
+import { map, unpackBytes } from '@/utils'
+import { useEventBus } from '@vueuse/core'
 
 type Id = Modulator['id']
 
@@ -45,6 +48,19 @@ export const useModulators = defineStore('modulators', () => {
   const project = useProject()
   const device = useDevice()
   const definitions = useModulatorDefinitions()
+  const bridge = useBridge()
+  const modulatorValueBus = useEventBus('modulator-value')
+
+  bridge.on('/e/modulators/values', ({ args }) => {
+    for (const packed of args) {
+      const [modulatorId, value] = unpackBytes(packed)
+      const modulator = items.value.get(modulatorId)
+      if (!modulator) continue
+
+      const normalizedValue = map(value, 0, 255, -1, 1)
+      modulatorValueBus.emit(modulatorId, normalizedValue)
+    }
+  })
 
   // Getters
   const get = (id: Id) => {
@@ -89,3 +105,6 @@ export const useModulators = defineStore('modulators', () => {
 
   return { items, list, get, serialize, deserialize, add, clear }
 })
+
+if (import.meta.hot)
+  import.meta.hot.accept(acceptHMRUpdate(useModulators as any, import.meta.hot))
