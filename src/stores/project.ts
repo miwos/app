@@ -7,6 +7,8 @@ import { useConnections } from './connections'
 import { useDevice } from './device'
 import { useMappings } from './mappings'
 import { useModules } from './modules'
+import { useModulators } from './modulators'
+import { useModulations } from './modulations'
 
 export const useProject = defineStore('project', () => {
   const partIndex = ref(0)
@@ -18,6 +20,8 @@ export const useProject = defineStore('project', () => {
   const connections = useConnections()
   const modules = useModules()
   const mappings = useMappings()
+  const modulators = useModulators()
+  const modulations = useModulations()
 
   const folder = computed(() => `lua/projects/${name.value}`)
   const file = computed(() => `${folder.value}/part-${partIndex.value + 1}.lua`)
@@ -35,28 +39,36 @@ export const useProject = defineStore('project', () => {
     connections: connections.serialize(),
     modules: modules.serialize(),
     mappings: mappings.serialize(),
+    modulators: modulators.serialize(),
+    modulations: modulations.serialize(),
   })
 
   const save = debounce(() => {
+    // console.log('save disabled')
     if (!device.isConnected) return
     const content = jsonToLua(serialize())
+    console.log(content)
     return bridge.writeFile(file.value, content)
   }, 1000)
 
   const load = async () => {
     if (!device.isConnected) return
     const content = await bridge.readFile(file.value)
-    // console.log(content)
+    console.log(content)
     const serialized = luaToJson(content) as ProjectSerialized
     modules.deserialize(serialized.modules)
     connections.deserialize(serialized.connections)
     mappings.deserialize(serialized.mappings)
+    modulators.deserialize(serialized.modulators)
+    modulations.deserialize(serialized.modulations)
   }
 
   const clear = (updateDevice = true) => {
     connections.clear()
     modules.clear()
     mappings.clear()
+    modulations.clear()
+    modulators.clear()
     if (updateDevice) device.update('/e/patch/clear')
   }
 

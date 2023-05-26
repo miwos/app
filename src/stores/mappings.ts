@@ -14,8 +14,8 @@ const mappingsEqual = (a: Omit<Mapping, 'slot'>, b: Omit<Mapping, 'slot'>) =>
 
 export const useMappings = defineStore('mappings', () => {
   const pages = ref(new Map<number, MappingPage>())
-
   const pageIndex = ref(0)
+
   const device = useDevice()
 
   // Getters
@@ -31,10 +31,11 @@ export const useMappings = defineStore('mappings', () => {
 
   const getMapping = (moduleId: Module['id'], prop: string) =>
     computed(() => {
-      const page = pages.value.get(pageIndex.value)
-      if (!page) return
-      for (const mapping of page.values()) {
-        if (mappingsEqual(mapping, { moduleId, prop })) return mapping
+      for (const [index, page] of pages.value.entries()) {
+        for (const mapping of page.values()) {
+          if (mappingsEqual(mapping, { moduleId, prop }))
+            return { ...mapping, pageIndex: index }
+        }
       }
     })
 

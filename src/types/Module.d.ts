@@ -19,3 +19,23 @@ export interface ModuleSerialized {
   props?: Record<string, unknown>
   position?: [x: number, y: number]
 }
+
+export interface ModuleDefinition {
+  id: string
+  label?: string
+  shape: Shape['id']
+  clipContent: boolean
+  inputs: { signal: Signal }[]
+  outputs: { signal: Signal }[]
+  props: Record<string, { type: string; options: Record<string, any> }>
+}
+
+export interface ModuleDefinitionSerialized {
+  id: string
+  label?: string
+  shape: Shape['id']
+  clipContent?: boolean
+  inputs?: Signal[]
+  outputs?: Signal[]
+  props?: Record<string, [type: string, options: Record<string, any>]>
+}

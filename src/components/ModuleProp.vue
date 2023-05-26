@@ -1,15 +1,19 @@
 <template>
   <div
     class="module-prop"
-    :class="`side-${side}`"
+    :class="[`side-${side}`]"
     :style="{
-      'z-index': mappingIsVisible ? 1 : undefined,
+      'z-index': contextIsVisible ? 1 : undefined,
       top: props.position.y + 'px',
       left: props.position.x + 'px',
     }"
     ref="el"
   >
-    <button class="module-prop-handle" @click="showMapping"></button>
+    <button
+      class="module-prop-handle"
+      :data-status="handleStatus"
+      @click="showMapping"
+    ></button>
     <div class="module-prop-content" ref="content">
       <button
         v-if="nameIsVisible"
@@ -32,13 +36,17 @@
       />
     </div>
     <Teleport to="body">
-      <MappingSelect
-        v-if="mappingIsVisible"
-        ref="mappingSelect"
-        class="module-prop-mapping"
-        :value="mapping?.slot"
-        @update:value="updateMapping"
-      />
+      <div v-if="contextIsVisible" ref="context" class="module-prop-context">
+        <MappingSelect
+          class="module-prop-mapping"
+          :value="mapping?.slot"
+          @update:value="updateMapping"
+        />
+        <ModulateSelect
+          :value="modulation?.modulatorId"
+          @update:value="updateModulation"
+        />
+      </div>
     </Teleport>
   </div>
 </template>
@@ -52,10 +60,14 @@ import type { Module, Point } from '@/types'
 import Number from '@/ui/MNumber.vue'
 import { computed, nextTick, ref, type Component } from 'vue'
 import MappingSelect from './MappingSelect.vue'
+import ModulateSelect from './ModulateSelect.vue'
+import { useModulations } from '@/stores/modulations'
 
 const props = defineProps<{
   name: string
-  moduleId: Module['id']
+  // TODO: change back to `Module[id]`, props of type number
+  // are somehow broken
+  moduleId: any
   type: string
   value: unknown
   options: any
@@ -75,14 +87,30 @@ const field = ref<HTMLElement>()
 const fieldIsVisible = ref(false)
 
 const mappings = useMappings()
-const mappingSelect = ref<HTMLElement>()
-const mappingIsVisible = ref(false)
-const mappingPosition = ref({ x: 0, y: 0 })
+const modulations = useModulations()
+const context = ref<HTMLElement>()
+const contextIsVisible = ref(false)
+const contextPosition = ref({ x: 0, y: 0 })
+
 const mapping = mappings.getMapping(props.moduleId, props.name)
+const modulation = modulations.getModulation(props.moduleId, props.name)
+const isMappedOnCurrentPage = computed(
+  () => mapping.value?.pageIndex === mappings.pageIndex
+)
 
 const name = ref<HTMLElement>()
 const nameIsVisible = computed(
   () => app.showPropFields || !fieldIsVisible.value
+)
+
+const handleStatus = computed(() =>
+  isMappedOnCurrentPage.value && modulation.value
+    ? 'mapped-and-modulated'
+    : isMappedOnCurrentPage.value
+    ? 'mapped'
+    : modulation.value
+    ? 'modulated'
+    : 'mapped-inactive'
 )
 
 const showField = async () => {
@@ -104,23 +132,43 @@ const showMapping = () => {
   // currently focused element and restore it in `hideMapping()`.
   activeElement = document.activeElement
   const { top = 0, left = 0 } = content.value?.getBoundingClientRect() ?? {}
-  mappingPosition.value = { x: left, y: top }
-  mappingIsVisible.value = app.isMapping = true
+  contextPosition.value = { x: left, y: top }
+  contextIsVisible.value = app.isMapping = true
 }
 
-const hideMapping = () => {
-  mappingIsVisible.value = app.isMapping = false
+const hideContext = () => {
+  contextIsVisible.value = app.isMapping = false
   window.setTimeout(() => (activeElement as HTMLElement)?.focus())
 }
 
-const updateMapping = (slot: number) => {
+const updateMapping = (slot: number | undefined) => {
   const { moduleId, name: prop } = props
-  mappings.add(mappings.pageIndex, { slot, moduleId, prop })
-  hideMapping()
+
+  if (slot === undefined) {
+    const mapping = mappings.getMapping(moduleId, prop).value
+    mapping && mappings.remove(mappings.pageIndex, mapping.slot)
+  } else {
+    mappings.add(mappings.pageIndex, { slot, moduleId, prop })
+  }
+
+  hideContext()
+}
+
+const updateModulation = (modulatorId: number | undefined) => {
+  const { moduleId, name: prop } = props
+
+  if (modulatorId === undefined) {
+    const modulation = modulations.getModulation(moduleId, prop).value
+    modulation && modulations.remove(modulation.modulatorId, moduleId, prop)
+  } else {
+    modulations.add({ modulatorId, moduleId, prop, amount: 0.5 })
+  }
+
+  hideContext()
 }
 
 onMouseUpOutside(el, hideField)
-onMouseDownOutside(mappingSelect, hideMapping)
+onMouseDownOutside(context, hideContext)
 </script>
 
 <style scoped lang="scss">
@@ -147,14 +195,26 @@ onMouseDownOutside(mappingSelect, hideMapping)
     cursor: pointer;
     transition: fill var(--fade-duration);
 
-    .mapped & {
+    .mapping-modal &,
+    &[data-status='mapped'] {
+      background: var(--color-mapping);
+    }
+
+    &[data-status='mapped-inactive'] {
       // A bit darker than the glass color.
       background-color: hsl(0deg 0% 29%);
     }
 
-    .mapping-modal &,
-    .mapped-current-page & {
-      background-color: var(--mapping-color);
+    &[data-status='modulated'] {
+      background: var(--color-modulation);
+    }
+
+    &[data-status='mapped-and-modulated'] {
+      background: linear-gradient(
+        90deg,
+        var(--color-mapping) 50%,
+        var(--color-modulation) 50%
+      );
     }
   }
 
@@ -180,11 +240,13 @@ onMouseDownOutside(mappingSelect, hideMapping)
     font-weight: 300;
   }
 
-  &-mapping {
-    top: v-bind('mappingPosition.y + `px`');
-    left: v-bind('mappingPosition.x + `px`');
+  &-context {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    top: v-bind('contextPosition.y + `px`');
+    left: v-bind('contextPosition.x + `px`');
   }
 }
 </style>
-
-<style></style>

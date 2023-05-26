@@ -2,7 +2,7 @@
   <ul
     ref="el"
     class="m-select"
-    :class="{ overflow: isOverflowing }"
+    :class="{ 'show-unset': showUnset }"
     :data-theme="theme ?? 'default'"
     role="listbox"
     :aria-label="label"
@@ -12,24 +12,32 @@
       v-for="(option, index) in props.options"
       :key="option.id"
       class="m-select-option"
-      :class="{ focus: index === focusedIndex }"
+      :class="{ focused: index === focusedIndex }"
       role="option"
       :aria-selected="props.value === option.id"
       @click="emit('update:value', option.id)"
       @mouseenter="focus(index)"
     >
-      <slot
-        name="option"
-        v-bind="option"
-        :isFocused="index === focusedIndex"
-      ></slot>
+      <slot name="option" v-bind="option" :isFocused="index === focusedIndex">
+        {{ option.label }}
+      </slot>
+      <button
+        v-if="showUnset && option.id === value"
+        class="m-select-unset"
+        @click="emit('update:value', undefined)"
+      >
+        <svg viewBox="0 0 10 10">
+          <line x1="0" y1="0" x2="10" y2="10" />
+          <line x1="10" y1="0" x2="0" y2="10" />
+        </svg>
+      </button>
     </li>
   </ul>
 </template>
 
 <script setup lang="ts">
 import { useElementBounding } from '@vueuse/core'
-import { nextTick, onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
+import { onMounted, onUnmounted, ref, toRefs, watch } from 'vue'
 
 const emit = defineEmits<{ (e: 'update:value', id: any): void }>()
 
@@ -39,13 +47,13 @@ const props = defineProps<{
   theme?: 'default' | 'none'
   autoFocus?: boolean
   label?: string
+  showUnset?: boolean
 }>()
 
 const el = ref<HTMLElement>()
 const { options } = toRefs(props)
 const focusedIndex = ref(0)
 const bounds = useElementBounding(el, { windowScroll: false })
-const isOverflowing = ref(false)
 
 onMounted(() => {
   if (props.autoFocus) el.value?.focus()
@@ -55,13 +63,7 @@ onMounted(() => {
   }
 })
 
-watch(options, async () => {
-  focusedIndex.value = 0
-  if (el.value) {
-    await nextTick()
-    isOverflowing.value = el.value.scrollHeight > el.value.clientHeight
-  }
-})
+watch(options, async () => (focusedIndex.value = 0))
 
 const focus = (index: number) => {
   const { length } = options.value
@@ -107,10 +109,10 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
 
 <style lang="scss">
 .m-select {
+  position: relative;
   list-style: none;
   padding-left: 0;
   margin: 0;
-  overflow-y: auto;
 
   &-option {
     cursor: pointer;
@@ -144,41 +146,60 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
     padding: 0 var(--radius);
     cursor: pointer;
 
-    &.focus:not(:last-child, :first-child) {
+    &:first-child {
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    &:last-child {
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    &.focused:not(:last-child, :first-child) {
       margin: -1px 0;
       padding-top: 1px;
       padding-bottom: 1px;
     }
 
-    &.focus {
+    &.focused {
       background-color: var(--m-select-color-focus);
     }
   }
-}
 
-// .m-select {
-//   --radius: var(--radius-s);
-//   --option-height: 23px;
-//   border-radius: var(--radius);
-//   white-space: nowrap;
-//   outline: none;
-//   background-color: red;
-// }
-// .m-select-option {
-//   height: var(--option-height);
-//   display: flex;
-//   align-items: center;
-//   padding: 0 var(--radius);
-//   cursor: pointer;
-//   &:first-child {
-//     padding-top: 2px;
-//     border-top-left-radius: var(--radius);
-//     border-top-right-radius: var(--radius);
-//   }
-//   &:last-child {
-//     padding-bottom: 2px;
-//     border-bottom-left-radius: var(--radius);
-//     border-bottom-right-radius: var(--radius);
-//   }
-// }
+  &.show-unset .m-select-option[aria-selected='true'] {
+    // Add a little space for the unset button.
+    padding-right: calc(var(--radius) + 0.1rem);
+  }
+
+  .m-select-unset {
+    display: flex;
+    right: 0;
+    width: 0.85rem;
+    height: 0.85rem;
+    transform: translateX(55%);
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+    background-color: #d9d9d9;
+
+    &:hover {
+      background-color: var(--color-glass-dark-solid);
+      svg {
+        stroke: white;
+      }
+    }
+
+    svg {
+      width: 40%;
+      height: 40%;
+      stroke: black;
+      stroke-width: 1px;
+      overflow: visible;
+      stroke-linecap: round;
+      line {
+        vector-effect: non-scaling-stroke;
+      }
+    }
+  }
+}
 </style>

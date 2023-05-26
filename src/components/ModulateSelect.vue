@@ -1,6 +1,6 @@
 <template>
   <MSelect
-    class="mapping-select"
+    class="modulate-select"
     :options="options"
     :autoFocus="true"
     :showUnset="true"
@@ -8,19 +8,21 @@
 </template>
 
 <script setup lang="ts">
+import { useModulators } from '@/stores/modulators'
 import MSelect from '@/ui/MSelect.vue'
+import { computed } from 'vue'
 
-const options = [
-  { id: 0, label: 'Map to 1' },
-  { id: 1, label: 'Map to 2' },
-  { id: 2, label: 'Map to 3' },
-]
+const modulators = useModulators()
+
+const options = computed(() =>
+  modulators.list.map(({ id, label }) => ({ id, label }))
+)
 </script>
 
 <style scoped lang="scss">
-.mapping-select {
-  --m-select-color-bg: var(--color-mapping);
-  --m-select-color-focus: hsl(155deg 58% 38%); // Slightly darker mapping color.
+.modulate-select {
+  --m-select-color-bg: var(--color-modulation);
+  --m-select-color-focus: hsl(46 112% 41%); // Slightly darker modulate color.
 
   width: fit-content;
   color: rgb(0 0 0 / 91%);

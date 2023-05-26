@@ -1,4 +1,5 @@
 import type { ConnectionSerialized } from './Connection'
+import type { ModulationSerialized, Modulator } from './Modulation'
 import type { Module } from './Module'
 import type { ModuleDefinitionSerialized } from './ModuleDefinition'
 
@@ -13,6 +14,18 @@ export type DeviceMethods = {
   '/e/modules/prop': (id: Module['id'], name: string, value: unknown) => boolean
   '/e/modules/definitions': () => string
   '/e/modules/definition': (moduleName: string) => string
+
+  '/e/modulators/add': (id: Modulator['id'], type: Modulator['type']) => void
+  '/e/modulators/remove': (id: Modulator['id']) => void
+
+  '/e/modulations/add': (...args: ModulationSerialized) => void
+  '/e/modulations/remove': (
+    ...args: [
+      modulatorId: Modulator['id'],
+      moduleId: Module['id'],
+      prop: string
+    ]
+  ) => void
 
   '/e/patch/clear': () => boolean
 
