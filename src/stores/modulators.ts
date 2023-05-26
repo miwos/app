@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useDevice } from './device'
 import { useModulatorDefinitions } from './modulatorDefinitions'
+import { useProject } from './project'
 
 type Id = Modulator['id']
 
@@ -40,8 +41,8 @@ export const useModulators = defineStore('modulators', () => {
       ],
     ])
   )
-  const nextId = ref(1)
 
+  const project = useProject()
   const device = useDevice()
   const definitions = useModulatorDefinitions()
 
@@ -68,7 +69,7 @@ export const useModulators = defineStore('modulators', () => {
       add(modulator, false)
       // Make sure that future modulator ids won't clash with the currently
       // added modulator.
-      nextId.value = Math.max(nextId.value, modulator.id + 1)
+      project.nextId = Math.max(project.nextId, modulator.id + 1)
     }
   }
 
@@ -76,7 +77,7 @@ export const useModulators = defineStore('modulators', () => {
     modulator: Optional<Modulator, 'id' | 'props'>,
     updateDevice = true
   ) => {
-    modulator.id ??= nextId.value++
+    modulator.id ??= project.nextId++
     modulator.props ??= definitions.getDefaultProps(modulator.type)
     items.value.set(modulator.id, modulator as Modulator)
 
@@ -84,10 +85,7 @@ export const useModulators = defineStore('modulators', () => {
       device.update('/e/modulators/add', [modulator.id, modulator.type])
   }
 
-  const clear = () => {
-    items.value.clear()
-    nextId.value = 1
-  }
+  const clear = () => items.value.clear()
 
   return { items, list, get, serialize, deserialize, add, clear }
 })

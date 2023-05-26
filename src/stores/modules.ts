@@ -7,6 +7,7 @@ import { useConnections } from './connections'
 import { useDevice } from './device'
 import { useModuleDefinitions } from './moduleDefinitions'
 import { useModuleShapes } from './moduleShapes'
+import { useProject } from './project'
 
 type Id = Module['id']
 
@@ -31,6 +32,7 @@ export const deserializeModule = (serialized: ModuleSerialized): Module => ({
 })
 
 export const useModules = defineStore('module-instances', () => {
+  const project = useProject()
   const device = useDevice()
   const definitions = useModuleDefinitions()
   const connections = useConnections()
@@ -42,7 +44,6 @@ export const useModules = defineStore('module-instances', () => {
   const sortedIds = ref<Id[]>([])
   const selectedIds = ref(new Set<Id>())
   const isDragging = ref(false)
-  const nextId = ref(1) // We use a one-based index to be consistent with lua.
   const activeOutputIds = ref(new Set<string>())
 
   bridge.on('/e/modules/prop', ({ args: [id, name, value] }) => {
@@ -150,7 +151,7 @@ export const useModules = defineStore('module-instances', () => {
       add(module, false)
       // Make sure that future module ids won't clash with the currently added
       // module.
-      nextId.value = Math.max(nextId.value, module.id + 1)
+      project.nextId = Math.max(project.nextId, module.id + 1)
     }
   }
 
@@ -158,7 +159,7 @@ export const useModules = defineStore('module-instances', () => {
     module: Optional<Module, 'id' | 'props'>,
     updateDevice = true
   ) => {
-    module.id ??= nextId.value++
+    module.id ??= project.nextId++
     module.props ??= definitions.getDefaultProps(module.type)
     items.value.set(module.id, module as Module)
     sortedIds.value.push(module.id)
@@ -210,7 +211,6 @@ export const useModules = defineStore('module-instances', () => {
   const clear = () => {
     items.value.clear()
     sortedIds.value = []
-    nextId.value = 1
   }
 
   return {
