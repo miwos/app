@@ -26,7 +26,7 @@
         class="m-select-unset"
         @click="emit('update:value', undefined)"
       >
-        <svg viewBox="0 0 10 10">
+        <svg viewBox="0 0 10 10" class="icon">
           <line x1="0" y1="0" x2="10" y2="10" />
           <line x1="10" y1="0" x2="0" y2="10" />
         </svg>
@@ -145,6 +145,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
     align-items: center;
     padding: 0 var(--radius);
     cursor: pointer;
+    gap: 0.2em;
 
     &:first-child {
       border-radius: var(--radius) var(--radius) 0 0;
@@ -171,28 +172,27 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
   }
 
   .m-select-unset {
-    display: flex;
+    --bg: #d9d9d9;
+    --color: black;
+
+    position: absolute;
     right: 0;
+    transform: translateX(55%);
     width: 0.85rem;
     height: 0.85rem;
-    transform: translateX(55%);
-    position: absolute;
-    align-items: center;
-    justify-content: center;
     border-radius: 100%;
-    background-color: #d9d9d9;
+    background-color: var(--bg);
+    box-sizing: border-box;
+    padding: 4px;
 
     &:hover {
-      background-color: var(--color-glass-dark-solid);
-      svg {
-        stroke: white;
-      }
+      --bg: var(--color-glass-dark-solid);
+      --color: white;
     }
 
     svg {
-      width: 40%;
-      height: 40%;
-      stroke: black;
+      display: block;
+      stroke: var(--color);
       stroke-width: 1px;
       overflow: visible;
       stroke-linecap: round;
