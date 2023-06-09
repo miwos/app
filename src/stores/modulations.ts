@@ -80,6 +80,26 @@ export const useModulations = defineStore('modulations', () => {
     }
   }
 
+  const updateAmount = (
+    id: Id,
+    amount: Modulation['amount'],
+    updateDevice = true
+  ) => {
+    const modulation = items.value.get(id)
+    if (!modulation) return
+
+    modulation.amount = amount
+    if (updateDevice) {
+      const { modulatorId, moduleId, prop } = modulation
+      device.update('/e/modulations/amount', [
+        modulatorId,
+        moduleId,
+        prop,
+        amount,
+      ])
+    }
+  }
+
   const clear = () => items.value.clear()
 
   return {
@@ -90,6 +110,7 @@ export const useModulations = defineStore('modulations', () => {
     deserialize,
     add,
     remove,
+    updateAmount,
     clear,
   }
 })

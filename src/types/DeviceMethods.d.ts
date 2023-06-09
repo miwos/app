@@ -20,11 +20,15 @@ export type DeviceMethods = {
 
   '/e/modulations/add': (...args: ModulationSerialized) => void
   '/e/modulations/remove': (
-    ...args: [
-      modulatorId: Modulator['id'],
-      moduleId: Module['id'],
-      prop: string
-    ]
+    modulatorId: Modulator['id'],
+    moduleId: Module['id'],
+    prop: string
+  ) => void
+  '/e/modulations/amount': (
+    modulatorId: Modulator['id'],
+    moduleId: Module['id'],
+    prop: string,
+    amount: number
   ) => void
 
   '/e/patch/clear': () => boolean

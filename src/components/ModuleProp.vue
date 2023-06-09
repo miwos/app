@@ -12,7 +12,7 @@
     <button
       class="module-prop-handle"
       :data-status="handleStatus"
-      @click="showMapping"
+      @click="showContext"
     ></button>
     <div class="module-prop-content" ref="content">
       <button
@@ -40,11 +40,18 @@
         <MappingSelect
           class="module-prop-mapping"
           :value="mapping?.slot"
-          @update:value="updateMapping"
+          @update:value="setMapping"
+        />
+        <ModulateAmount
+          v-if="amountIsVisible"
+          :value="modulation?.amount"
+          :modulation="modulation"
+          @update:value="updateModulationAmount"
         />
         <ModulateSelect
+          v-else
           :value="modulation?.modulatorId"
-          @update:value="updateModulation"
+          @update:value="setModulation"
         />
       </div>
     </Teleport>
@@ -62,6 +69,7 @@ import { computed, nextTick, ref, type Component } from 'vue'
 import MappingSelect from './MappingSelect.vue'
 import ModulateSelect from './ModulateSelect.vue'
 import { useModulations } from '@/stores/modulations'
+import ModulateAmount from './ModulateAmount.vue'
 
 const props = defineProps<{
   name: string
@@ -91,6 +99,7 @@ const modulations = useModulations()
 const context = ref<HTMLElement>()
 const contextIsVisible = ref(false)
 const contextPosition = ref({ x: 0, y: 0 })
+const amountIsVisible = ref(false)
 
 const mapping = mappings.getMapping(props.moduleId, props.name)
 const modulation = modulations.getByModuleProp(props.moduleId, props.name)
@@ -126,7 +135,7 @@ const hideField = () => {
 }
 
 let activeElement: Element | null
-const showMapping = () => {
+const showContext = () => {
   // The mapping select is teleported and thereby breaking the tab flow. To let
   // the user continue where we left off before the mapping dialog we store the
   // currently focused element and restore it in `hideMapping()`.
@@ -134,6 +143,7 @@ const showMapping = () => {
   const { top = 0, left = 0 } = content.value?.getBoundingClientRect() ?? {}
   contextPosition.value = { x: left, y: top }
   contextIsVisible.value = app.isMapping = true
+  amountIsVisible.value = false
 }
 
 const hideContext = () => {
@@ -141,7 +151,7 @@ const hideContext = () => {
   window.setTimeout(() => (activeElement as HTMLElement)?.focus())
 }
 
-const updateMapping = (slot: number | undefined) => {
+const setMapping = (slot: number | undefined) => {
   const { moduleId, name: prop } = props
 
   if (slot === undefined) {
@@ -154,17 +164,21 @@ const updateMapping = (slot: number | undefined) => {
   hideContext()
 }
 
-const updateModulation = (modulatorId: number | undefined) => {
+const setModulation = (modulatorId: number | undefined) => {
   const { moduleId, name: prop } = props
 
   if (modulatorId === undefined) {
-    const modulation = modulations.getByModuleProp(moduleId, prop).value
-    modulation && modulations.remove(modulation.id)
+    modulation.value && modulations.remove(modulation.value.id)
   } else {
     modulations.add({ modulatorId, moduleId, prop, amount: 0.5 })
   }
 
-  hideContext()
+  amountIsVisible.value = true
+}
+
+const updateModulationAmount = (amount: number) => {
+  if (!modulation.value) return
+  modulations.updateAmount(modulation.value.id, amount)
 }
 
 onMouseUpOutside(el, hideField)
