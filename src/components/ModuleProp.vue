@@ -93,7 +93,7 @@ const contextIsVisible = ref(false)
 const contextPosition = ref({ x: 0, y: 0 })
 
 const mapping = mappings.getMapping(props.moduleId, props.name)
-const modulation = modulations.getModulation(props.moduleId, props.name)
+const modulation = modulations.getByModuleProp(props.moduleId, props.name)
 const isMappedOnCurrentPage = computed(
   () => mapping.value?.pageIndex === mappings.pageIndex
 )
@@ -158,8 +158,8 @@ const updateModulation = (modulatorId: number | undefined) => {
   const { moduleId, name: prop } = props
 
   if (modulatorId === undefined) {
-    const modulation = modulations.getModulation(moduleId, prop).value
-    modulation && modulations.remove(modulation.modulatorId, moduleId, prop)
+    const modulation = modulations.getByModuleProp(moduleId, prop).value
+    modulation && modulations.remove(modulation.id)
   } else {
     modulations.add({ modulatorId, moduleId, prop, amount: 0.5 })
   }

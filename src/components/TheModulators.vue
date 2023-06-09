@@ -7,6 +7,7 @@
     >
       <ModulatorInstance
         v-for="[id, item] in modulators.items"
+        :key="id"
         :modulator="item"
       />
     </div>

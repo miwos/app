@@ -23,12 +23,17 @@ export const useModulations = defineStore('modulations', () => {
   const device = useDevice()
 
   // Getters
-  const getModulation = (moduleId: Module['id'], prop: string) =>
+  const getByModuleProp = (moduleId: Module['id'], prop: string) =>
     computed(() =>
       Array.from(items.value.values()).find(
         (item) => item.moduleId === moduleId && item.prop === prop
       )
     )
+
+  const list = computed(() => Array.from(items.value.values()))
+
+  const getByModulatorId = (id: Modulator['id']) =>
+    list.value.filter((item) => item.modulatorId === id)
 
   // Actions
   const serialize = (): ModulationSerialized[] =>
@@ -63,24 +68,28 @@ export const useModulations = defineStore('modulations', () => {
     }
   }
 
-  const remove = (
-    modulatorId: Modulator['id'],
-    moduleId: Module['id'],
-    prop: string,
-    updateDevice = true
-  ) => {
-    for (const [_, modulation] of items.value) {
-      if (modulationsAreEqual(modulation, { modulatorId, moduleId, prop })) {
-        items.value.delete(modulation.id)
-      }
-    }
+  const remove = (id: Id, updateDevice = false) => {
+    const modulation = items.value.get(id)
+    if (!modulation) return
 
-    if (updateDevice)
-      // use one-based indexes
+    items.value.delete(id)
+
+    if (updateDevice) {
+      const { modulatorId, moduleId, prop } = modulation
       device.update('/e/modulations/remove', [modulatorId, moduleId, prop])
+    }
   }
 
   const clear = () => items.value.clear()
 
-  return { items, getModulation, serialize, deserialize, add, remove, clear }
+  return {
+    items,
+    getByModuleProp,
+    getByModulatorId,
+    serialize,
+    deserialize,
+    add,
+    remove,
+    clear,
+  }
 })

@@ -7,6 +7,7 @@ import { useProject } from './project'
 import { useBridge } from '@/bridge'
 import { map, unpackBytes } from '@/utils'
 import { useEventBus } from '@vueuse/core'
+import { useModulations } from './modulations'
 
 type Id = Modulator['id']
 
@@ -45,6 +46,7 @@ export const useModulators = defineStore('modulators', () => {
     ])
   )
 
+  const modulations = useModulations()
   const project = useProject()
   const device = useDevice()
   const definitions = useModulatorDefinitions()
@@ -101,9 +103,17 @@ export const useModulators = defineStore('modulators', () => {
       device.update('/e/modulators/add', [modulator.id, modulator.type])
   }
 
+  const remove = (id: Id, updateDevice = true) => {
+    items.value.delete(id)
+
+    modulations.getByModulatorId(id).forEach(({ id }) => modulations.remove(id))
+
+    if (updateDevice) device.update('/e/modulators/remove', [id])
+  }
+
   const clear = () => items.value.clear()
 
-  return { items, list, get, serialize, deserialize, add, clear }
+  return { items, list, get, serialize, deserialize, add, remove, clear }
 })
 
 if (import.meta.hot)
