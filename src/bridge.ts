@@ -1,5 +1,5 @@
 import { Bridge } from '@miwos/bridge'
-import { WebSerialTransport } from '@miwos/bridge/dist/WebSerialTransport.js'
+import { WebSerialTransport } from '@miwos/bridge/src/WebSerialTransport'
 import { markRaw } from 'vue'
 
 let bridge: Bridge | undefined
