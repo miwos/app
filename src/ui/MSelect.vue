@@ -4,6 +4,7 @@
     class="m-select"
     :class="{ 'show-unset': showUnset }"
     :data-theme="theme ?? 'default'"
+    :data-single-option="options.length === 1"
     role="listbox"
     :aria-label="label"
     tabindex="0"
@@ -164,6 +165,10 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
     &.focused {
       background-color: var(--m-select-color-focus);
     }
+  }
+
+  &[data-single-option='true'] .m-select-option {
+    border-radius: var(--radius);
   }
 
   &.show-unset .m-select-option[aria-selected='true'] {
