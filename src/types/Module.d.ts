@@ -25,6 +25,7 @@ export interface ModuleDefinition {
   label?: string
   shape: Shape['id']
   clipContent: boolean
+  showLabel: boolean
   inputs: { signal: Signal }[]
   outputs: { signal: Signal }[]
   props: Record<string, { type: string; options: Record<string, any> }>
@@ -35,6 +36,7 @@ export interface ModuleDefinitionSerialized {
   label?: string
   shape: Shape['id']
   clipContent?: boolean
+  showLabel?: boolean
   inputs?: Signal[]
   outputs?: Signal[]
   props?: Record<string, [type: string, options: Record<string, any>]>

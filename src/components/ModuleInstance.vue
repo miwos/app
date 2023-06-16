@@ -14,7 +14,11 @@
       />
       <ModuleShape v-if="shape" :shape="shape" />
       <ModuleContent :module="module" :mask="`url(#${maskId})`" />
-      <ModuleLabel :module="module" :shape="shape" />
+      <ModuleLabel
+        v-if="definition?.showLabel"
+        :module="module"
+        :shape="shape"
+      />
       <ConnectionPoints :module="module" />
       <ModuleProps :module="module" />
     </template>
@@ -23,27 +27,20 @@
 
 <script setup lang="ts">
 import { onMouseUpOutside } from '@/composables/onMouseUpOutside'
-import { useDraggable } from '@/composables/useDraggable'
-import { useModules } from '@/stores/modules'
+import { useModulesDrag } from '@/composables/useModulesDrag'
+import { useModuleDefinitions } from '@/stores/moduleDefinitions'
 import { useModuleShapes } from '@/stores/moduleShapes'
+import { useModules } from '@/stores/modules'
 import { useProject } from '@/stores/project'
 import type { Module, Point } from '@/types'
-import {
-  computed,
-  defineAsyncComponent,
-  onMounted,
-  ref,
-  toRefs,
-  watch,
-} from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import ConnectionPoints from './ConnectionPoints.vue'
-import ModuleOutline from './ModuleOutline.vue'
-import ModuleShape from './ModuleShape.vue'
-import { useModulesDrag } from '@/composables/useModulesDrag'
-import ModuleProps from './ModuleProps.vue'
 import ModuleContent from './ModuleContent.vue'
-import ModuleMask from './ModuleMask.vue'
 import ModuleLabel from './ModuleLabel.vue'
+import ModuleMask from './ModuleMask.vue'
+import ModuleOutline from './ModuleOutline.vue'
+import ModuleProps from './ModuleProps.vue'
+import ModuleShape from './ModuleShape.vue'
 
 const moduleComponentsImport = import.meta.glob([
   '../modules/*.vue',
@@ -59,10 +56,12 @@ const moduleComponents = new Map(
 
 const props = defineProps<{ position: Point; module: Module }>()
 
-const el = ref<HTMLElement>()
 const modules = useModules()
+const definition = useModuleDefinitions().get(props.module.type)
 const shape = useModuleShapes().getByModule(props.module)
 const project = useProject()
+
+const el = ref<HTMLElement>()
 const maskId = `module-${props.module.id}-mask`
 const customComponent = moduleComponents.get(props.module.type)
 

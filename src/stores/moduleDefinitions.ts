@@ -28,6 +28,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
           ],
           shape: 'Input',
           clipContent: false,
+          showLabel: false,
           props: {
             device: {
               type: 'Number',
@@ -64,6 +65,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
           outputs: [],
           shape: 'Output',
           clipContent: false,
+          showLabel: false,
           props: {
             device: {
               type: 'Number',
@@ -142,8 +144,9 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
   const deserialize = (serialized: ModuleDefinitionSerialized[]) => {
     for (const serializedDefinition of serialized) {
       // prettier-ignore
-      const { shape, id, label, clipContent, inputs, outputs, props = {} } = 
-        serializedDefinition
+      const {
+        shape, id, label, clipContent, showLabel, inputs, outputs, props = {}
+      } = serializedDefinition
 
       items.value.set(id, {
         id,
@@ -152,6 +155,7 @@ export const useModuleDefinitions = defineStore('module definitions', () => {
         shape: shape ?? id,
         label: label ?? id,
         clipContent: clipContent ?? true,
+        showLabel: showLabel ?? true,
         props: Object.fromEntries(
           Object.entries(props).map(([name, [type, options]]) => [
             name,
