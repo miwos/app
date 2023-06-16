@@ -156,11 +156,13 @@ export const useModules = defineStore('module-instances', () => {
   }
 
   const add = (
-    module: Optional<Module, 'id' | 'props'>,
+    module: Optional<Module, 'id' | 'props' | 'label'>,
     updateDevice = true
   ) => {
     module.id ??= project.nextId++
     module.props ??= definitions.getDefaultProps(module.type)
+    module.label ??= module.type
+    console.log(module)
     items.value.set(module.id, module as Module)
     sortedIds.value.push(module.id)
 

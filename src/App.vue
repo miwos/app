@@ -6,14 +6,13 @@
 </template>
 
 <script setup lang="ts">
-import { useMagicKeys } from '@vueuse/core'
-import { watch } from 'vue'
 import { RouterView } from 'vue-router'
-import { redo, undo } from './commands'
-import TheTopBar from './components/TheTopBar.vue'
 import TheLog from './components/TheLog.vue'
+import TheTopBar from './components/TheTopBar.vue'
 
-const keys = useMagicKeys()
-watch(keys['Ctrl+Z'], (v) => v && undo())
-watch(keys['Ctrl+Y'], (v) => v && redo())
+// TODO: add undo/redo again, this time with some sort of snapshots or state
+// diffing instead of the more error-prone command pattern.
+// const keys = useMagicKeys()
+// watch(keys['Ctrl+Z'], (v) => v && undo())
+// watch(keys['Ctrl+Y'], (v) => v && redo())
 </script>

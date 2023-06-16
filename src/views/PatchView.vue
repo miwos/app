@@ -33,18 +33,15 @@
 </template>
 
 <script setup lang="ts">
-import { removeModules } from '@/commands'
 import ConnectionLine from '@/components/ConnectionLine.vue'
 import ConnectionLineTemp from '@/components/ConnectionLineTemp.vue'
 import MenuAdd from '@/components/MenuAdd.vue'
-import ModulatorInstance from '@/components/ModulatorInstance.vue'
 import ModuleInstance from '@/components/ModuleInstance.vue'
 import TheEncoders from '@/components/TheEncoders.vue'
 import TheModulators from '@/components/TheModulators.vue'
 import { useSelection } from '@/composables/useSelection'
 import { useApp } from '@/stores/app'
 import { useConnections } from '@/stores/connections'
-import { useModulators } from '@/stores/modulators'
 import { useModules } from '@/stores/modules'
 import { useProject } from '@/stores/project'
 import { containsRect } from '@/utils'
@@ -53,7 +50,6 @@ import { ref, watch } from 'vue'
 
 const bg = ref<HTMLElement>()
 const modules = useModules()
-const modulators = useModulators()
 const connections = useConnections()
 const project = useProject()
 const app = useApp()
@@ -80,7 +76,9 @@ whenever(keys['escape'], () => {
   cancel()
 })
 
-whenever(keys['delete'], () => removeModules(modules.selectedIds))
+whenever(keys['delete'], () =>
+  modules.selectedIds.forEach((id) => modules.remove(id))
+)
 </script>
 
 <style scoped lang="scss">

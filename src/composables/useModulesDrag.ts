@@ -1,6 +1,6 @@
-import { drag, endDrag, startDrag } from '@/commands'
 import { useModules } from '@/stores/modules'
-import type { Module } from '@/types'
+import type { Module, Point, Rect } from '@/types'
+import { getCombinedRect } from '@/utils'
 import { useEventListener } from '@vueuse/core'
 import type { Ref } from 'vue'
 
@@ -11,6 +11,76 @@ export const useModulesDrag = (
   const modules = useModules()
   const dragThreshold = 5 // px
   let positionMouseDown = { x: 0, y: 0 }
+  let groupRect: Rect | undefined
+  let groupDelta: Point | undefined
+  let group: Module[] = []
+  const prevModulePositions = new Map<Module['id'], Point>()
+  const modulePositions = new Map<Module['id'], Point>()
+  const moduleDeltas = new Map<Module['id'], Point>()
+
+  const startDrag = (modules: Module[], point: Point) => {
+    group = modules
+
+    // Conceptually we do not move the individual modules but the whole group. So
+    // we use the groups rectangle and it's corresponding delta.
+    groupRect = getCombinedRect(
+      Array.from(group.values()).map(({ position, size }) => ({
+        ...position,
+        ...size!,
+      }))
+    )
+    groupDelta = { x: point.x - groupRect.x, y: point.y - groupRect.y }
+
+    modulePositions.clear()
+    moduleDeltas.clear()
+    for (const { id, position } of group) {
+      // Store the original positions, so we can cancel the drag.
+      prevModulePositions.set(id, { x: position.x, y: position.y })
+      // Store individual deltas relative to the group's rectangle, so we can
+      // figure out the individual positions while dragging.
+      moduleDeltas.set(id, {
+        x: position.x - groupRect.x,
+        y: position.y - groupRect.y,
+      })
+    }
+  }
+
+  const drag = (point: Point) => {
+    if (!groupRect || !groupDelta) return
+
+    let x = point.x - groupDelta.x
+    let y = point.y - groupDelta.y
+    const { width, height } = groupRect
+
+    // Subtract 1px to prevent any overflow (might be caused be rounding errors).
+    const windowWidth = window.innerWidth - 1
+    const windowHeight = window.innerHeight - 1
+
+    // Make sure the group won't leave the window.
+    if (x < 0) x = 0
+    else if (x + width > windowWidth) x = windowWidth - width
+
+    if (y < 0) y = 0
+    else if (y + height > windowHeight) y = windowHeight - height
+
+    for (const module of group) {
+      const delta = moduleDeltas.get(module.id)
+      if (!delta) continue
+      module.position = { x: x + delta.x, y: y + delta.y }
+      modulePositions.set(module.id, { ...module.position })
+    }
+  }
+
+  const cancelDrag = () => {
+    group = []
+    const modules = useModules()
+    for (const [id, { x, y }] of prevModulePositions) {
+      const module = modules.get(id)
+      if (module) module.position = { x, y }
+    }
+  }
+
+  const endDrag = () => (group = [])
 
   const handleMouseMove = (event: MouseEvent) => {
     event.preventDefault()

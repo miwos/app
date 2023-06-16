@@ -1,6 +1,7 @@
 import type { Module, Optional, Point } from '@/types'
 import type {
   Connection,
+  ConnectionPoint,
   ConnectionSerialized,
   TemporaryConnection,
 } from '@/types/Connection'
@@ -8,6 +9,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { useDevice } from './device'
 import { useModules } from './modules'
+import { sortPointsByPosition } from '@/utils'
 
 type Id = Connection['id']
 
@@ -111,6 +113,32 @@ export const useConnections = defineStore('connections', () => {
 
   const clear = () => items.value.clear()
 
+  let startPoint: ConnectionPoint | undefined
+  const connectFrom = (point: ConnectionPoint) => (startPoint = point)
+
+  const connectTo = (point: ConnectionPoint) => {
+    if (!startPoint) return
+
+    const bothAreThru = point.thru && startPoint.thru
+
+    // Sort the points so our connection will always flow from `out` to
+    // `in`. If both points are of the special type `thru` we have to make a guess
+    // based on the points positions, treating the higher point as `out` and the
+    // lower as `in`. Otherwise we look for a point with a distinct direction
+    // (not `thru`) and sort them based an that point.
+    const connectionPoints = bothAreThru
+      ? sortPointsByPosition(startPoint, point)
+      : (!startPoint.thru && startPoint.direction === 'out') ||
+        (!point.thru && point.direction === 'in')
+      ? [startPoint, point]
+      : [point, startPoint]
+
+    const [from, to] = connectionPoints
+    startPoint = undefined
+
+    add({ from, to })
+  }
+
   return {
     items,
     tempConnection,
@@ -123,6 +151,8 @@ export const useConnections = defineStore('connections', () => {
     add,
     remove,
     clear,
+    connectFrom,
+    connectTo,
   }
 })
 

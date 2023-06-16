@@ -10,8 +10,8 @@
 </template>
 
 <script setup lang="ts">
-import * as commands from '@/commands'
 import { useApp } from '@/stores/app'
+import { useModules } from '@/stores/modules'
 import type { ModuleDefinition } from '@/types'
 import {
   onClickOutside,
@@ -22,10 +22,12 @@ import {
 import { nextTick, ref, watchEffect } from 'vue'
 import ModuleDefinitionSearch from './ModuleDefinitionSearch.vue'
 
-const el = ref<HTMLElement>()
-const search = ref<InstanceType<typeof ModuleDefinitionSearch>>()
 const mouse = useMouse()
 const app = useApp()
+const modules = useModules()
+
+const el = ref<HTMLElement>()
+const search = ref<InstanceType<typeof ModuleDefinitionSearch>>()
 const { height: windowHeight } = useWindowSize()
 const position = ref({ x: 0, y: 0 })
 const isOpen = ref(false)
@@ -66,7 +68,7 @@ const close = () => {
 
 const addModule = (type: ModuleDefinition['id']) => {
   const position = { x: mouse.x.value, y: mouse.y.value }
-  commands.addModule({ type, position })
+  modules.add({ type, position })
   close()
 }
 </script>

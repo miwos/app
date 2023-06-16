@@ -16,7 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import { connectFrom, connectTo } from '@/commands'
 import { useDragDrop } from '@/composables/useDragDrop'
 import { useConnections } from '@/stores/connections'
 import { useModules } from '@/stores/modules'
@@ -43,7 +42,7 @@ const handleDragStart = (event: DragEvent) => {
   if (!event.dataTransfer) return
   event.dataTransfer.setDragImage(createEmptyImage(), 0, 0)
   event.dataTransfer.dropEffect = 'link'
-  connectFrom(props.point)
+  connections.connectFrom(props.point)
 
   if (module) {
     const { direction } = props.point
@@ -79,7 +78,7 @@ const handleDragEnd = () => {
 }
 
 const handleDrop = () => {
-  connectTo(props.point)
+  connections.connectTo(props.point)
   connections.tempConnection = undefined
 }
 
